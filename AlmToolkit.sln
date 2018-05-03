@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BismNormalizer", "BismNormalizer\BismNormalizer.csproj", "{E54D1347-06AE-41AC-A750-5BF8ECC80EC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlmToolkit", "AlmToolkit\AlmToolkit.csproj", "{765C0612-BB8F-4261-87AE-B5B842BE3C26}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E54D1347-06AE-41AC-A750-5BF8ECC80EC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E54D1347-06AE-41AC-A750-5BF8ECC80EC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E54D1347-06AE-41AC-A750-5BF8ECC80EC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E54D1347-06AE-41AC-A750-5BF8ECC80EC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{765C0612-BB8F-4261-87AE-B5B842BE3C26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{765C0612-BB8F-4261-87AE-B5B842BE3C26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{765C0612-BB8F-4261-87AE-B5B842BE3C26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{765C0612-BB8F-4261-87AE-B5B842BE3C26}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A11D46BF-003D-459D-AA42-707A6C1953D5}
+	EndGlobalSection
+EndGlobal
