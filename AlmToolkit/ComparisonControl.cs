@@ -508,9 +508,9 @@ namespace AlmToolkit
 
         public void CompareTabularModels()
         {
+            _comparison.CompareTabularModels();
             treeGridComparisonResults.Comparison = _comparison;
             treeGridComparisonResults.DataBindComparison();
-
             SetComparedState();
         }
 

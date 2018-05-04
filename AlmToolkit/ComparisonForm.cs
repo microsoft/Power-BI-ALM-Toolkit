@@ -51,7 +51,7 @@ namespace AlmToolkit
 
         #endregion
 
-        #region (Mainly) Private Methods
+        #region Methods
 
         public ComparisonForm()
         {
@@ -65,6 +65,11 @@ namespace AlmToolkit
 
             //hdpi
             Rescale();
+        }
+
+        private void ComparisonForm_Shown(object sender, EventArgs e)
+        {
+            this.InitializeAndCompareTabularModels();
         }
 
         private void SetNotComparedState()
@@ -83,7 +88,7 @@ namespace AlmToolkit
             btnUpdate.Enabled = false;
             btnGenerateScript.Enabled = false;
             btnReportDifferences.Enabled = false;
-            StatusBarComparsion.Text = "";
+            toolStripStatusLabel1.Text = "";
 
             ComparisonCtrl.SetNotComparedState();
         }
@@ -186,6 +191,9 @@ namespace AlmToolkit
 
                 if (!ShowConnectionsForm()) return;
 
+                Cursor.Current = Cursors.WaitCursor;
+                toolStripStatusLabel1.Text = "ALM Toolkit - comparing models ...";
+
                 PopulateSourceTargetTextBoxes();
                 if (sourceTemp != txtSource.Text || targetTemp != txtTarget.Text)
                 {
@@ -194,10 +202,8 @@ namespace AlmToolkit
                     ComparisonCtrl.ComparisonInfo.SkipSelections.Clear();
                 }
 
-                Cursor.Current = Cursors.WaitCursor;
-                StatusBarComparsion.Text = "ALM Toolkit - comparing models ...";
-                ComparisonCtrl.CompareTabularModels();
-                StatusBarComparsion.Text = "ALM Toolkit - finished comparing models";
+                this.CompareTabularModels();
+                toolStripStatusLabel1.Text = "ALM Toolkit - finished comparing models";
             }
             catch (Exception exc)
             {
@@ -222,7 +228,7 @@ namespace AlmToolkit
                 ComparisonCtrl.Comparison.DatabaseDeployment += HandleDatabaseDeployment;
                 ComparisonCtrl.Comparison.Connect();
                 SetAutoComplete();
-                ComparisonCtrl.Comparison.CompareTabularModels();
+                ComparisonCtrl.CompareTabularModels();
                 SetComparedState();
             }
         }
@@ -307,7 +313,7 @@ namespace AlmToolkit
             try
             {
                 Cursor.Current = Cursors.WaitCursor;
-                StatusBarComparsion.Text = "Creating script ...";
+                toolStripStatusLabel1.Text = "Creating script ...";
 
                 //string script = ComparisonCtrl.Comparison.ScriptDatabase(); //doing this here in case errors before opening file in VS
                 //Document file = NewXmlaFile(ComparisonCtrl.Comparison.CompatibilityLevel >= 1200, (ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.UseProject ? ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.ProjectName : ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.DatabaseName));
@@ -336,7 +342,7 @@ namespace AlmToolkit
                 if (saveFile.ShowDialog() == DialogResult.OK)
                 {
                     File.WriteAllText(saveFile.FileName, ComparisonCtrl.Comparison.ScriptDatabase());
-                    StatusBarComparsion.Text = "ALM Toolkit - finished generating script";
+                    toolStripStatusLabel1.Text = "ALM Toolkit - finished generating script";
                     MessageBox.Show("Created script\n" + saveFile.FileName, _appCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
@@ -348,7 +354,7 @@ namespace AlmToolkit
             finally
             {
                 Cursor.Current = Cursors.Default;
-                StatusBarComparsion.Text = "";
+                toolStripStatusLabel1.Text = "";
             }
         }
 
@@ -365,7 +371,7 @@ namespace AlmToolkit
                 if (ComparisonCtrl.CompareState != CompareState.NotCompared)
                 {
                     SetNotComparedState();
-                    StatusBarComparsion.Text = "Comparison invalidated. Please re-run the comparison.";
+                    toolStripStatusLabel1.Text = "Comparison invalidated. Please re-run the comparison.";
                 }
             }
         }
@@ -375,10 +381,10 @@ namespace AlmToolkit
             try
             {
                 Cursor.Current = Cursors.WaitCursor;
-                StatusBarComparsion.Text = "ALM Toolkit - generating report ...";
-                StatusProgressBar.Visible = true;
-                ComparisonCtrl.Comparison.ReportDifferences(StatusProgressBar);
-                StatusBarComparsion.Text = "ALM Toolkit - finished generating report";
+                toolStripStatusLabel1.Text = "ALM Toolkit - generating report ...";
+                toolStripProgressBar1.Visible = true;
+                ComparisonCtrl.Comparison.ReportDifferences(toolStripProgressBar1);
+                toolStripStatusLabel1.Text = "ALM Toolkit - finished generating report";
             }
             catch (Exception exc)
             {
@@ -386,7 +392,7 @@ namespace AlmToolkit
             }
             finally
             {
-                StatusProgressBar.Visible = false;
+                toolStripProgressBar1.Visible = false;
                 Cursor.Current = Cursors.Default;
             }
         }
@@ -477,7 +483,7 @@ namespace AlmToolkit
                 //}
 
                 Cursor.Current = Cursors.WaitCursor;
-                StatusBarComparsion.Text = "ALM Toolkit - validating ...";
+                toolStripStatusLabel1.Text = "ALM Toolkit - validating ...";
                 ComparisonCtrl.RefreshDiffResultsFromGrid();
 
                 //TODO: when set up validation window
@@ -486,7 +492,7 @@ namespace AlmToolkit
 
                 ComparisonCtrl.Comparison.ValidateSelection();
                 SetValidatedState();
-                StatusBarComparsion.Text = "ALM Toolkit - finished validating";
+                toolStripStatusLabel1.Text = "ALM Toolkit - finished validating";
             }
             catch (Exception exc)
             {
@@ -509,10 +515,10 @@ namespace AlmToolkit
             try
             {
                 Cursor.Current = Cursors.WaitCursor;
-                StatusBarComparsion.Text = "ALM Toolkit - committing changes ...";
+                toolStripStatusLabel1.Text = "ALM Toolkit - committing changes ...";
                 ComparisonCtrl.RefreshSkipSelections();
                 bool update = ComparisonCtrl.Comparison.Update();
-                StatusBarComparsion.Text = "ALM Toolkit - finished committing changes";
+                toolStripStatusLabel1.Text = "ALM Toolkit - finished committing changes";
 
                 SetNotComparedState();
                 if (update && MessageBox.Show($"Updated {(ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.UseProject ? "project " + ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.ProjectName : "database " + ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.DatabaseName)}.\n\nDo you want to refresh the comparison?", _appCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -561,5 +567,6 @@ namespace AlmToolkit
         }
 
         #endregion
+
     }
 }

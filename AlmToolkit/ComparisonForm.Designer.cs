@@ -59,14 +59,16 @@
             this.btnOptions = new System.Windows.Forms.ToolStripButton();
             this.btnReportDifferences = new System.Windows.Forms.ToolStripButton();
             this.StatusBarComparsion = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.ComparisonCtrl = new AlmToolkit.ComparisonControl();
-            this.StatusProgressBar = new System.Windows.Forms.ProgressBar();
             this.pnlHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.spltSourceTarget)).BeginInit();
             this.spltSourceTarget.Panel1.SuspendLayout();
             this.spltSourceTarget.Panel2.SuspendLayout();
             this.spltSourceTarget.SuspendLayout();
             this.toolStrip1.SuspendLayout();
+            this.StatusBarComparsion.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlHeader
@@ -155,7 +157,7 @@
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(792, 25);
-            this.toolStrip1.TabIndex = 46;
+            this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
             // btnCompareTabularModels
@@ -312,11 +314,25 @@
             // 
             // StatusBarComparsion
             // 
+            this.StatusBarComparsion.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1,
+            this.toolStripProgressBar1});
             this.StatusBarComparsion.Location = new System.Drawing.Point(0, 565);
             this.StatusBarComparsion.Name = "StatusBarComparsion";
             this.StatusBarComparsion.Size = new System.Drawing.Size(792, 22);
             this.StatusBarComparsion.TabIndex = 48;
             this.StatusBarComparsion.Text = "Comparison Status";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
+            // 
+            // toolStripProgressBar1
+            // 
+            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
+            this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
+            this.toolStripProgressBar1.Visible = false;
             // 
             // ComparisonCtrl
             // 
@@ -355,29 +371,20 @@
             this.ComparisonCtrl.Location = new System.Drawing.Point(0, 55);
             this.ComparisonCtrl.Name = "ComparisonCtrl";
             this.ComparisonCtrl.Size = new System.Drawing.Size(792, 510);
-            this.ComparisonCtrl.TabIndex = 49;
-            // 
-            // StatusProgressBar
-            // 
-            this.StatusProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.StatusProgressBar.Location = new System.Drawing.Point(0, 565);
-            this.StatusProgressBar.Name = "StatusProgressBar";
-            this.StatusProgressBar.Size = new System.Drawing.Size(100, 22);
-            this.StatusProgressBar.TabIndex = 50;
-            this.StatusProgressBar.Visible = false;
+            this.ComparisonCtrl.TabIndex = 1;
             // 
             // ComparisonForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(792, 587);
-            this.Controls.Add(this.StatusProgressBar);
             this.Controls.Add(this.ComparisonCtrl);
             this.Controls.Add(this.StatusBarComparsion);
             this.Controls.Add(this.pnlHeader);
             this.Name = "ComparisonForm";
             this.Text = "ALM Toolkit for Power BI - by MAQ Software & Microsoft";
             this.Load += new System.EventHandler(this.ComparisonForm_Load);
+            this.Shown += new System.EventHandler(this.ComparisonForm_Shown);
             this.pnlHeader.ResumeLayout(false);
             this.pnlHeader.PerformLayout();
             this.spltSourceTarget.Panel1.ResumeLayout(false);
@@ -388,6 +395,8 @@
             this.spltSourceTarget.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.StatusBarComparsion.ResumeLayout(false);
+            this.StatusBarComparsion.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -422,7 +431,8 @@
         private System.Windows.Forms.ToolStripButton btnReportDifferences;
         private System.Windows.Forms.StatusStrip StatusBarComparsion;
         private ComparisonControl ComparisonCtrl;
-        private System.Windows.Forms.ProgressBar StatusProgressBar;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
     }
 }
 
