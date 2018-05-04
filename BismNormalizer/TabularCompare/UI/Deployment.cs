@@ -122,7 +122,7 @@ namespace BismNormalizer.TabularCompare.UI
 
             btnStopProcessing.Enabled = false;
             btnClose.Enabled = true;
-            btnClose.Select();
+            //btnClose.Select();
         }
 
         private delegate void SetErrorStatusDelegate(string errorMessage);

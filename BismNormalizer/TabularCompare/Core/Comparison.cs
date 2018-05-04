@@ -237,7 +237,7 @@ namespace BismNormalizer.TabularCompare.Core
         /// Generate Excel report of differences.
         /// </summary>
         /// <param name="progBar"></param>
-        public void ReportDifferences(ProgressBar progBar)
+        public void ReportDifferences(ToolStripProgressBar progBar)
         {
             try
             {
@@ -360,7 +360,7 @@ namespace BismNormalizer.TabularCompare.Core
             }
         }
 
-        private void PopulateExcelRow(Excel.Worksheet Ws, ref int row, ref int lastDataSourceRow, ref int lastTableRow, ComparisonObject comparisonObject, ProgressBar progBar)
+        private void PopulateExcelRow(Excel.Worksheet Ws, ref int row, ref int lastDataSourceRow, ref int lastTableRow, ComparisonObject comparisonObject, ToolStripProgressBar progBar)
         {
             progBar.PerformStep();
             row += 1;

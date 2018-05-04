@@ -1041,7 +1041,7 @@ namespace BismNormalizer.TabularCompare.UI
                 pnlProgressBar.Visible = true;
                 pnlProgressBar.BringToFront();
                 pnlProgressBar.Refresh();
-                _comparison.ReportDifferences(progressBar);
+                //_comparison.ReportDifferences(progressBar);
 
                 if (_bismNormalizerPackage.Dte != null)
                 {
