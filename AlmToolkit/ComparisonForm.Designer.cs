@@ -381,6 +381,7 @@
             this.Controls.Add(this.ComparisonCtrl);
             this.Controls.Add(this.StatusBarComparsion);
             this.Controls.Add(this.pnlHeader);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ComparisonForm";
             this.Text = "ALM Toolkit for Power BI - by MAQ Software & Microsoft";
             this.Load += new System.EventHandler(this.ComparisonForm_Load);

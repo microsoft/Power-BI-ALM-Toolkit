@@ -23,34 +23,6 @@ namespace AlmToolkit
 
         #endregion
 
-        #region DPI
-
-        private float _dpiScaleFactor = 1;
-        private void Rescale()
-        {
-            this._dpiScaleFactor = HighDPIUtils.GetDpiFactor();
-            if (this._dpiScaleFactor == 1) return;
-            float fudgedDpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
-
-            this.Scale(new SizeF(fudgedDpiScaleFactor, fudgedDpiScaleFactor));
-
-            this.Font = new Font(this.Font.FontFamily,
-                                 this.Font.Size * fudgedDpiScaleFactor,
-                                 this.Font.Style);
-            pnlHeader.Font = new Font(pnlHeader.Font.FontFamily,
-                                pnlHeader.Font.Size * fudgedDpiScaleFactor,
-                                pnlHeader.Font.Style);
-
-            spltSourceTarget.SplitterDistance = Convert.ToInt32(Convert.ToDouble(spltSourceTarget.Width) * 0.5);
-            pnlHeader.Height = Convert.ToInt32(toolStrip1.Height * 2.3); // Convert.ToInt32(pnlHeader.Height * fudgedDpiScaleFactor * 0.68);
-            txtSource.Width = Convert.ToInt32(Convert.ToDouble(Convert.ToDouble(spltSourceTarget.Width) * 0.5) * 0.8);
-            txtSource.Left = Convert.ToInt32(txtSource.Left * fudgedDpiScaleFactor * 0.9);
-            txtTarget.Width = Convert.ToInt32(Convert.ToDouble(Convert.ToDouble(spltSourceTarget.Width) * 0.5) * 0.8);
-            txtTarget.Left = Convert.ToInt32(txtTarget.Left * fudgedDpiScaleFactor * 0.9);
-        }
-
-        #endregion
-
         #region Methods
 
         public ComparisonForm()
@@ -564,6 +536,34 @@ namespace AlmToolkit
             deployForm.StartPosition = FormStartPosition.CenterParent;
             deployForm.ShowDialog();
             e.DeploymentSuccessful = (deployForm.DialogResult == DialogResult.OK);
+        }
+
+        #endregion
+
+        #region DPI
+
+        private float _dpiScaleFactor = 1;
+        private void Rescale()
+        {
+            this._dpiScaleFactor = HighDPIUtils.GetDpiFactor();
+            if (this._dpiScaleFactor == 1) return;
+            float fudgedDpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
+
+            this.Scale(new SizeF(fudgedDpiScaleFactor, fudgedDpiScaleFactor));
+
+            this.Font = new Font(this.Font.FontFamily,
+                                 this.Font.Size * fudgedDpiScaleFactor,
+                                 this.Font.Style);
+            pnlHeader.Font = new Font(pnlHeader.Font.FontFamily,
+                                pnlHeader.Font.Size * fudgedDpiScaleFactor,
+                                pnlHeader.Font.Style);
+
+            spltSourceTarget.SplitterDistance = Convert.ToInt32(Convert.ToDouble(spltSourceTarget.Width) * 0.5);
+            pnlHeader.Height = Convert.ToInt32(toolStrip1.Height * 2.3); // Convert.ToInt32(pnlHeader.Height * fudgedDpiScaleFactor * 0.68);
+            txtSource.Width = Convert.ToInt32(Convert.ToDouble(Convert.ToDouble(spltSourceTarget.Width) * 0.5) * 0.8);
+            txtSource.Left = Convert.ToInt32(txtSource.Left * fudgedDpiScaleFactor * 0.9);
+            txtTarget.Width = Convert.ToInt32(Convert.ToDouble(Convert.ToDouble(spltSourceTarget.Width) * 0.5) * 0.8);
+            txtTarget.Left = Convert.ToInt32(txtTarget.Left * fudgedDpiScaleFactor * 0.9);
         }
 
         #endregion
