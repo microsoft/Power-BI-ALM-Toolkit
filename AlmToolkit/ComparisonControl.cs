@@ -121,8 +121,6 @@ namespace AlmToolkit
 
         private void ComparisonControl_Load(object sender, EventArgs e)
         {
-            _comparisonInfo = new ComparisonInfo();
-
             treeGridComparisonResults.SetupForComparison();
             treeGridComparisonResults.SetObjectDefinitionsCallBack(PopulateObjectDefinitions);
             treeGridComparisonResults.SetCellEditCallBack(TriggerComparisonChanged);
@@ -154,10 +152,6 @@ namespace AlmToolkit
         {
             _compareState = CompareState.NotCompared;
 
-            if (_comparison != null)
-            {
-                _comparison.Disconnect();
-            }
             treeGridComparisonResults.Unloading = true;
             treeGridComparisonResults.Nodes.Clear();
             treeGridComparisonResults.Unloading = false;
@@ -213,26 +207,18 @@ namespace AlmToolkit
 
         private void PopulateObjectDefinitions(string objDefSource, string objDefTarget, ComparisonObjectType objType, ComparisonObjectStatus objStatus)
         {
-            if (_comparison.CompatibilityLevel >= 1200)
+            try
             {
-                try
-                {
-                    IterateJson(txtSourceObjectDefinition, objDefSource);
-                    IterateJson(txtTargetObjectDefinition, objDefTarget);
-                }
-                catch (Exception)
-                {
-                    txtSourceObjectDefinition.Text = "";
-                    txtSourceObjectDefinition.Text = objDefSource;
-                    txtTargetObjectDefinition.Text = "";
-                    txtTargetObjectDefinition.Text = objDefTarget;
-                }
+                IterateJson(txtSourceObjectDefinition, objDefSource);
+                IterateJson(txtTargetObjectDefinition, objDefTarget);
             }
-            else
+            catch (Exception)
             {
-                FormatAmoDefinitions(objDefSource, objDefTarget, objType);
+                txtSourceObjectDefinition.Text = "";
+                txtSourceObjectDefinition.Text = objDefSource;
+                txtTargetObjectDefinition.Text = "";
+                txtTargetObjectDefinition.Text = objDefTarget;
             }
-
             #region Difference Highlighting
 
             if (   objStatus == ComparisonObjectStatus.DifferentDefinitions ||
@@ -506,9 +492,8 @@ namespace AlmToolkit
 
         #endregion
 
-        public void CompareTabularModels()
+        public void DataBindComparison()
         {
-            _comparison.CompareTabularModels();
             treeGridComparisonResults.Comparison = _comparison;
             treeGridComparisonResults.DataBindComparison();
             SetComparedState();

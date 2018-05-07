@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using BismNormalizer;
 using BismNormalizer.TabularCompare;
+using BismNormalizer.TabularCompare.Core;
 using BismNormalizer.TabularCompare.UI;
 
 namespace AlmToolkit
@@ -19,6 +20,8 @@ namespace AlmToolkit
     {
         #region Private Members
 
+        private ComparisonInfo _comparisonInfo;
+        private Comparison _comparison;
         private const string _appCaption = "ALM Toolkit for Power BI";
 
         #endregion
@@ -32,6 +35,9 @@ namespace AlmToolkit
 
         private void ComparisonForm_Load(object sender, EventArgs e)
         {
+            _comparisonInfo = new ComparisonInfo();
+            ComparisonCtrl.ComparisonInfo = _comparisonInfo;
+
             GetFromAutoCompleteSource();
             GetFromAutoCompleteTarget();
 
@@ -46,6 +52,11 @@ namespace AlmToolkit
 
         private void SetNotComparedState()
         {
+            if (_comparison != null)
+            {
+                _comparison.Disconnect();
+            }
+
             btnCompareTabularModels.Enabled = true;
             ddSelectActions.Enabled = false;
             mnuHideSkipObjects.Enabled = false;
@@ -102,7 +113,8 @@ namespace AlmToolkit
                     //Blank file not saved to yet
                     return;
                 }
-                ComparisonCtrl.ComparisonInfo = ComparisonInfo.DeserializeBsmnFile(fileName);
+                _comparisonInfo = ComparisonInfo.DeserializeBsmnFile(fileName);
+                ComparisonCtrl.ComparisonInfo = _comparisonInfo;
 
                 PopulateSourceTargetTextBoxes();
             }
@@ -124,7 +136,7 @@ namespace AlmToolkit
 
                 XmlSerializer writer = new XmlSerializer(typeof(ComparisonInfo));
                 StreamWriter file = new System.IO.StreamWriter(fileName);
-                writer.Serialize(file, ComparisonCtrl.ComparisonInfo);
+                writer.Serialize(file, _comparisonInfo);
                 file.Close();
             }
             catch (Exception exc)
@@ -142,7 +154,7 @@ namespace AlmToolkit
             }
 
             Connections connForm = new Connections();
-            connForm.ComparisonInfo = ComparisonCtrl.ComparisonInfo;
+            connForm.ComparisonInfo = _comparisonInfo;
             connForm.StartPosition = FormStartPosition.CenterParent;
             connForm.DpiScaleFactor = _dpiScaleFactor;
             connForm.ShowDialog();
@@ -171,7 +183,7 @@ namespace AlmToolkit
                 {
                     // New connections
                     ComparisonCtrl.TriggerComparisonChanged();
-                    ComparisonCtrl.ComparisonInfo.SkipSelections.Clear();
+                    _comparisonInfo.SkipSelections.Clear();
                 }
 
                 this.CompareTabularModels();
@@ -191,16 +203,20 @@ namespace AlmToolkit
         public void CompareTabularModels()
         {
             bool userCancelled;
-            ComparisonCtrl.Comparison = ComparisonFactory.CreateComparison(ComparisonCtrl.ComparisonInfo, out userCancelled);
+            _comparison = ComparisonFactory.CreateComparison(_comparisonInfo, out userCancelled);
 
             if (!userCancelled)
             {
-                ComparisonCtrl.Comparison.ValidationMessage += HandleValidationMessage;
-                ComparisonCtrl.Comparison.ResizeValidationHeaders += HandleResizeValidationHeaders;
-                ComparisonCtrl.Comparison.DatabaseDeployment += HandleDatabaseDeployment;
-                ComparisonCtrl.Comparison.Connect();
+                _comparison.ValidationMessage += HandleValidationMessage;
+                _comparison.ResizeValidationHeaders += HandleResizeValidationHeaders;
+                _comparison.DatabaseDeployment += HandleDatabaseDeployment;
+                _comparison.Connect();
                 SetAutoComplete();
-                ComparisonCtrl.CompareTabularModels();
+                _comparison.CompareTabularModels();
+
+                ComparisonCtrl.Comparison = _comparison;
+                ComparisonCtrl.DataBindComparison();
+
                 SetComparedState();
             }
         }
@@ -236,33 +252,33 @@ namespace AlmToolkit
 
         private void SetAutoComplete()
         {
-            if (!ComparisonCtrl.ComparisonInfo.ConnectionInfoSource.UseProject)
+            if (!_comparisonInfo.ConnectionInfoSource.UseProject)
             {
-                if (Settings.Default.SourceServerAutoCompleteEntries.IndexOf(ComparisonCtrl.ComparisonInfo.ConnectionInfoSource.ServerName + "|") > -1)
+                if (Settings.Default.SourceServerAutoCompleteEntries.IndexOf(_comparisonInfo.ConnectionInfoSource.ServerName + "|") > -1)
                 {
                     Settings.Default.SourceServerAutoCompleteEntries =
                         Settings.Default.SourceServerAutoCompleteEntries.Remove(
-                            Settings.Default.SourceServerAutoCompleteEntries.IndexOf(ComparisonCtrl.ComparisonInfo.ConnectionInfoSource.ServerName + "|"),
-                            (ComparisonCtrl.ComparisonInfo.ConnectionInfoSource.ServerName + "|").Length);
+                            Settings.Default.SourceServerAutoCompleteEntries.IndexOf(_comparisonInfo.ConnectionInfoSource.ServerName + "|"),
+                            (_comparisonInfo.ConnectionInfoSource.ServerName + "|").Length);
                 }
-                Settings.Default.SourceServerAutoCompleteEntries += ComparisonCtrl.ComparisonInfo.ConnectionInfoSource.ServerName + "|";
-                Settings.Default.SourceCatalog = ComparisonCtrl.ComparisonInfo.ConnectionInfoSource.DatabaseName;
+                Settings.Default.SourceServerAutoCompleteEntries += _comparisonInfo.ConnectionInfoSource.ServerName + "|";
+                Settings.Default.SourceCatalog = _comparisonInfo.ConnectionInfoSource.DatabaseName;
 
                 Settings.Default.Save();
                 GetFromAutoCompleteSource();
             }
 
-            if (!ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.UseProject)
+            if (!_comparisonInfo.ConnectionInfoTarget.UseProject)
             {
-                if (Settings.Default.TargetServerAutoCompleteEntries.IndexOf(ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.ServerName + "|") > -1)
+                if (Settings.Default.TargetServerAutoCompleteEntries.IndexOf(_comparisonInfo.ConnectionInfoTarget.ServerName + "|") > -1)
                 {
                     Settings.Default.TargetServerAutoCompleteEntries =
                         Settings.Default.TargetServerAutoCompleteEntries.Remove(
-                            Settings.Default.TargetServerAutoCompleteEntries.IndexOf(ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.ServerName + "|"),
-                            (ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.ServerName + "|").Length);
+                            Settings.Default.TargetServerAutoCompleteEntries.IndexOf(_comparisonInfo.ConnectionInfoTarget.ServerName + "|"),
+                            (_comparisonInfo.ConnectionInfoTarget.ServerName + "|").Length);
                 }
-                Settings.Default.TargetServerAutoCompleteEntries += ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.ServerName + "|";
-                Settings.Default.TargetCatalog = ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.DatabaseName;
+                Settings.Default.TargetServerAutoCompleteEntries += _comparisonInfo.ConnectionInfoTarget.ServerName + "|";
+                Settings.Default.TargetCatalog = _comparisonInfo.ConnectionInfoTarget.DatabaseName;
 
                 Settings.Default.Save();
                 GetFromAutoCompleteTarget();
@@ -275,8 +291,8 @@ namespace AlmToolkit
 
         private void PopulateSourceTargetTextBoxes()
         {
-            txtSource.Text = (ComparisonCtrl.ComparisonInfo.ConnectionInfoSource.UseProject ? "Project: " + ComparisonCtrl.ComparisonInfo.ConnectionInfoSource.ProjectName : "Database: " + ComparisonCtrl.ComparisonInfo.ConnectionInfoSource.ServerName + ";" + ComparisonCtrl.ComparisonInfo.ConnectionInfoSource.DatabaseName);
-            txtTarget.Text = (ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.UseProject ? "Project: " + ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.ProjectName : "Database: " + ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.ServerName + ";" + ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.DatabaseName);
+            txtSource.Text = (_comparisonInfo.ConnectionInfoSource.UseProject ? "Project: " + _comparisonInfo.ConnectionInfoSource.ProjectName : "Database: " + _comparisonInfo.ConnectionInfoSource.ServerName + ";" + _comparisonInfo.ConnectionInfoSource.DatabaseName);
+            txtTarget.Text = (_comparisonInfo.ConnectionInfoTarget.UseProject ? "Project: " + _comparisonInfo.ConnectionInfoTarget.ProjectName : "Database: " + _comparisonInfo.ConnectionInfoTarget.ServerName + ";" + _comparisonInfo.ConnectionInfoTarget.DatabaseName);
 
         }
 
@@ -287,33 +303,14 @@ namespace AlmToolkit
                 Cursor.Current = Cursors.WaitCursor;
                 toolStripStatusLabel1.Text = "Creating script ...";
 
-                //string script = ComparisonCtrl.Comparison.ScriptDatabase(); //doing this here in case errors before opening file in VS
-                //Document file = NewXmlaFile(ComparisonCtrl.Comparison.CompatibilityLevel >= 1200, (ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.UseProject ? ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.ProjectName : ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.DatabaseName));
-                //if (file != null)
-                //{
-                //    TextSelection selection = (TextSelection)file.Selection;
-                //    selection.SelectAll();
-                //    selection.Insert(script);
-                //    selection.GotoLine(1);
-
-                //    return;
-                //}
-
                 //If we get here, there was a problem generating the xmla file (maybe file item templates not installed), so offer saving to a file instead
                 SaveFileDialog saveFile = new SaveFileDialog();
                 saveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                if (ComparisonCtrl.Comparison.CompatibilityLevel >= 1200)
-                {
-                    saveFile.Filter = "JSON Files|*.json|Text Files|*.txt|All files|*.*";
-                }
-                else
-                {
-                    saveFile.Filter = "XMLA Files|*.xmla|Text Files|*.txt|All files|*.*";
-                }
+                saveFile.Filter = "XMLA Files|*.xmla|JSON Files|*.json|Text Files|*.txt|All files|*.*";
                 saveFile.CheckFileExists = false;
                 if (saveFile.ShowDialog() == DialogResult.OK)
                 {
-                    File.WriteAllText(saveFile.FileName, ComparisonCtrl.Comparison.ScriptDatabase());
+                    File.WriteAllText(saveFile.FileName, _comparison.ScriptDatabase());
                     toolStripStatusLabel1.Text = "ALM Toolkit - finished generating script";
                     MessageBox.Show("Created script\n" + saveFile.FileName, _appCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -333,7 +330,7 @@ namespace AlmToolkit
         private void btnOptions_Click(object sender, EventArgs e)
         {
             Options optionsForm = new Options();
-            optionsForm.ComparisonInfo = ComparisonCtrl.ComparisonInfo;
+            optionsForm.ComparisonInfo = _comparisonInfo;
             optionsForm.StartPosition = FormStartPosition.CenterParent;
             optionsForm.DpiScaleFactor = _dpiScaleFactor;
             optionsForm.ShowDialog();
@@ -355,7 +352,7 @@ namespace AlmToolkit
                 Cursor.Current = Cursors.WaitCursor;
                 toolStripStatusLabel1.Text = "ALM Toolkit - generating report ...";
                 toolStripProgressBar1.Visible = true;
-                ComparisonCtrl.Comparison.ReportDifferences(toolStripProgressBar1);
+                _comparison.ReportDifferences(toolStripProgressBar1);
                 toolStripStatusLabel1.Text = "ALM Toolkit - finished generating report";
             }
             catch (Exception exc)
@@ -462,7 +459,7 @@ namespace AlmToolkit
                 //_bismNormalizerPackage.ValidationOutput.ClearMessages(this.ComparisonEditorPane.Window.Handle.ToInt32());
                 //_bismNormalizerPackage.ValidationOutput.SetImageList(TreeGridImageList);
 
-                ComparisonCtrl.Comparison.ValidateSelection();
+                _comparison.ValidateSelection();
                 SetValidatedState();
                 toolStripStatusLabel1.Text = "ALM Toolkit - finished validating";
             }
@@ -479,7 +476,7 @@ namespace AlmToolkit
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show($"Are you sure you want to update target {(ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.UseProject ? "project" : "database")}?", _appCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            if (MessageBox.Show($"Are you sure you want to update target {(_comparisonInfo.ConnectionInfoTarget.UseProject ? "project" : "database")}?", _appCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
             {
                 return;
             }
@@ -489,11 +486,11 @@ namespace AlmToolkit
                 Cursor.Current = Cursors.WaitCursor;
                 toolStripStatusLabel1.Text = "ALM Toolkit - committing changes ...";
                 ComparisonCtrl.RefreshSkipSelections();
-                bool update = ComparisonCtrl.Comparison.Update();
+                bool update = _comparison.Update();
                 toolStripStatusLabel1.Text = "ALM Toolkit - finished committing changes";
 
                 SetNotComparedState();
-                if (update && MessageBox.Show($"Updated {(ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.UseProject ? "project " + ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.ProjectName : "database " + ComparisonCtrl.ComparisonInfo.ConnectionInfoTarget.DatabaseName)}.\n\nDo you want to refresh the comparison?", _appCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (update && MessageBox.Show($"Updated {(_comparisonInfo.ConnectionInfoTarget.UseProject ? "project " + _comparisonInfo.ConnectionInfoTarget.ProjectName : "database " + _comparisonInfo.ConnectionInfoTarget.DatabaseName)}.\n\nDo you want to refresh the comparison?", _appCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     this.CompareTabularModels();
                 }
@@ -530,8 +527,8 @@ namespace AlmToolkit
         private void HandleDatabaseDeployment(object sender, DatabaseDeploymentEventArgs e)
         {
             Deployment deployForm = new Deployment();
-            deployForm.Comparison = ComparisonCtrl.Comparison;
-            deployForm.ComparisonInfo = ComparisonCtrl.ComparisonInfo;
+            deployForm.Comparison = _comparison;
+            deployForm.ComparisonInfo = _comparisonInfo;
             deployForm.DpiScaleFactor = _dpiScaleFactor;
             deployForm.StartPosition = FormStartPosition.CenterParent;
             deployForm.ShowDialog();
