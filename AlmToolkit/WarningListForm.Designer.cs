@@ -84,7 +84,7 @@
             this.Controls.Add(this.panelOk);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Name = "WarningListForm";
-            this.Text = "Validate Selection";
+            this.Text = "Warning List";
             this.Load += new System.EventHandler(this.WarningListForm_Load);
             this.Shown += new System.EventHandler(this.WarningListForm_Shown);
             this.panelOk.ResumeLayout(false);
