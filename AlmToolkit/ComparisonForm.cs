@@ -207,13 +207,14 @@ namespace AlmToolkit
 
             if (!userCancelled)
             {
-                _comparison.ValidationMessage += HandleValidationMessage;
-                _comparison.ResizeValidationHeaders += HandleResizeValidationHeaders;
+                //_comparison.ValidationMessage += HandleValidationMessage;
+                //_comparison.ResizeValidationHeaders += HandleResizeValidationHeaders;
                 _comparison.DatabaseDeployment += HandleDatabaseDeployment;
                 _comparison.Connect();
                 SetAutoComplete();
                 _comparison.CompareTabularModels();
 
+                ComparisonCtrl.ComparisonChanged += HandleComparisonChanged;
                 ComparisonCtrl.Comparison = _comparison;
                 ComparisonCtrl.DataBindComparison();
 
@@ -440,26 +441,16 @@ namespace AlmToolkit
         {
             try
             {
-                //TODO: when set up validation window
-                //if (_bismNormalizerPackage.ValidationOutput == null)
-                //{
-                //    //this should set up the tool window and then can refer to _bismNormalizerPackage.ValidationOutput
-                //    _bismNormalizerPackage.InitializeToolWindowInternal(_dpiScaleFactor);
-                //}
-                //else
-                //{
-                //    _bismNormalizerPackage.ShowToolWindow();
-                //}
-
                 Cursor.Current = Cursors.WaitCursor;
                 toolStripStatusLabel1.Text = "ALM Toolkit - validating ...";
                 ComparisonCtrl.RefreshDiffResultsFromGrid();
 
-                //TODO: when set up validation window
-                //_bismNormalizerPackage.ValidationOutput.ClearMessages(this.ComparisonEditorPane.Window.Handle.ToInt32());
-                //_bismNormalizerPackage.ValidationOutput.SetImageList(TreeGridImageList);
+                WarningListForm warningList = new WarningListForm();
+                warningList.Comparison = _comparison;
+                warningList.TreeGridImageList = ComparisonCtrl.TreeGridImageList;
+                warningList.StartPosition = FormStartPosition.CenterParent;
+                warningList.ShowDialog();
 
-                _comparison.ValidateSelection();
                 SetValidatedState();
                 toolStripStatusLabel1.Text = "ALM Toolkit - finished validating";
             }
@@ -507,23 +498,6 @@ namespace AlmToolkit
             }
         }
 
-        private void HandleValidationMessage(object sender, ValidationMessageEventArgs e)
-        {
-            //TODO: Hook up validation screen and handle message
-            //BismNormalizerPackage.ValidationOutput.ShowStatusMessage(
-            //    ComparisonEditorPane.Window.Handle.ToInt32(),
-            //    ComparisonEditorPane.Name,
-            //    e.Message,
-            //    e.ValidationMessageType,
-            //    e.ValidationMessageStatus);
-        }
-
-        private void HandleResizeValidationHeaders(object sender, EventArgs e)
-        {
-            //TODO when hook up validation screen 
-            //BismNormalizerPackage.ValidationOutput.ResizeValidationHeaders();
-        }
-
         private void HandleDatabaseDeployment(object sender, DatabaseDeploymentEventArgs e)
         {
             Deployment deployForm = new Deployment();
@@ -533,6 +507,16 @@ namespace AlmToolkit
             deployForm.StartPosition = FormStartPosition.CenterParent;
             deployForm.ShowDialog();
             e.DeploymentSuccessful = (deployForm.DialogResult == DialogResult.OK);
+        }
+
+        private void HandleComparisonChanged(object sender, EventArgs e)
+        {
+            //If user changes a skip selection after validation, need to disable Update button
+            if (ComparisonCtrl.CompareState == CompareState.Validated)
+            {
+                SetComparedState();
+                toolStripStatusLabel1.Text = "ALM Toolkit - models compared";
+            }
         }
 
         #endregion
