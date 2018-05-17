@@ -78,7 +78,7 @@
             this.pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlHeader.Location = new System.Drawing.Point(0, 0);
             this.pnlHeader.Name = "pnlHeader";
-            this.pnlHeader.Size = new System.Drawing.Size(792, 55);
+            this.pnlHeader.Size = new System.Drawing.Size(979, 55);
             this.pnlHeader.TabIndex = 47;
             // 
             // spltSourceTarget
@@ -97,8 +97,8 @@
             // 
             this.spltSourceTarget.Panel2.Controls.Add(this.txtTarget);
             this.spltSourceTarget.Panel2.Controls.Add(this.label2);
-            this.spltSourceTarget.Size = new System.Drawing.Size(792, 30);
-            this.spltSourceTarget.SplitterDistance = 388;
+            this.spltSourceTarget.Size = new System.Drawing.Size(979, 30);
+            this.spltSourceTarget.SplitterDistance = 479;
             this.spltSourceTarget.TabIndex = 45;
             // 
             // label1
@@ -118,7 +118,7 @@
             this.txtSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtSource.Location = new System.Drawing.Point(49, 7);
             this.txtSource.Name = "txtSource";
-            this.txtSource.Size = new System.Drawing.Size(336, 20);
+            this.txtSource.Size = new System.Drawing.Size(427, 20);
             this.txtSource.TabIndex = 41;
             // 
             // txtTarget
@@ -129,7 +129,7 @@
             this.txtTarget.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtTarget.Location = new System.Drawing.Point(45, 7);
             this.txtTarget.Name = "txtTarget";
-            this.txtTarget.Size = new System.Drawing.Size(344, 20);
+            this.txtTarget.Size = new System.Drawing.Size(440, 20);
             this.txtTarget.TabIndex = 42;
             // 
             // label2
@@ -156,7 +156,7 @@
             this.btnReportDifferences});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(792, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(979, 25);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -317,9 +317,9 @@
             this.StatusBarComparsion.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
             this.toolStripProgressBar1});
-            this.StatusBarComparsion.Location = new System.Drawing.Point(0, 565);
+            this.StatusBarComparsion.Location = new System.Drawing.Point(0, 636);
             this.StatusBarComparsion.Name = "StatusBarComparsion";
-            this.StatusBarComparsion.Size = new System.Drawing.Size(792, 22);
+            this.StatusBarComparsion.Size = new System.Drawing.Size(979, 22);
             this.StatusBarComparsion.TabIndex = 48;
             this.StatusBarComparsion.Text = "Comparison Status";
             // 
@@ -339,14 +339,12 @@
             this.ComparisonCtrl.CompareState = AlmToolkit.CompareState.NotCompared;
             this.ComparisonCtrl.Comparison = null;
             connectionInfo1.DatabaseName = null;
-            //connectionInfo1.Project = null;
             connectionInfo1.ProjectFile = null;
             connectionInfo1.ProjectName = null;
             connectionInfo1.ServerName = null;
             connectionInfo1.UseProject = false;
             comparisonInfo1.ConnectionInfoSource = connectionInfo1;
             connectionInfo2.DatabaseName = null;
-            //connectionInfo2.Project = null;
             connectionInfo2.ProjectFile = null;
             connectionInfo2.ProjectName = null;
             connectionInfo2.ServerName = null;
@@ -370,14 +368,14 @@
             this.ComparisonCtrl.Dock = System.Windows.Forms.DockStyle.Left;
             this.ComparisonCtrl.Location = new System.Drawing.Point(0, 55);
             this.ComparisonCtrl.Name = "ComparisonCtrl";
-            this.ComparisonCtrl.Size = new System.Drawing.Size(792, 510);
+            this.ComparisonCtrl.Size = new System.Drawing.Size(979, 581);
             this.ComparisonCtrl.TabIndex = 1;
             // 
             // ComparisonForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(792, 587);
+            this.ClientSize = new System.Drawing.Size(979, 658);
             this.Controls.Add(this.ComparisonCtrl);
             this.Controls.Add(this.StatusBarComparsion);
             this.Controls.Add(this.pnlHeader);
