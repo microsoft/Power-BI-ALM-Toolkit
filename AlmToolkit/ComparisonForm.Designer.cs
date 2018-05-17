@@ -367,7 +367,7 @@
             comparisonInfo1.OptionsInfo = optionsInfo1;
             comparisonInfo1.PromptForDatabaseProcessing = false;
             this.ComparisonCtrl.ComparisonInfo = comparisonInfo1;
-            this.ComparisonCtrl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ComparisonCtrl.Dock = System.Windows.Forms.DockStyle.Left;
             this.ComparisonCtrl.Location = new System.Drawing.Point(0, 55);
             this.ComparisonCtrl.Name = "ComparisonCtrl";
             this.ComparisonCtrl.Size = new System.Drawing.Size(792, 510);

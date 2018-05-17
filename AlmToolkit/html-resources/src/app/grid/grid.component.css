@@ -1,0 +1,45 @@
+.comparison-grid {
+    border: 1px solid #000;
+    margin: 10px;
+    border-collapse: collapse;
+    font: 15px 'Segoe UI';
+}
+
+.grid-column {
+    padding: 5px;
+    border: 1px solid #000;
+}
+
+#header-row {
+    font-weight: bold;
+}
+
+.grid-row {
+    cursor: pointer;
+}
+
+.hide-row {
+    display: none;
+}
+
+.greyed-out-cell {
+    background-color: rgba(112, 112, 112, 0.37);
+}
+
+.action-dropdown {
+    width: 75px;
+    font: 15px 'Segoe UI';
+    position: relative;
+    top: 1px;
+    cursor: pointer;
+}
+
+.node-images {
+    height: 20px;
+    width: 20px;
+}
+
+.node-type {
+    position: relative;
+    top: -3.5px;
+}

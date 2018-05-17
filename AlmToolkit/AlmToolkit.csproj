@@ -1,5 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\CefSharp.WinForms.63.0.3\build\CefSharp.WinForms.props" Condition="Exists('..\packages\CefSharp.WinForms.63.0.3\build\CefSharp.WinForms.props')" />
+  <Import Project="..\packages\CefSharp.Common.63.0.3\build\CefSharp.Common.props" Condition="Exists('..\packages\CefSharp.Common.63.0.3\build\CefSharp.Common.props')" />
+  <Import Project="..\packages\cef.redist.x86.3.3239.1723\build\cef.redist.x86.props" Condition="Exists('..\packages\cef.redist.x86.3.3239.1723\build\cef.redist.x86.props')" />
+  <Import Project="..\packages\cef.redist.x64.3.3239.1723\build\cef.redist.x64.props" Condition="Exists('..\packages\cef.redist.x64.3.3239.1723\build\cef.redist.x64.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -11,6 +15,9 @@
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <CefSharpAnyCpuSupport>true</CefSharpAnyCpuSupport>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,6 +39,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\BismNormalizer\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -45,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChromeDebugger.cs" />
     <Compile Include="ComparisonControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -57,6 +69,8 @@
     <Compile Include="ComparisonForm.Designer.cs">
       <DependentUpon>ComparisonForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ComparisonJSInteraction.cs" />
+    <Compile Include="Model\ComparisonTree.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
@@ -81,6 +95,23 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="html-resources\.angular-cli.json" />
+    <None Include="html-resources\.editorconfig" />
+    <None Include="html-resources\dist\go.chunk.js.map">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="html-resources\dist\html.chunk.js.map">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="html-resources\e2e\tsconfig.e2e.json" />
+    <None Include="html-resources\package-lock.json" />
+    <None Include="html-resources\package.json" />
+    <None Include="html-resources\src\assets\.gitkeep" />
+    <None Include="html-resources\src\tsconfig.app.json" />
+    <None Include="html-resources\src\tsconfig.spec.json" />
+    <None Include="html-resources\tsconfig.json" />
+    <None Include="html-resources\tslint.json" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -104,5 +135,267 @@
       <Name>BismNormalizer</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="html-resources\dist\0.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\assets\action-Create-Grey.png" />
+    <Content Include="html-resources\dist\assets\action-Create.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\assets\action-Delete-Grey.png" />
+    <Content Include="html-resources\dist\assets\action-Delete.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\assets\action-Skip-Grey.png" />
+    <Content Include="html-resources\dist\assets\action-Skip.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\assets\action-Update.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\assets\node-type-Action.png" />
+    <Content Include="html-resources\dist\assets\node-type-Culture.png" />
+    <Content Include="html-resources\dist\assets\node-type-Data-Source.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\assets\node-type-Expression.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\assets\node-type-KPI.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\assets\node-type-Measure.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\assets\node-type-Perspective.png" />
+    <Content Include="html-resources\dist\assets\node-type-Relationship.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\assets\node-type-Role.png" />
+    <Content Include="html-resources\dist\assets\node-type-Table.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\bat.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\coffee.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\cpp.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\csharp.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\csp.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\css.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\cssMode.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\dockerfile.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\favicon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\fsharp.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\go.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\handlebars.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\html.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\htmlMode.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\ini.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\inline.bundle.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\java.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\jsonMode.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\less.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\lua.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\main.bundle.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\markdown.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\msdax.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\mysql.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\objective-c.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\pgsql.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\php.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\polyfills.bundle.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\postiats.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\powershell.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\pug.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\python.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\r.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\razor.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\redis.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\redshift.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\ruby.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\rust.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\sb.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\scss.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\solidity.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\sql.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\styles.bundle.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\swift.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\symbol-sprite.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\tsMode.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\vb.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\vendor.bundle.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\xml.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\dist\yaml.chunk.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html-resources\karma.conf.js" />
+    <Content Include="html-resources\protractor.conf.js" />
+    <Content Include="html-resources\src\app\app.component.css" />
+    <Content Include="html-resources\src\app\app.component.html" />
+    <Content Include="html-resources\src\app\codeeditor\codeeditor.component.css" />
+    <Content Include="html-resources\src\app\codeeditor\codeeditor.component.html" />
+    <Content Include="html-resources\src\app\grid\grid.component.css" />
+    <Content Include="html-resources\src\app\grid\grid.component.html" />
+    <Content Include="html-resources\src\assets\action-Create-Grey.png" />
+    <Content Include="html-resources\src\assets\action-Create.png" />
+    <Content Include="html-resources\src\assets\action-Delete-Grey.png" />
+    <Content Include="html-resources\src\assets\action-Delete.png" />
+    <Content Include="html-resources\src\assets\action-Skip-Grey.png" />
+    <Content Include="html-resources\src\assets\action-Skip.png" />
+    <Content Include="html-resources\src\assets\action-Update.png" />
+    <Content Include="html-resources\src\assets\node-type-Action.png" />
+    <Content Include="html-resources\src\assets\node-type-Culture.png" />
+    <Content Include="html-resources\src\assets\node-type-Data-Source.png" />
+    <Content Include="html-resources\src\assets\node-type-Expression.png" />
+    <Content Include="html-resources\src\assets\node-type-KPI.png" />
+    <Content Include="html-resources\src\assets\node-type-Measure.png" />
+    <Content Include="html-resources\src\assets\node-type-Perspective.png" />
+    <Content Include="html-resources\src\assets\node-type-Relationship.png" />
+    <Content Include="html-resources\src\assets\node-type-Role.png" />
+    <Content Include="html-resources\src\assets\node-type-Table.png" />
+    <Content Include="html-resources\src\favicon.ico" />
+    <Content Include="html-resources\src\index.html" />
+    <Content Include="html-resources\src\styles.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="html-resources\e2e\app.e2e-spec.ts" />
+    <TypeScriptCompile Include="html-resources\e2e\app.po.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\app-log\app-log.service.spec.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\app-log\app-log.service.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\app.component.spec.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\app.component.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\app.module.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\codeeditor\codeeditor.component.spec.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\codeeditor\codeeditor.component.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\grid\grid.component.spec.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\grid\grid.component.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\service\grid-data.service.spec.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\service\grid-data.service.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\service\window-reference.service.spec.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\service\window-reference.service.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\shared\mocks\data-list.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\shared\model\comparison-tree.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\shared\model\database-objects.ts" />
+    <TypeScriptCompile Include="html-resources\src\environments\environment.prod.ts" />
+    <TypeScriptCompile Include="html-resources\src\environments\environment.ts" />
+    <TypeScriptCompile Include="html-resources\src\main.ts" />
+    <TypeScriptCompile Include="html-resources\src\polyfills.ts" />
+    <TypeScriptCompile Include="html-resources\src\test.ts" />
+    <TypeScriptCompile Include="html-resources\src\typings.d.ts" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\cef.redist.x64.3.3239.1723\build\cef.redist.x64.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x64.3.3239.1723\build\cef.redist.x64.props'))" />
+    <Error Condition="!Exists('..\packages\cef.redist.x86.3.3239.1723\build\cef.redist.x86.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x86.3.3239.1723\build\cef.redist.x86.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.Common.63.0.3\build\CefSharp.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.63.0.3\build\CefSharp.Common.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.Common.63.0.3\build\CefSharp.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.63.0.3\build\CefSharp.Common.targets'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.WinForms.63.0.3\build\CefSharp.WinForms.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.63.0.3\build\CefSharp.WinForms.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.WinForms.63.0.3\build\CefSharp.WinForms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.63.0.3\build\CefSharp.WinForms.targets'))" />
+  </Target>
+  <Import Project="..\packages\CefSharp.Common.63.0.3\build\CefSharp.Common.targets" Condition="Exists('..\packages\CefSharp.Common.63.0.3\build\CefSharp.Common.targets')" />
+  <Import Project="..\packages\CefSharp.WinForms.63.0.3\build\CefSharp.WinForms.targets" Condition="Exists('..\packages\CefSharp.WinForms.63.0.3\build\CefSharp.WinForms.targets')" />
 </Project>

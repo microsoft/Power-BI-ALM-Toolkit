@@ -1,0 +1,34 @@
+<table class='comparison-grid'>
+    <tr id='header-row'>
+        <td class='grid-column'>Type</td>
+        <td class='grid-column'>Source Name</td>
+        <td class='grid-column'>Status</td>
+        <td class='grid-column'>Target Name</td>
+        <td class='grid-column'></td>
+        <td class='grid-column'>Action</td>
+
+    </tr>
+    <tr *ngFor='let dataObject of comparisonDataToDisplay' class='grid-row object-level-{{dataObject.Level}}' [class.hide-row]='!dataObject.ShowNode'>
+        <td class='grid-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject)'>
+            <span>
+                <img [src]='getImage(dataObject.NodeType,1)' class='node-images' />
+            </span>
+            <span class='node-type'>{{dataObject.NodeType}}</span>
+        </td>
+        <td class='grid-column' (click)='onSelect(dataObject)' [class.greyed-out-cell]='!dataObject.SourceName'>{{dataObject.SourceName}}</td>
+        <td class='grid-column' (click)='onSelect(dataObject)'>{{dataObject.Status}}</td>
+        <td class='grid-column' (click)='onSelect(dataObject)' [class.greyed-out-cell]='!dataObject.TargetName'>{{dataObject.TargetName}}</td>
+        <td class='grid-column' (click)='onSelect(dataObject)'>
+            <span>
+                <img [src]='getImage(dataObject.MergeAction,2)' class='node-images' />
+            </span>
+        </td>
+        <td class='grid-column'>
+            <select class='action-dropdown' (change)='optionChange(dataObject.Id, $event.target.value)'>
+                <option *ngFor='let option of dataObject.AvailableActions' [selected]='option == dataObject.MergeAction ? true : null'>{{option}}</option>
+            </select>
+        </td>
+
+    </tr>
+</table>
+<app-codeeditor [comparisonData]="selectedObject"></app-codeeditor>

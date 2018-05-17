@@ -13,6 +13,8 @@ using BismNormalizer;
 using BismNormalizer.TabularCompare;
 using BismNormalizer.TabularCompare.Core;
 using BismNormalizer.TabularCompare.UI;
+using CefSharp;
+using CefSharp.WinForms;
 
 namespace AlmToolkit
 {
@@ -22,6 +24,8 @@ namespace AlmToolkit
 
         private ComparisonInfo _comparisonInfo;
         private Comparison _comparison;
+        private ComparisonJSInteraction _comparisonInter;
+        private ChromiumWebBrowser chromeBrowser;
         private const string _appCaption = "ALM Toolkit for Power BI";
 
         #endregion
@@ -31,6 +35,41 @@ namespace AlmToolkit
         public ComparisonForm()
         {
             InitializeComponent();
+            InitializeChromium();
+        }
+
+        /// <summary>
+        /// Initialize the chrome browser with the html file to be opened
+        /// </summary>
+        private void InitializeChromium()
+        {
+            // Check if the page exists
+            string page = string.Format(@"{0}\html-resources\dist\index.html", Application.StartupPath);
+            if (!File.Exists(page))
+            {
+                MessageBox.Show("Error html file doesn't exist : " + page);
+            }
+
+            CefSettings settings = new CefSettings();
+            // Initialize cef with the provided settings
+            settings.BrowserSubprocessPath = @"x86\CefSharp.BrowserSubprocess.exe";
+
+            Cef.Initialize(settings, performDependencyCheck: false, browserProcessHandler: null);
+            // Create a browser component
+            chromeBrowser = new ChromiumWebBrowser(page);
+            // Add it to the form and fill it to the form window.
+            this.Controls.Add(chromeBrowser);
+            chromeBrowser.Dock = DockStyle.Fill;
+            chromeBrowser.BringToFront();
+
+            CefSharpSettings.LegacyJavascriptBindingEnabled = true;
+
+            // Register C# objects
+            chromeBrowser.RegisterAsyncJsObject("chromeDebugger", new ChromeDebugger(chromeBrowser, this));
+            chromeBrowser.RegisterAsyncJsObject("comparisonJSInteraction", new ComparisonJSInteraction());
+
+            // Initialize the interaction variable
+            _comparisonInter = new ComparisonJSInteraction();
         }
 
         private void ComparisonForm_Load(object sender, EventArgs e)
@@ -94,6 +133,8 @@ namespace AlmToolkit
             btnReportDifferences.Enabled = true;
 
             ComparisonCtrl.SetComparedState();
+
+            // NG: Disable skip and other actions for the control here
         }
 
         private void SetValidatedState()
@@ -217,8 +258,23 @@ namespace AlmToolkit
                 ComparisonCtrl.Comparison = _comparison;
                 ComparisonCtrl.DataBindComparison();
 
+                _comparisonInter.Comparison = _comparison;
+                _comparisonInter.SetComparisonData();
+                // Send notification to refresh the grid
+                refreshGridControl();
+
                 SetComparedState();
             }
+        }
+
+        /// <summary>
+        /// Send notification to refresh the grid control on UI
+        /// </summary>
+        private void refreshGridControl()
+        {
+            // Invoke method in Angular
+            string script = "window.angularComponentRef.zone.run(() => { window.angularComponentRef.showTree(); })";
+            chromeBrowser.ExecuteScriptAsync(script);
         }
 
         private void GetFromAutoCompleteSource()
