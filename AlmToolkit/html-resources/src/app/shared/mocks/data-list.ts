@@ -1,7 +1,8 @@
-import { ComparisonTree } from '../model/comparison-tree';
+import { ComparisonNode } from '../model/comparison-node';
+import { fail } from 'assert';
 
 
-export const DatabaseSourceData: ComparisonTree[] = [
+export const DatabaseSourceData: ComparisonNode[] = [
   {
     'Id': 1,
     'NodeType': 'Data Source',
@@ -17,7 +18,9 @@ export const DatabaseSourceData: ComparisonTree[] = [
     'TargetObjectDefinition': 'DataSource TestDB to be created',
     'ChildNodes': [2, 3, 4, 7],
     'AvailableActions': ['Create', 'Skip'],
-    'ShowNode': true
+    'ShowNode': true,
+    'DropdownDisabled': false,
+    'DisableMessage': ''
   },
   {
     'Id': 2,
@@ -34,7 +37,9 @@ export const DatabaseSourceData: ComparisonTree[] = [
     'TargetObjectDefinition': 'Table Attendee Edited',
     'ChildNodes': [5, 6],
     'AvailableActions': ['Update', 'Skip'],
-    'ShowNode': true
+    'ShowNode': true,
+    'DropdownDisabled': false,
+    'DisableMessage': ''
   },
   {
     'Id': 3,
@@ -51,7 +56,9 @@ export const DatabaseSourceData: ComparisonTree[] = [
     'TargetObjectDefinition': 'Table ABC',
     'ChildNodes': [],
     'AvailableActions': ['Delete', 'Skip'],
-    'ShowNode': true
+    'ShowNode': true,
+    'DropdownDisabled': false,
+    'DisableMessage': ''
   },
   {
     'Id': 4,
@@ -68,7 +75,9 @@ export const DatabaseSourceData: ComparisonTree[] = [
     'TargetObjectDefinition': 'Employee Project',
     'ChildNodes': [12],
     'AvailableActions': ['Skip'],
-    'ShowNode': true
+    'ShowNode': true,
+    'DropdownDisabled': false,
+    'DisableMessage': ''
   },
   {
     'Id': 5,
@@ -85,7 +94,9 @@ export const DatabaseSourceData: ComparisonTree[] = [
     'TargetObjectDefinition': 'Attendee Relationship',
     'ChildNodes': [],
     'AvailableActions': ['Skip'],
-    'ShowNode': true
+    'ShowNode': true,
+    'DropdownDisabled': false,
+    'DisableMessage': ''
   },
   {
     'Id': 6,
@@ -102,7 +113,9 @@ export const DatabaseSourceData: ComparisonTree[] = [
     'TargetObjectDefinition': 'MaxAttendeeAge Target\nTrying with one more line',
     'ChildNodes': [],
     'AvailableActions': ['Update', 'Skip'],
-    'ShowNode': true
+    'ShowNode': true,
+    'DropdownDisabled': false,
+    'DisableMessage': ''
   },
   {
     'Id': 7,
@@ -119,7 +132,9 @@ export const DatabaseSourceData: ComparisonTree[] = [
     'TargetObjectDefinition': 'Employee',
     'ChildNodes': [8, 9, 10, 11],
     'AvailableActions': ['Skip'],
-    'ShowNode': true
+    'ShowNode': true,
+    'DropdownDisabled': false,
+    'DisableMessage': ''
   },
   {
     'Id': 8,
@@ -136,7 +151,9 @@ export const DatabaseSourceData: ComparisonTree[] = [
     'TargetObjectDefinition': null,
     'ChildNodes': [],
     'AvailableActions': ['Create', 'Skip'],
-    'ShowNode': true
+    'ShowNode': true,
+    'DropdownDisabled': false,
+    'DisableMessage': ''
   },
   {
     'Id': 9,
@@ -153,7 +170,9 @@ export const DatabaseSourceData: ComparisonTree[] = [
     'TargetObjectDefinition': null,
     'ChildNodes': [],
     'AvailableActions': ['Create', 'Skip'],
-    'ShowNode': true
+    'ShowNode': true,
+    'DropdownDisabled': false,
+    'DisableMessage': ''
   },
   {
     'Id': 10,
@@ -170,7 +189,9 @@ export const DatabaseSourceData: ComparisonTree[] = [
     'TargetObjectDefinition': 'EducationCount Measure',
     'ChildNodes': [],
     'AvailableActions': ['Delete', 'Skip'],
-    'ShowNode': true
+    'ShowNode': true,
+    'DropdownDisabled': false,
+    'DisableMessage': ''
   },
   {
     'Id': 11,
@@ -187,7 +208,9 @@ export const DatabaseSourceData: ComparisonTree[] = [
     'TargetObjectDefinition': 'MaxEmployeeAge Measure',
     'ChildNodes': [],
     'AvailableActions': ['Delete', 'Skip'],
-    'ShowNode': true
+    'ShowNode': true,
+    'DropdownDisabled': false,
+    'DisableMessage': ''
   },
   {
     'Id': 12,
@@ -204,6 +227,8 @@ export const DatabaseSourceData: ComparisonTree[] = [
     'TargetObjectDefinition': 'EmployeeProject to Employee Relationship',
     'ChildNodes': [],
     'AvailableActions': ['Delete', 'Skip'],
-    'ShowNode': true
+    'ShowNode': true,
+    'DropdownDisabled': false,
+    'DisableMessage': ''
   }
 ];

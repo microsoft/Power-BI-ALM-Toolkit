@@ -1,4 +1,4 @@
-export class ComparisonTree {
+export class ComparisonNode {
 
   // Id of the object
   Id: number;
@@ -46,5 +46,10 @@ export class ComparisonTree {
 
   // To maintain if the object is to be shown on UI or not
   ShowNode: boolean;
+
+  // To maintain if the dropdown is disabled on the UI
+  DropdownDisabled: boolean;
+  // Text mentioning why the dropdown is disabled
+  DisableMessage: string;
 }
 

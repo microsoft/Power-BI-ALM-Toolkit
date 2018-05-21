@@ -15,9 +15,9 @@
             </span>
             <span class='node-type'>{{dataObject.NodeType}}</span>
         </td>
-        <td class='grid-column' (click)='onSelect(dataObject)' [class.greyed-out-cell]='!dataObject.SourceName'>{{dataObject.SourceName}}</td>
+        <td class='grid-column' (click)='onSelect(dataObject)'  [style.padding-left]='getIndentLevel(dataObject.Level)' [class.greyed-out-cell]='!dataObject.SourceName'>{{dataObject.SourceName}}</td>
         <td class='grid-column' (click)='onSelect(dataObject)'>{{dataObject.Status}}</td>
-        <td class='grid-column' (click)='onSelect(dataObject)' [class.greyed-out-cell]='!dataObject.TargetName'>{{dataObject.TargetName}}</td>
+        <td class='grid-column' (click)='onSelect(dataObject)'  [style.padding-left]='getIndentLevel(dataObject.Level)' [class.greyed-out-cell]='!dataObject.TargetName'>{{dataObject.TargetName}}</td>
         <td class='grid-column' (click)='onSelect(dataObject)'>
             <span>
                 <img [src]='getImage(dataObject.MergeAction,2)' class='node-images' />

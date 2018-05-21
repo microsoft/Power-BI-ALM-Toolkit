@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    public class ComparisonTree
+    public class ComparisonNode
     {
         private static int objectCount = 1;
 
@@ -67,9 +67,17 @@
         /// To maintain if the object is to be shown on UI or not
         /// </summary>
         public bool ShowNode { get; set; }
+        /// <summary>
+        /// To maintain if the dropdown is disabled on the UI
+        /// </summary>
+        public bool DropdownDisabled { get; set; }
+        /// <summary>
+        /// Text mentioning why the dropdown is disabled
+        /// </summary>
+        public string DisableMessage { get; set; }
 
 
-        public ComparisonTree()
+        public ComparisonNode()
         {
             Id = objectCount;
             objectCount = objectCount + 1;

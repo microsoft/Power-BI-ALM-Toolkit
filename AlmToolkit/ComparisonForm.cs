@@ -24,7 +24,7 @@ namespace AlmToolkit
 
         private ComparisonInfo _comparisonInfo;
         private Comparison _comparison;
-        private ComparisonJSInteraction _comparisonInter;
+        private ComparisonJSInteraction _comparisonInter; // CEFSharp Interface to connect to Angular Tree Control
         private ChromiumWebBrowser chromeBrowser;
         private const string _appCaption = "ALM Toolkit for Power BI";
 
@@ -260,12 +260,18 @@ namespace AlmToolkit
                 ComparisonCtrl.DataBindComparison();
 
                 _comparisonInter.Comparison = _comparison;
-                _comparisonInter.SetComparisonData();
-                // Send notification to refresh the grid
-                refreshGridControl();
+                transformAndRefreshGridControl();
 
                 SetComparedState();
             }
+        }
+
+        #region Angular tree control handlers
+        private void transformAndRefreshGridControl()
+        {
+            _comparisonInter.SetComparisonData();
+            // Send notification to refresh the grid
+            refreshGridControl();
         }
 
         /// <summary>
@@ -277,6 +283,10 @@ namespace AlmToolkit
             string script = "window.angularComponentRef.zone.run(() => { window.angularComponentRef.showTree(); })";
             chromeBrowser.ExecuteScriptAsync(script);
         }
+
+        #endregion
+
+
 
         private void GetFromAutoCompleteSource()
         {
@@ -442,16 +452,25 @@ namespace AlmToolkit
         private void mnuHideSkipObjects_Click(object sender, EventArgs e)
         {
             ComparisonCtrl.ShowHideNodes(true);
+
+            _comparisonInter.ShowHideSkipNodes(true);
+            refreshGridControl();
         }
 
         private void mnuHideSkipObjectsWithSameDefinition_Click(object sender, EventArgs e)
         {
             ComparisonCtrl.ShowHideNodes(true, sameDefinitionFilter: true);
+
+            _comparisonInter.ShowHideSkipNodes(true, sameDefinitionFilter: true);
+            refreshGridControl();
         }
 
         private void mnuShowSkipObjects_Click(object sender, EventArgs e)
         {
             ComparisonCtrl.ShowHideNodes(false);
+
+            _comparisonInter.ShowHideSkipNodes(false);
+            refreshGridControl();
         }
 
         private void mnuSkipAllObjectsMissingInSource_Click(object sender, EventArgs e)
@@ -465,6 +484,8 @@ namespace AlmToolkit
             ComparisonCtrl.ShowHideNodes(false);
             ComparisonCtrl.DeleteItems(false);
             SetComparedState();
+
+            _comparisonInter.ShowHideSkipNodes(false);
         }
 
         private void mnuSkipAllObjectsMissingInTarget_Click(object sender, EventArgs e)
@@ -478,6 +499,8 @@ namespace AlmToolkit
             ComparisonCtrl.ShowHideNodes(false);
             ComparisonCtrl.CreateItems(false);
             SetComparedState();
+
+            _comparisonInter.ShowHideSkipNodes(false);
         }
 
         private void mnuSkipAllObjectsWithDifferentDefinitions_Click(object sender, EventArgs e)
@@ -491,6 +514,10 @@ namespace AlmToolkit
             ComparisonCtrl.ShowHideNodes(false);
             ComparisonCtrl.UpdateItems(false);
             SetComparedState();
+
+            _comparisonInter.ShowHideSkipNodes(false);
+            _comparisonInter.UpdateItems(false);
+            refreshGridControl();
         }
 
         private void btnValidateSelection_Click(object sender, EventArgs e)

@@ -70,7 +70,9 @@
       <DependentUpon>ComparisonForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ComparisonJSInteraction.cs" />
-    <Compile Include="Model\ComparisonTree.cs" />
+    <Compile Include="Model\AngularComposite.cs" />
+    <Compile Include="Model\ComparisonNode.cs" />
+    <Compile Include="Model\ComparisonVisibilityMap.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WarningListForm.cs">
@@ -374,8 +376,7 @@
     <TypeScriptCompile Include="html-resources\src\app\service\window-reference.service.spec.ts" />
     <TypeScriptCompile Include="html-resources\src\app\service\window-reference.service.ts" />
     <TypeScriptCompile Include="html-resources\src\app\shared\mocks\data-list.ts" />
-    <TypeScriptCompile Include="html-resources\src\app\shared\model\comparison-tree.ts" />
-    <TypeScriptCompile Include="html-resources\src\app\shared\model\database-objects.ts" />
+    <TypeScriptCompile Include="html-resources\src\app\shared\model\comparison-node.ts" />
     <TypeScriptCompile Include="html-resources\src\environments\environment.prod.ts" />
     <TypeScriptCompile Include="html-resources\src\environments\environment.ts" />
     <TypeScriptCompile Include="html-resources\src\main.ts" />

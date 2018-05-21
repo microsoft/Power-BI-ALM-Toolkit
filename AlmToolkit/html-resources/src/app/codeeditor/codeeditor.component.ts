@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import * as monaco from 'monaco-editor';
-import { ComparisonTree } from '../shared/model/comparison-tree';
+import { ComparisonNode } from '../shared/model/comparison-node';
 
 @Component({
   selector: 'app-codeeditor',
@@ -10,7 +10,7 @@ import { ComparisonTree } from '../shared/model/comparison-tree';
 
 export class CodeeditorComponent implements OnChanges {
 
-  @Input() comparisonData: ComparisonTree;
+  @Input() comparisonData: ComparisonNode;
 
   constructor() { }
 

@@ -1,6 +1,6 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { GridDataService } from '../service/grid-data.service';
-import { ComparisonTree } from '../shared/model/comparison-tree';
+import { ComparisonNode } from '../shared/model/comparison-node';
 import { CodeeditorComponent as codeeditor } from '../codeeditor/codeeditor.component';
 import { AppLogService } from '../app-log/app-log.service';
 
@@ -11,8 +11,8 @@ import { AppLogService } from '../app-log/app-log.service';
 })
 export class GridComponent implements OnInit {
 
-  comparisonDataToDisplay: ComparisonTree[] = [];
-  selectedObject: ComparisonTree;
+  comparisonDataToDisplay: ComparisonNode[] = [];
+  selectedObject: ComparisonNode;
 
   constructor(private gridService: GridDataService, private appLog: AppLogService, private zone: NgZone) {
     window['angularComponentRef'] = {
@@ -30,7 +30,7 @@ export class GridComponent implements OnInit {
     * Handle selection for each row on comparison tree
     * @param objectSelected - Clicked node on comparison tree
     */
-  onSelect(objectSelected: ComparisonTree): void {
+  onSelect(objectSelected: ComparisonNode): void {
     this.appLog.add('Grid: Row selected', 'info');
     this.selectedObject = objectSelected;
   }
