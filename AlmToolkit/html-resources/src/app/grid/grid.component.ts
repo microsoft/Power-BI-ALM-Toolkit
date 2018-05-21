@@ -52,15 +52,20 @@ export class GridComponent implements OnInit {
    * @param imageType - Node type or the Action selected
    * @param type - type based on if it is node icon or selected action
    */
-  getImage(imageType: string, type: number) {
+  getImage(nodeData: ComparisonTree, type: number) {
     let roleImageLocation: string;
     if (type === 1) {
-      roleImageLocation = './assets/node-type-' + imageType.replace(' ', '-') + '.png';
+      roleImageLocation = './assets/node-type-' + nodeData.NodeType.replace(' ', '-') + '.png';
     } else if (type === 2) {
-      roleImageLocation = './assets/action-' + imageType.replace(' ', '-') + '.png';
+      if ( nodeData.Status.toLowerCase() === 'same definition' ) {
+            roleImageLocation = './assets/action-Skip-Grey.png';
+      } else {
+        roleImageLocation = './assets/action-' + nodeData.MergeAction.replace(' ', '-') + '.png';
+      }
     }
     return roleImageLocation;
   }
+
 
   /**
    * Returns the style to be used to indent the row

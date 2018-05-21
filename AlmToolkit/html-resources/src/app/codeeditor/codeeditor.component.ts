@@ -25,8 +25,8 @@ export class CodeeditorComponent implements OnChanges {
     if (!this.comparisonData) {
       return;
     }
-    const sourceDataModel = monaco.editor.createModel(this.comparisonData.SourceObjectDefinition, 'text/plain');
-    const targetDataModel = monaco.editor.createModel(this.comparisonData.TargetObjectDefinition, 'text/plain');
+    const sourceDataModel = monaco.editor.createModel(this.comparisonData.SourceObjectDefinition, 'json');
+    const targetDataModel = monaco.editor.createModel(this.comparisonData.TargetObjectDefinition, 'json');
 
     // if the container already contains an editor, remove it
     const codeEditorContainer = document.getElementById('code-editor-container');

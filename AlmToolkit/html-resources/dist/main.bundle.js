@@ -182,14 +182,14 @@ var AppModule = /** @class */ (function () {
 /***/ "./src/app/codeeditor/codeeditor.component.css":
 /***/ (function(module, exports) {
 
-module.exports = "#code-editor-container {\r\n    height: 100px;\r\n    display: none;\r\n}\r\n"
+module.exports = "#code-editor-container {\r\n    height: 100%;\r\n}\r\n\r\n#code-editor-section{\r\n  margin-top:20px;\r\n  height: 200px;\r\n  border: 1px solid rgba(112, 112, 112, 0.64);\r\n}\r\n"
 
 /***/ }),
 
 /***/ "./src/app/codeeditor/codeeditor.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"code-editor-container\">\r\n</div>\r\n"
+module.exports = "<div id=\"code-editor-section\">\r\n  <div id=\"code-editor-container\">\r\n  </div>\r\n</div>\r\n"
 
 /***/ }),
 
@@ -226,8 +226,8 @@ var CodeeditorComponent = /** @class */ (function () {
         if (!this.comparisonData) {
             return;
         }
-        var sourceDataModel = __WEBPACK_IMPORTED_MODULE_1_monaco_editor__["a" /* editor */].createModel(this.comparisonData.SourceObjectDefinition, 'text/plain');
-        var targetDataModel = __WEBPACK_IMPORTED_MODULE_1_monaco_editor__["a" /* editor */].createModel(this.comparisonData.TargetObjectDefinition, 'text/plain');
+        var sourceDataModel = __WEBPACK_IMPORTED_MODULE_1_monaco_editor__["a" /* editor */].createModel(this.comparisonData.SourceObjectDefinition, 'json');
+        var targetDataModel = __WEBPACK_IMPORTED_MODULE_1_monaco_editor__["a" /* editor */].createModel(this.comparisonData.TargetObjectDefinition, 'json');
         // if the container already contains an editor, remove it
         var codeEditorContainer = document.getElementById('code-editor-container');
         if (codeEditorContainer.firstChild) {
@@ -261,14 +261,14 @@ var CodeeditorComponent = /** @class */ (function () {
 /***/ "./src/app/grid/grid.component.css":
 /***/ (function(module, exports) {
 
-module.exports = ".comparison-grid {\r\n    border: 1px solid #000;\r\n    margin: 10px;\r\n    border-collapse: collapse;\r\n    font: 15px 'Segoe UI';\r\n}\r\n\r\n.grid-column {\r\n    padding: 5px;\r\n    border: 1px solid #000;\r\n}\r\n\r\n#header-row {\r\n    font-weight: bold;\r\n}\r\n\r\n.grid-row {\r\n    cursor: pointer;\r\n}\r\n\r\n.hide-row {\r\n    display: none;\r\n}\r\n\r\n.greyed-out-cell {\r\n    background-color: rgba(112, 112, 112, 0.37);\r\n}\r\n\r\n.action-dropdown {\r\n    width: 75px;\r\n    font: 15px 'Segoe UI';\r\n    position: relative;\r\n    top: 1px;\r\n    cursor: pointer;\r\n}\r\n\r\n.node-images {\r\n    height: 20px;\r\n    width: 20px;\r\n}\r\n\r\n.node-type {\r\n    position: relative;\r\n    top: -3.5px;\r\n}\r\n"
+module.exports = "#comparison-table-container{\r\n    height: 650px;\r\n    overflow-y: auto;\r\n}\r\n\r\n.comparison-grid {\r\n    border: 1px solid rgba(112, 112, 112, 0.64);\r\n    margin: 10px;\r\n    border-collapse: collapse;\r\n  \r\n}\r\n\r\n.grid-column {\r\n    padding: 1px;\r\n    border: 1px solid rgba(112, 112, 112, 0.64);\r\n    max-width:300px;\r\n    text-overflow:ellipsis;\r\n    overflow: hidden;\r\n    white-space:nowrap;\r\n}\r\n\r\n.grid-row {\r\n    cursor: pointer;\r\n    font-weight: 600;\r\n    font-size: 12px;\r\n    font-family: 'Segoe UI';\r\n    font-color:#000;\r\n    height: 10px;\r\n}\r\n\r\n.hide-row {\r\n    display: none;\r\n}\r\n\r\n.greyed-out-cell {\r\n    background-color: rgba(112, 112, 112, 0.37);\r\n}\r\n\r\n.action-dropdown {\r\n    width: 75px;\r\n    font-size: 12px;\r\n    font-weight: 600;\r\n    font-family: 'Segoe UI';\r\n    font-color: #000;\r\n    position: relative;\r\n    top: 1px;\r\n    cursor: pointer;\r\n}\r\n\r\n.node-images {\r\n    height: 15px;\r\n    width: 15px;\r\n}\r\n\r\n.node-type {\r\n    position: relative;\r\n    top: -3px;\r\n}\r\n"
 
 /***/ }),
 
 /***/ "./src/app/grid/grid.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<table class='comparison-grid'>\r\n    <tr id='header-row'>\r\n        <td class='grid-column'>Type</td>\r\n        <td class='grid-column'>Source Name</td>\r\n        <td class='grid-column'>Status</td>\r\n        <td class='grid-column'>Target Name</td>\r\n        <td class='grid-column'></td>\r\n        <td class='grid-column'>Action</td>\r\n\r\n    </tr>\r\n    <tr *ngFor='let dataObject of comparisonDataToDisplay' class='grid-row object-level-{{dataObject.Level}}' [class.hide-row]='!dataObject.ShowNode'>\r\n        <td class='grid-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject)'>\r\n            <span>\r\n                <img [src]='getImage(dataObject.NodeType,1)' class='node-images' />\r\n            </span>\r\n            <span class='node-type'>{{dataObject.NodeType}}</span>\r\n        </td>\r\n        <td class='grid-column' (click)='onSelect(dataObject)' [class.greyed-out-cell]='!dataObject.SourceName'>{{dataObject.SourceName}}</td>\r\n        <td class='grid-column' (click)='onSelect(dataObject)'>{{dataObject.Status}}</td>\r\n        <td class='grid-column' (click)='onSelect(dataObject)' [class.greyed-out-cell]='!dataObject.TargetName'>{{dataObject.TargetName}}</td>\r\n        <td class='grid-column' (click)='onSelect(dataObject)'>\r\n            <span>\r\n                <img [src]='getImage(dataObject.MergeAction,2)' class='node-images' />\r\n            </span>\r\n        </td>\r\n        <td class='grid-column'>\r\n            <select class='action-dropdown' (change)='optionChange(dataObject.Id, $event.target.value)'>\r\n                <option *ngFor='let option of dataObject.AvailableActions' [selected]='option == dataObject.MergeAction ? true : null'>{{option}}</option>\r\n            </select>\r\n        </td>\r\n\r\n    </tr>\r\n</table>\r\n<app-codeeditor [comparisonData]=\"selectedObject\"></app-codeeditor>\r\n"
+module.exports = "<div id='comparison-table-container'>\r\n<table class='comparison-grid'>\r\n    <tr id='header-row' class='grid-row'>\r\n        <td class='grid-column node-type-column'>Type</td>\r\n        <td class='grid-column source-name-column'>Source Name</td>\r\n        <td class='grid-column status-column'>Status</td>\r\n        <td class='grid-column target-name-column'>Target Name</td>\r\n        <td class='grid-column action-icon-column'></td>\r\n        <td class='grid-column grid-column action-options'>Action</td>\r\n\r\n    </tr>\r\n    <tr *ngFor='let dataObject of comparisonDataToDisplay' class='grid-row object-level-{{dataObject.Level}}' [class.hide-row]='!dataObject.ShowNode'>\r\n        <td class='grid-column node-type-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject)'>\r\n            <span>\r\n                <img [src]='getImage(dataObject,1)' class='node-images' />\r\n            </span>\r\n            <span class='node-type'>{{dataObject.NodeType}}</span>\r\n        </td>\r\n        <td class='grid-column source-name-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject)' [class.greyed-out-cell]='!dataObject.SourceName'>{{dataObject.SourceName}}</td>\r\n        <td class='grid-column status-column' (click)='onSelect(dataObject)'>{{dataObject.Status}}</td>\r\n        <td class='grid-column target-name-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject)' [class.greyed-out-cell]='!dataObject.TargetName'>{{dataObject.TargetName}}</td>\r\n        <td class='grid-column action-icon-column'(click)='onSelect(dataObject)'>\r\n            <span>\r\n                <img [src]='getImage(dataObject,2)' class='node-images' />\r\n            </span>\r\n        </td>\r\n        <td class='grid-column action-options'>\r\n            <select class='action-dropdown' (change)='optionChange(dataObject.Id, $event.target.value)' [disabled]=\"dataObject.Status == 'Same Definition' ? true : null\">\r\n                <option *ngFor='let option of dataObject.AvailableActions' [selected]='option == dataObject.MergeAction ? true : null'>{{option}}</option>\r\n            </select>\r\n        </td>\r\n\r\n    </tr>\r\n</table>\r\n</div>\r\n<app-codeeditor [comparisonData]=\"selectedObject\"></app-codeeditor>\r\n"
 
 /***/ }),
 
@@ -332,13 +332,18 @@ var GridComponent = /** @class */ (function () {
      * @param imageType - Node type or the Action selected
      * @param type - type based on if it is node icon or selected action
      */
-    GridComponent.prototype.getImage = function (imageType, type) {
+    GridComponent.prototype.getImage = function (nodeData, type) {
         var roleImageLocation;
         if (type === 1) {
-            roleImageLocation = './assets/node-type-' + imageType.replace(' ', '-') + '.png';
+            roleImageLocation = './assets/node-type-' + nodeData.NodeType.replace(' ', '-') + '.png';
         }
         else if (type === 2) {
-            roleImageLocation = './assets/action-' + imageType.replace(' ', '-') + '.png';
+            if (nodeData.Status.toLowerCase() === 'same definition') {
+                roleImageLocation = './assets/action-Skip-Grey.png';
+            }
+            else {
+                roleImageLocation = './assets/action-' + nodeData.MergeAction.replace(' ', '-') + '.png';
+            }
         }
         return roleImageLocation;
     };

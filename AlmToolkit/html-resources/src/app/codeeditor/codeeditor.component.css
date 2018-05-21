@@ -1,4 +1,9 @@
 #code-editor-container {
-    height: 100px;
-    display: none;
+    height: 100%;
+}
+
+#code-editor-section{
+  margin-top:20px;
+  height: 200px;
+  border: 1px solid rgba(112, 112, 112, 0.64);
 }

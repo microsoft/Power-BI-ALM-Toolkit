@@ -97,12 +97,6 @@
     </Compile>
     <None Include="html-resources\.angular-cli.json" />
     <None Include="html-resources\.editorconfig" />
-    <None Include="html-resources\dist\go.chunk.js.map">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="html-resources\dist\html.chunk.js.map">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="html-resources\e2e\tsconfig.e2e.json" />
     <None Include="html-resources\package-lock.json" />
     <None Include="html-resources\package.json" />
@@ -146,7 +140,9 @@
     <Content Include="html-resources\dist\assets\action-Delete.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="html-resources\dist\assets\action-Skip-Grey.png" />
+    <Content Include="html-resources\dist\assets\action-Skip-Grey.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="html-resources\dist\assets\action-Skip.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -175,157 +171,22 @@
     <Content Include="html-resources\dist\assets\node-type-Table.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="html-resources\dist\bat.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\coffee.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\cpp.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\csharp.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\csp.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\css.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\cssMode.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\dockerfile.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="html-resources\dist\favicon.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\fsharp.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\go.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\handlebars.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\html.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\htmlMode.chunk.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="html-resources\dist\index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="html-resources\dist\ini.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="html-resources\dist\inline.bundle.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\java.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\jsonMode.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\less.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\lua.chunk.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="html-resources\dist\main.bundle.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="html-resources\dist\markdown.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\msdax.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\mysql.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\objective-c.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\pgsql.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\php.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="html-resources\dist\polyfills.bundle.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="html-resources\dist\postiats.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\powershell.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\pug.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\python.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\r.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\razor.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\redis.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\redshift.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\ruby.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\rust.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\sb.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\scss.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\solidity.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\sql.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\styles.bundle.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\swift.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="html-resources\dist\symbol-sprite.svg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\tsMode.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\vb.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\vendor.bundle.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\xml.chunk.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="html-resources\dist\yaml.chunk.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="html-resources\karma.conf.js" />
@@ -336,6 +197,9 @@
     <Content Include="html-resources\src\app\codeeditor\codeeditor.component.html" />
     <Content Include="html-resources\src\app\grid\grid.component.css" />
     <Content Include="html-resources\src\app\grid\grid.component.html" />
+    <Content Include="html-resources\src\app\shared\model\database-objects.ts">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="html-resources\src\assets\action-Create-Grey.png" />
     <Content Include="html-resources\src\assets\action-Create.png" />
     <Content Include="html-resources\src\assets\action-Delete-Grey.png" />
@@ -375,7 +239,6 @@
     <TypeScriptCompile Include="html-resources\src\app\service\window-reference.service.ts" />
     <TypeScriptCompile Include="html-resources\src\app\shared\mocks\data-list.ts" />
     <TypeScriptCompile Include="html-resources\src\app\shared\model\comparison-tree.ts" />
-    <TypeScriptCompile Include="html-resources\src\app\shared\model\database-objects.ts" />
     <TypeScriptCompile Include="html-resources\src\environments\environment.prod.ts" />
     <TypeScriptCompile Include="html-resources\src\environments\environment.ts" />
     <TypeScriptCompile Include="html-resources\src\main.ts" />
