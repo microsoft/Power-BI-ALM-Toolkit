@@ -8,13 +8,13 @@ import { AppLogService } from '../app-log/app-log.service';
 import { WindowReferenceService } from './window-reference.service';
 
 import { DatabaseSourceData } from '../shared/mocks/data-list';
-import { ComparisonTree } from '../shared/model/comparison-tree';
+import { ComparisonNode } from '../shared/model/comparison-node';
 
 @Injectable()
 export class GridDataService {
 
   private _window: Window;
-  private databaseObjects: ComparisonTree[];
+  private databaseObjects: ComparisonNode[];
 
   constructor(private logService: AppLogService, private windowRef: WindowReferenceService) {
     this._window = this.windowRef.nativeWindow;
@@ -23,7 +23,7 @@ export class GridDataService {
   /**
    * Get the data from the C# application
    */
-  getGridDataToDisplay(): Observable<ComparisonTree[]> {
+  getGridDataToDisplay(): Observable<ComparisonNode[]> {
     this.logService.add('Grid data service: Getting data from C#', 'info');
     return fromPromise(this._window['comparisonJSInteraction']
       .getComparisonList())

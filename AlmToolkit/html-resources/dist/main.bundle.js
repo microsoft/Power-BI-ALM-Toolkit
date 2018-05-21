@@ -182,7 +182,7 @@ var AppModule = /** @class */ (function () {
 /***/ "./src/app/codeeditor/codeeditor.component.css":
 /***/ (function(module, exports) {
 
-module.exports = "#code-editor-container {\r\n    height: 100%;\r\n}\r\n\r\n#code-editor-section{\r\n  margin-top:20px;\r\n  height: 200px;\r\n  border: 1px solid rgba(112, 112, 112, 0.64);\r\n}\r\n"
+module.exports = "#code-editor-container {\r\n    height: 100px;\r\n    /*display: none;*/\r\n}\r\n"
 
 /***/ }),
 
@@ -200,7 +200,7 @@ module.exports = "<div id=\"code-editor-section\">\r\n  <div id=\"code-editor-co
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CodeeditorComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_monaco_editor__ = __webpack_require__("./node_modules/monaco-editor/esm/vs/editor/editor.main.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__shared_model_comparison_tree__ = __webpack_require__("./src/app/shared/model/comparison-tree.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__shared_model_comparison_node__ = __webpack_require__("./src/app/shared/model/comparison-node.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -241,7 +241,7 @@ var CodeeditorComponent = /** @class */ (function () {
     };
     __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["z" /* Input */])(),
-        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_2__shared_model_comparison_tree__["a" /* ComparisonTree */])
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_2__shared_model_comparison_node__["a" /* ComparisonNode */])
     ], CodeeditorComponent.prototype, "comparisonData", void 0);
     CodeeditorComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
@@ -268,7 +268,7 @@ module.exports = "#comparison-table-container{\r\n    height: 650px;\r\n    over
 /***/ "./src/app/grid/grid.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div id='comparison-table-container'>\r\n<table class='comparison-grid'>\r\n    <tr id='header-row' class='grid-row'>\r\n        <td class='grid-column node-type-column'>Type</td>\r\n        <td class='grid-column source-name-column'>Source Name</td>\r\n        <td class='grid-column status-column'>Status</td>\r\n        <td class='grid-column target-name-column'>Target Name</td>\r\n        <td class='grid-column action-icon-column'></td>\r\n        <td class='grid-column grid-column action-options'>Action</td>\r\n\r\n    </tr>\r\n    <tr *ngFor='let dataObject of comparisonDataToDisplay' class='grid-row object-level-{{dataObject.Level}}' [class.hide-row]='!dataObject.ShowNode'>\r\n        <td class='grid-column node-type-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject)'>\r\n            <span>\r\n                <img [src]='getImage(dataObject,1)' class='node-images' />\r\n            </span>\r\n            <span class='node-type'>{{dataObject.NodeType}}</span>\r\n        </td>\r\n        <td class='grid-column source-name-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject)' [class.greyed-out-cell]='!dataObject.SourceName'>{{dataObject.SourceName}}</td>\r\n        <td class='grid-column status-column' (click)='onSelect(dataObject)'>{{dataObject.Status}}</td>\r\n        <td class='grid-column target-name-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject)' [class.greyed-out-cell]='!dataObject.TargetName'>{{dataObject.TargetName}}</td>\r\n        <td class='grid-column action-icon-column'(click)='onSelect(dataObject)'>\r\n            <span>\r\n                <img [src]='getImage(dataObject,2)' class='node-images' />\r\n            </span>\r\n        </td>\r\n        <td class='grid-column action-options'>\r\n            <select class='action-dropdown' (change)='optionChange(dataObject.Id, $event.target.value)' [disabled]=\"dataObject.Status == 'Same Definition' ? true : null\">\r\n                <option *ngFor='let option of dataObject.AvailableActions' [selected]='option == dataObject.MergeAction ? true : null'>{{option}}</option>\r\n            </select>\r\n        </td>\r\n\r\n    </tr>\r\n</table>\r\n</div>\r\n<app-codeeditor [comparisonData]=\"selectedObject\"></app-codeeditor>\r\n"
+module.exports = "<table class='comparison-grid'>\r\n    <tr id='header-row'>\r\n        <td class='grid-column'>Type</td>\r\n        <td class='grid-column'>Source Name</td>\r\n        <td class='grid-column'>Status</td>\r\n        <td class='grid-column'>Target Name</td>\r\n        <td class='grid-column'></td>\r\n        <td class='grid-column'>Action</td>\r\n\r\n    </tr>\r\n    <tr *ngFor='let dataObject of comparisonDataToDisplay' class='grid-row object-level-{{dataObject.Level}}' [class.hide-row]='!dataObject.ShowNode'>\r\n        <td class='grid-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject)'>\r\n            <span>\r\n                <img [src]='getImage(dataObject.NodeType,1)' class='node-images' />\r\n            </span>\r\n            <span class='node-type'>{{dataObject.NodeType}}</span>\r\n        </td>\r\n        <td class='grid-column' (click)='onSelect(dataObject)' [class.greyed-out-cell]='!dataObject.SourceName'>{{dataObject.SourceName}}</td>\r\n        <td class='grid-column' (click)='onSelect(dataObject)'>{{dataObject.Status}}</td>\r\n        <td class='grid-column' (click)='onSelect(dataObject)' [class.greyed-out-cell]='!dataObject.TargetName'>{{dataObject.TargetName}}</td>\r\n        <td class='grid-column' (click)='onSelect(dataObject)'>\r\n            <span>\r\n                <img [src]='getImage(dataObject.MergeAction,2)' class='node-images' />\r\n            </span>\r\n        </td>\r\n        <td class='grid-column'>\r\n            <select class='action-dropdown' (change)='optionChange(dataObject.Id, $event.target.value)'>\r\n                <option *ngFor='let option of dataObject.AvailableActions' [selected]='option == dataObject.MergeAction ? true : null'>{{option}}</option>\r\n            </select>\r\n        </td>\r\n\r\n    </tr>\r\n</table>\r\n<app-codeeditor [comparisonData]=\"selectedObject\"></app-codeeditor>\r\n"
 
 /***/ }),
 
@@ -491,15 +491,15 @@ var WindowReferenceService = /** @class */ (function () {
 
 /***/ }),
 
-/***/ "./src/app/shared/model/comparison-tree.ts":
+/***/ "./src/app/shared/model/comparison-node.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ComparisonTree; });
-var ComparisonTree = /** @class */ (function () {
-    function ComparisonTree() {
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ComparisonNode; });
+var ComparisonNode = /** @class */ (function () {
+    function ComparisonNode() {
     }
-    return ComparisonTree;
+    return ComparisonNode;
 }());
 
 

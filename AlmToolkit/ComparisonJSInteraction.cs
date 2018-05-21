@@ -5,12 +5,16 @@
     using Model;
     using Newtonsoft.Json;
     using System.Collections.Generic;
+    using System;
 
     public class ComparisonJSInteraction
     {
-        // List to be used to populate data in grid control
-        public static List<ComparisonTree> comparisonList = new List<ComparisonTree>();
         private Comparison _comparison;
+
+        public static List<ComparisonNode> comparisonList = new List<ComparisonNode>(); // List to be used to populate data in grid control
+        private Dictionary<int, AngularComposite> _directAccessList = new Dictionary<int, AngularComposite>(); // Used to maintain a dictionary with direct access to the Angular node and C# comparison object
+        private List<ComparisonVisibilityMap> _avMap = new List<ComparisonVisibilityMap>();  // Used to maintain visibility associated with object and mapping between internal name and tree identifier
+
 
         #region Public properties
         public Comparison Comparison
@@ -19,6 +23,8 @@
             set { _comparison = value; }
         }
         #endregion
+
+        #region Angular endpoints
 
         /// <summary>
         /// Method that sends flattened comparison object to Angular control
@@ -33,6 +39,28 @@
         }
 
         /// <summary>
+        /// Update the object as and when selected action is changed on UI
+        /// </summary>
+        /// <param name="id">Id of the node updated</param>
+        /// <param name="newAction">New selected action</param>
+        /// <param name="oldAction">Old selected action</param>
+        public void changeOccurred(int id, string newAction, string oldAction)
+        {
+            foreach (ComparisonNode databaseObject in comparisonList)
+            {
+                if (databaseObject.Id == id)
+                {
+                    databaseObject.MergeAction = newAction;
+                    break;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Data transformation and population
+
+        /// <summary>
         /// Transform comparison object to structure understood by Angular control
         /// </summary>
         public void SetComparisonData()
@@ -40,6 +68,9 @@
             if (this._comparison != null)
             {
                 comparisonList.Clear();
+                _directAccessList.Clear();
+                _avMap.Clear();
+
                 foreach (ComparisonObject comparisonObject in this._comparison.ComparisonObjects)
                 {
                     this.PopulateComparisonData(comparisonObject, 0, null);
@@ -53,12 +84,12 @@
         /// <param name="comparisonObject">Individual node in the tree</param>
         /// <param name="level">Level in the heirarchy to which the object belongs</param>
         /// <param name="parentNode">Reference to the parent node of the current object</param>
-        private void PopulateComparisonData(ComparisonObject comparisonObject, int level, ComparisonTree parentNode)
+        private void PopulateComparisonData(ComparisonObject comparisonObject, int level, ComparisonNode parentNode)
         {
             if (comparisonObject != null)
             {
 
-                ComparisonTree currentNode = new ComparisonTree
+                ComparisonNode currentNode = new ComparisonNode
                 {
                     NodeType = string.Equals(ComparisonObjectType.DataSource, comparisonObject.ComparisonObjectType) ? "Data Source" : comparisonObject.ComparisonObjectType.ToString(),
 
@@ -70,7 +101,9 @@
                     TargetObjectDefinition = comparisonObject.TargetObjectDefinition,
                     ShowNode = true,
                     Level = level,
-                    MergeAction = comparisonObject.MergeAction.ToString()
+                    MergeAction = comparisonObject.MergeAction.ToString(),
+                    DisableMessage = "",
+                    DropdownDisabled = false
                 };
 
                 if (parentNode != null)
@@ -152,6 +185,24 @@
                 };
 
                 comparisonList.Add(currentNode);
+
+                // Populate helper objects
+                AngularComposite angularComposite = new AngularComposite(currentNode, comparisonObject);
+                _directAccessList.Add(currentNode.Id, angularComposite);
+
+                ComparisonVisibilityMap visibilityMap = new ComparisonVisibilityMap
+                {
+                    SourceObjectName = currentNode.SourceName,
+                    SourceObjectInternalName = currentNode.SourceInternalName,
+                    TargetObjectName = currentNode.TargetName,
+                    TargetObjectInternalName = currentNode.TargetInternalName,
+                    ObjType = currentNode.NodeType.ToString(),
+                    composite = angularComposite,
+                    IsVisible = true,
+                    ComparisonTreeId = currentNode.Id
+                };
+                _avMap.Add(visibilityMap);
+
                 // Add child objects if it exists
                 if (comparisonObject.ChildComparisonObjects != null && comparisonObject.ChildComparisonObjects.Count > 0)
                 {
@@ -164,21 +215,172 @@
         }
 
         /// <summary>
-        /// Update the object as and when selected action is changed on UI
+        /// Refresh action and visibility for Angular tree objects using Comparison object
         /// </summary>
-        /// <param name="id">Id of the node updated</param>
-        /// <param name="newAction">New selected action</param>
-        /// <param name="oldAction">Old selected action</param>
-        public void changeOccurred(int id, string newAction, string oldAction)
+        public void RefreshComparisonTree()
         {
-            foreach (ComparisonTree databaseObject in comparisonList)
+        }
+
+        #endregion
+
+        #region Helper functions
+        /// <summary>
+        /// Find a node by its internal name from visibilty map
+        /// </summary>
+        /// <param name="sourceObjectName">Display name of the node for source</param>
+        /// <param name="sourceObjectId">Internal name of the node for source</param>
+        /// <param name="targetObjectName">Display name of the node for target</param>
+        /// <param name="targetObjectId">Internal name of the node for target</param>
+        /// <param name="objType">Object type i.e. Data source, KPI, Measure</param>
+        /// <returns>Visibility node with reference to Comparison object as well as Angular node. Null in case not found </returns>
+        private ComparisonVisibilityMap FindNodeByInternalName(string sourceObjectName, string sourceObjectId, string targetObjectName, string targetObjectId, ComparisonObjectType objType)
+        {
+            foreach (ComparisonVisibilityMap node in _avMap)
             {
-                if (databaseObject.Id == id)
+                // Directly use composite instead
+                if (string.Equals(node.composite.dotNetComparison.SourceObjectName, sourceObjectName, StringComparison.InvariantCultureIgnoreCase)
+                    && string.Equals(node.composite.dotNetComparison.SourceObjectInternalName, sourceObjectId, StringComparison.InvariantCultureIgnoreCase)
+                    && string.Equals(node.composite.dotNetComparison.TargetObjectName, targetObjectName, StringComparison.InvariantCultureIgnoreCase)
+                    && string.Equals(node.composite.dotNetComparison.TargetObjectInternalName, targetObjectId, StringComparison.InvariantCultureIgnoreCase)
+                    && node.composite.dotNetComparison.ComparisonObjectType == objType)
                 {
-                    databaseObject.MergeAction = newAction;
-                    break;
+                    return node;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Set visibility of Angular node
+        /// </summary>
+        /// <param name="IsVisible">Show or hide node</param>
+        /// <param name="sourceObjectName">Display name of the node for source</param>
+        /// <param name="sourceObjectId">Internal name of the node for source</param>
+        /// <param name="targetObjectName">Display name of the node for target</param>
+        /// <param name="targetObjectId">Internal name of the node for target</param>
+        /// <param name="objType">Object type i.e. Data source, KPI, Measure</param>
+        private void SetNodeVisibility(bool IsVisible, string sourceObjectName, string sourceObjectId, string targetObjectName, string targetObjectId, ComparisonObjectType objType)
+        {
+            ComparisonVisibilityMap node = FindNodeByInternalName(sourceObjectName, sourceObjectId, targetObjectName, targetObjectId, objType);
+            if (node != null)
+            {
+                //node.IsVisible = IsVisible;
+                node.composite.ngComparison.ShowNode = IsVisible;
+            }
+        }
+        #endregion
+
+        #region Menu actions
+
+        /// <summary>
+        /// Show or Hide skip nodes
+        /// </summary>
+        /// <param name="hide">Hide Skip nodes</param>
+        /// <param name="sameDefinitionFilter">Hide objects only in case of same definition</param>
+        public void ShowHideSkipNodes(bool hide, bool sameDefinitionFilter = false)
+        {
+            if (this._comparison != null)
+            {
+                ShowHideNodes(this._comparison.ComparisonObjects, hide, sameDefinitionFilter);
+            }
+        }
+
+        private void ShowHideNodes(List<ComparisonObject> comparisonObject, bool hide, bool sameDefinitionFilter)
+        {
+
+            foreach (ComparisonObject node in comparisonObject)
+            {
+                bool isVisible = true;
+                if (node.MergeAction.ToString() == "Skip" && (!sameDefinitionFilter || (sameDefinitionFilter && hide && node.Status == ComparisonObjectStatus.SameDefinition)))
+                {
+                    // if currently selected skip item contains Update, Delete or Create children, then need to keep visible - or result in orphans
+                    bool foundCreateOrDeleteChild = false;
+                    foreach (ComparisonObject childNode in node.ChildComparisonObjects)
+                    {
+                        if (childNode.MergeAction.ToString() == "Update" || childNode.MergeAction.ToString() == "Delete" || childNode.MergeAction.ToString() == "Create")
+                        {
+                            foundCreateOrDeleteChild = true;
+                            break;
+                        }
+                    }
+
+                    if (hide)
+                    {
+                        if (!foundCreateOrDeleteChild)
+                        {
+                            isVisible = false;
+                        }
+                    }
+                    else
+                    {
+                        isVisible = true;
+                    }
+                }
+                else
+                {
+                    isVisible = (
+                        !(node.MergeAction.ToString() == "Skip " &&
+                         (node.ChildComparisonObjects.Count == 0 || !NodeContainsEditableChildren(node, hide))));
+                }
+
+                SetNodeVisibility(isVisible, node.SourceObjectName, node.SourceObjectInternalName, node.TargetObjectName, node.TargetObjectInternalName, node.ComparisonObjectType);
+
+                ShowHideNodes(node.ChildComparisonObjects, hide, sameDefinitionFilter);
+            }
+        }
+
+        private bool NodeContainsEditableChildren(ComparisonObject node, bool hide)
+        {
+            bool containsChildren = false;
+
+            foreach (ComparisonObject childNode in node.ChildComparisonObjects)
+            {
+                if ((hide &&
+                     childNode.MergeAction.ToString() != "Skip " &&
+                     childNode.MergeAction.ToString() != "Skip") ||
+                    (!hide &&
+                     childNode.MergeAction.ToString() != "Skip "))
+                {
+                    containsChildren = true;
+                }
+                else
+                {
+                    bool childContainsChildren = NodeContainsEditableChildren(childNode, hide);
+                    if (!containsChildren)
+                    {
+                        containsChildren = childContainsChildren;
+                    }
+                }
+
+                if (childNode.MergeAction.ToString() == "Skip")
+                {
+                    SetNodeVisibility(!hide, childNode.SourceObjectName, childNode.SourceObjectInternalName, childNode.TargetObjectName, childNode.TargetObjectInternalName, childNode.ComparisonObjectType);
+                }
+            }
+
+            if (node.MergeAction.ToString() != "Skip")
+            {
+                SetNodeVisibility(containsChildren, node.SourceObjectName, node.SourceObjectInternalName, node.TargetObjectName, node.TargetObjectInternalName, node.ComparisonObjectType);
+            }
+
+            return containsChildren;
+        }
+
+        public void UpdateItems(bool selectedOnly)
+        {
+            // Not necessary to run twice with internal method because Updates don't impact children
+            foreach (ComparisonNode item in comparisonList)
+            {
+                if (item.AvailableActions.Contains("Update"))
+                {
+                    item.MergeAction = "Update";
+                    // Set merge action in corresponding comparison list
+                    _directAccessList[item.Id].dotNetComparison.MergeAction = MergeAction.Update;
                 }
             }
         }
+
+        #endregion
     }
 }
