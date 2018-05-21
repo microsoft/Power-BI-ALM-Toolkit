@@ -30,8 +30,15 @@ export class GridComponent implements OnInit {
     * Handle selection for each row on comparison tree
     * @param objectSelected - Clicked node on comparison tree
     */
-  onSelect(objectSelected: ComparisonNode): void {
+  onSelect(objectSelected: ComparisonNode, event: Event): void {
     this.appLog.add('Grid: Row selected', 'info');
+    const selectedRows = document.getElementsByClassName('selected-row');
+
+    for (let iRowCounter = 0; iRowCounter < selectedRows.length; iRowCounter += 1) {
+      selectedRows[iRowCounter].classList.remove('selected-row');
+    }
+    const rowId = 'node-' + objectSelected.Id;
+    document.getElementById(rowId).classList.add('selected-row');
     this.selectedObject = objectSelected;
   }
 
@@ -52,7 +59,7 @@ export class GridComponent implements OnInit {
    * @param imageType - Node type or the Action selected
    * @param type - type based on if it is node icon or selected action
    */
-  getImage(nodeData: ComparisonTree, type: number) {
+  getImage(nodeData: ComparisonNode, type: number) {
     let roleImageLocation: string;
     if (type === 1) {
       roleImageLocation = './assets/node-type-' + nodeData.NodeType.replace(' ', '-') + '.png';

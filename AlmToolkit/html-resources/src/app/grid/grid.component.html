@@ -9,17 +9,17 @@
         <td class='grid-column grid-column action-options'>Action</td>
 
     </tr>
-    <tr *ngFor='let dataObject of comparisonDataToDisplay' class='grid-row object-level-{{dataObject.Level}}' [class.hide-row]='!dataObject.ShowNode'>
-        <td class='grid-column node-type-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject)'>
+    <tr *ngFor='let dataObject of comparisonDataToDisplay' class='grid-row object-level-{{dataObject.Level}}' [class.hide-row]='!dataObject.ShowNode' id='node-{{dataObject.Id}}'>
+        <td class='grid-column node-type-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject, $event)'>
             <span>
                 <img [src]='getImage(dataObject,1)' class='node-images' />
             </span>
             <span class='node-type'>{{dataObject.NodeType}}</span>
         </td>
-        <td class='grid-column source-name-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject)' [class.greyed-out-cell]='!dataObject.SourceName'>{{dataObject.SourceName}}</td>
-        <td class='grid-column status-column' (click)='onSelect(dataObject)'>{{dataObject.Status}}</td>
-        <td class='grid-column target-name-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject)' [class.greyed-out-cell]='!dataObject.TargetName'>{{dataObject.TargetName}}</td>
-        <td class='grid-column action-icon-column'(click)='onSelect(dataObject)'>
+        <td class='grid-column source-name-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject, $event)' [class.greyed-out-cell]='!dataObject.SourceName'>{{dataObject.SourceName}}</td>
+        <td class='grid-column status-column' (click)='onSelect(dataObject, $event)'>{{dataObject.Status}}</td>
+        <td class='grid-column target-name-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject, $event)' [class.greyed-out-cell]='!dataObject.TargetName'>{{dataObject.TargetName}}</td>
+        <td class='grid-column action-icon-column'(click)='onSelect(dataObject, $event)'>
             <span>
                 <img [src]='getImage(dataObject,2)' class='node-images' />
             </span>
