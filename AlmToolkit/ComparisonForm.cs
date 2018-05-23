@@ -477,6 +477,9 @@ namespace AlmToolkit
         {
             ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.MissingInSource);
             SetComparedState();
+
+            _comparisonInter.SkipItems(false, ComparisonObjectStatus.MissingInSource);
+            refreshGridControl();
         }
 
         private void mnuDeleteAllObjectsMissingInSource_Click(object sender, EventArgs e)
@@ -492,6 +495,9 @@ namespace AlmToolkit
         {
             ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.MissingInTarget);
             SetComparedState();
+
+            _comparisonInter.SkipItems(false, ComparisonObjectStatus.MissingInTarget);
+            refreshGridControl();
         }
 
         private void mnuCreateAllObjectsMissingInTarget_Click(object sender, EventArgs e)
@@ -507,6 +513,9 @@ namespace AlmToolkit
         {
             ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.DifferentDefinitions);
             SetComparedState();
+
+            _comparisonInter.SkipItems(false, ComparisonObjectStatus.DifferentDefinitions);
+            refreshGridControl();
         }
 
         private void mnuUpdateAllObjectsWithDifferentDefinitions_Click(object sender, EventArgs e)
