@@ -130,60 +130,6 @@
                         break;
                 }
 
-                // set drop-down to have limited members based on what is available
-                switch (comparisonObject.MergeAction)
-                {
-                    case MergeAction.Create:
-                        currentNode.AvailableActions = new List<string> { "Create", "Skip" };
-
-                        if (parentNode != null && string.Equals(parentNode.Status, "Missing in Target") && string.Equals(parentNode.MergeAction, "Skip"))
-                        {
-                            currentNode.AvailableActions = new List<string> { "Skip" };
-                        }
-                        break;
-                    case MergeAction.Update:
-                        currentNode.AvailableActions = new List<string> { "Update", "Skip" };
-                        break;
-                    case MergeAction.Delete:
-                        currentNode.AvailableActions = new List<string> { "Delete", "Skip" };
-
-                        //check if parent is also set to delete, in which case make this cell readonly
-                        if (parentNode != null && string.Equals(parentNode.MergeAction, "Delete"))
-                        {
-                            currentNode.AvailableActions = new List<string> { "Delete" };
-                        }
-                        break;
-                    case MergeAction.Skip:
-
-                        switch (comparisonObject.Status)
-                        {
-                            case ComparisonObjectStatus.MissingInTarget:
-                                currentNode.AvailableActions = new List<string> { "Create", "Skip" };
-
-                                //check if parent is also MissingInTarget and Skip, make this cell readonly
-                                if (parentNode != null && string.Equals(parentNode.Status, "Missing in Target") && string.Equals(parentNode.MergeAction, "Skip"))
-                                {
-                                    currentNode.AvailableActions = new List<string> { "Skip" };
-                                }
-
-                                break;
-                            case ComparisonObjectStatus.MissingInSource:
-                                currentNode.AvailableActions = new List<string> { "Delete", "Skip" };
-                                break;
-                            case ComparisonObjectStatus.DifferentDefinitions:
-                                currentNode.AvailableActions = new List<string> { "Update", "Skip" };
-                                break;
-                            default:
-                                //default covers ComparisonObjectStatus.SameDefinition: which is most common case (above cases are for saved skip selections from file)
-                                currentNode.AvailableActions = new List<string> { "Skip" };
-                                break;
-                        }
-
-                        break;
-                    default:
-                        break;
-                };
-
                 comparisonList.Add(currentNode);
 
                 // Populate helper objects
@@ -202,6 +148,67 @@
                     ComparisonTreeId = currentNode.Id
                 };
                 _avMap.Add(visibilityMap);
+
+                // set drop-down to have limited members based on what is available
+                switch (comparisonObject.MergeAction)
+                {
+                    case MergeAction.Create:
+                        currentNode.AvailableActions = new List<string> { "Create", "Skip" };
+
+                        if (parentNode != null && string.Equals(parentNode.Status, "Missing in Target") && string.Equals(parentNode.MergeAction, "Skip"))
+                        {
+                            comparisonObject.MergeAction = MergeAction.Skip;
+                            currentNode.MergeAction = MergeAction.Skip.ToString();
+                            currentNode.DropdownDisabled = true;
+                            SetNodeTooltip(visibilityMap, true);
+                        }
+                        break;
+                    case MergeAction.Update:
+                        currentNode.AvailableActions = new List<string> { "Update", "Skip" };
+                        break;
+                    case MergeAction.Delete:
+                        currentNode.AvailableActions = new List<string> { "Delete", "Skip" };
+
+                        //check if parent is also set to delete, in which case make this cell readonly
+                        if (parentNode != null && string.Equals(parentNode.MergeAction, "Delete"))
+                        {
+                            currentNode.DropdownDisabled = true;
+                            SetNodeTooltip(visibilityMap, true);
+                        }
+                        break;
+                    case MergeAction.Skip:
+
+                        switch (comparisonObject.Status)
+                        {
+                            case ComparisonObjectStatus.MissingInTarget:
+                                currentNode.AvailableActions = new List<string> { "Create", "Skip" };
+
+                                //check if parent is also MissingInTarget and Skip, make this cell readonly
+                                if (parentNode != null && string.Equals(parentNode.Status, "Missing in Target") && string.Equals(parentNode.MergeAction, "Skip"))
+                                {
+                                    currentNode.DropdownDisabled = true;
+                                    SetNodeTooltip(visibilityMap, true);
+                                }
+
+                                break;
+                            case ComparisonObjectStatus.MissingInSource:
+                                currentNode.AvailableActions = new List<string> { "Delete", "Skip" };
+                                break;
+                            case ComparisonObjectStatus.DifferentDefinitions:
+                                currentNode.AvailableActions = new List<string> { "Update", "Skip" };
+                                break;
+                            default:
+                                //default covers ComparisonObjectStatus.SameDefinition: which is most common case (above cases are for saved skip selections from file)
+                                currentNode.AvailableActions = new List<string> { "Skip" };
+                                currentNode.DropdownDisabled = true;
+                                SetNodeTooltip(visibilityMap, true);
+                                break;
+                        }
+
+                        break;
+                    default:
+                        break;
+                };
 
                 // Add child objects if it exists
                 if (comparisonObject.ChildComparisonObjects != null && comparisonObject.ChildComparisonObjects.Count > 0)
@@ -282,11 +289,17 @@
         {
             if (this._comparison != null)
             {
-                ShowHideNodes(this._comparison.ComparisonObjects, hide, sameDefinitionFilter);
+                ShowHideSkipNodes(this._comparison.ComparisonObjects, hide, sameDefinitionFilter);
             }
         }
 
-        private void ShowHideNodes(List<ComparisonObject> comparisonObject, bool hide, bool sameDefinitionFilter)
+        /// <summary>
+        /// Show or hide skip nodes
+        /// </summary>
+        /// <param name="comparisonObject">List of comparison objects for whom children are to be checked</param>
+        /// <param name="hide">Show or hide the node</param>
+        /// <param name="sameDefinitionFilter">Hide nodes with same definition</param>
+        private void ShowHideSkipNodes(List<ComparisonObject> comparisonObject, bool hide, bool sameDefinitionFilter)
         {
 
             foreach (ComparisonObject node in comparisonObject)
@@ -298,7 +311,7 @@
                     bool foundCreateOrDeleteChild = false;
                     foreach (ComparisonObject childNode in node.ChildComparisonObjects)
                     {
-                        if (childNode.MergeAction.ToString() == "Update" || childNode.MergeAction.ToString() == "Delete" || childNode.MergeAction.ToString() == "Create")
+                        if (childNode.MergeAction == MergeAction.Update || childNode.MergeAction == MergeAction.Delete || childNode.MergeAction == MergeAction.Create)
                         {
                             foundCreateOrDeleteChild = true;
                             break;
@@ -326,10 +339,16 @@
 
                 SetNodeVisibility(isVisible, node.SourceObjectName, node.SourceObjectInternalName, node.TargetObjectName, node.TargetObjectInternalName, node.ComparisonObjectType);
 
-                ShowHideNodes(node.ChildComparisonObjects, hide, sameDefinitionFilter);
+                ShowHideSkipNodes(node.ChildComparisonObjects, hide, sameDefinitionFilter);
             }
         }
 
+        /// <summary>
+        /// Check if node contains editable children
+        /// </summary>
+        /// <param name="node">Node for which children is to be checked</param>
+        /// <param name="hide">Hide or show</param>
+        /// <returns></returns>
         private bool NodeContainsEditableChildren(ComparisonObject node, bool hide)
         {
             bool containsChildren = false;
@@ -367,8 +386,14 @@
             return containsChildren;
         }
 
+        /// <summary>
+        /// Set actions for node with different definitions to update
+        /// </summary>
+        /// <param name="selectedOnly">Set for selected nodes or all nodes</param>
         public void UpdateItems(bool selectedOnly)
         {
+            // If selected only, pick items from selected list
+
             // Not necessary to run twice with internal method because Updates don't impact children
             foreach (ComparisonNode item in comparisonList)
             {
@@ -381,6 +406,135 @@
             }
         }
 
+
+        /********** Set node to skip for depending on comparison object status ****************/
+        /// <summary>
+        /// Sets Action property of objects to Skip within given range.
+        /// </summary>
+        /// <param name="selectedOnly"></param>
+        /// <param name="comparisonStatus"></param>
+        public void SkipItems(bool selectedOnly, ComparisonObjectStatus comparisonObjectStatus = ComparisonObjectStatus.Na) //Na because won't take null cos it's an enum
+        {
+            //Int32 selectedRowCount = (selectedOnly ? this.Rows.GetRowCount(DataGridViewElementStates.Selected) : this.Rows.Count);
+            //if (selectedRowCount > 0)
+            //{
+            // fudge to ensure child objects Missing in Source are skipped (this is because we have to iterate DataGridViewRow object which isn't hierarchical)
+            SkipItemsPrivate(selectedOnly, comparisonObjectStatus);
+            SkipItemsPrivate(selectedOnly, comparisonObjectStatus);
+            SkipItemsPrivate(selectedOnly, comparisonObjectStatus);
+
+            // Need to check if this is still needed
+            //SkipItemsPrivate(selectedOnly, comparisonObjectStatus, selectedRowCount);
+            //SkipItemsPrivate(selectedOnly, comparisonObjectStatus, selectedRowCount);
+
+            //    _cellEditCallBack.Invoke();
+            //}
+        }
+
+        private void SkipItemsPrivate(bool selectedOnly, ComparisonObjectStatus comparisonObjectStatus)
+        {
+            //for (int i = 0; i < selectedRowCount; i++)
+            //{
+            //    DataGridViewRow row = (selectedOnly ? this.SelectedRows[i] : this.Rows[i]);
+
+            //    SkipItemPrivate(comparisonObjectStatus, row);
+            //}
+
+            foreach (ComparisonObject node in this._comparison.ComparisonObjects)
+            {
+                // In case of selected only, check if item is present in selected objects
+                SkipItemPrivate(comparisonObjectStatus, node);
+            }
+        }
+
+        private void SkipItemPrivate(ComparisonObjectStatus comparisonObjectStatus, ComparisonObject row)
+        {
+            if (comparisonObjectStatus == ComparisonObjectStatus.Na ||
+                (comparisonObjectStatus == ComparisonObjectStatus.DifferentDefinitions && row.Status == ComparisonObjectStatus.DifferentDefinitions) ||
+                (comparisonObjectStatus == ComparisonObjectStatus.MissingInSource && row.Status == ComparisonObjectStatus.MissingInSource) ||
+                (comparisonObjectStatus == ComparisonObjectStatus.MissingInTarget && row.Status == ComparisonObjectStatus.MissingInTarget))
+            {
+                ComparisonVisibilityMap node = FindNodeByInternalName(row.SourceObjectName, row.SourceObjectInternalName, row.TargetObjectName, row.TargetObjectInternalName, row.ComparisonObjectType);
+                bool isReadOnly = node != null && node.composite.ngComparison.DropdownDisabled;
+                if (!isReadOnly &&
+                    row.MergeAction != MergeAction.Skip
+                    //&&
+                    //row.Cells[8].Value.ToString() != "Set Parent Node" -- Need to check where is this value set
+                    )
+                {
+                    row.MergeAction = MergeAction.Skip;
+                    node.composite.ngComparison.MergeAction = MergeAction.Skip.ToString();
+                    CheckToSkipChildren(row);
+                }
+            }
+        }
+
+        private void CheckToSkipChildren(ComparisonObject selectedRow)
+        {
+            // if Missing in Target (default is create) and user selects skip, definitely can't create child objects, so set them to skip too and disable them
+            if (selectedRow.Status == ComparisonObjectStatus.MissingInTarget)
+            {
+                //TreeGridNode selectedNode = FindNodeByIDs(selectedRow.Cells[0].Value.ToString(), selectedRow.Cells[2].Value.ToString(), selectedRow.Cells[6].Value.ToString());
+
+                //if (selectedNode != null)
+                //{
+                foreach (ComparisonObject node in selectedRow.ChildComparisonObjects)
+                {
+
+                    SetNodeToSkip(node);
+                }
+                //}
+            }
+            // if Missing in Source (default is delete) and user selects skip, he may still want to delete some child objects, so ensure they are enabled
+            else if (selectedRow.Status == ComparisonObjectStatus.MissingInTarget)
+            {
+                //TreeGridNode selectedNode = FindNodeByIDs(selectedRow.Cells[0].Value.ToString(), selectedRow.Cells[2].Value.ToString(), selectedRow.Cells[6].Value.ToString());
+
+                //if (selectedNode != null)
+                //{
+                foreach (ComparisonObject node in selectedRow.ChildComparisonObjects)
+                {
+                    ComparisonVisibilityMap nodeReference = FindNodeByInternalName(node.SourceObjectName
+                        , node.SourceObjectInternalName, node.TargetObjectName, node.TargetObjectInternalName, node.ComparisonObjectType);
+                    if (nodeReference.composite.ngComparison.AvailableActions.Contains("Skip"))
+                    {
+                        nodeReference.composite.ngComparison.DropdownDisabled = false;
+
+                        SetNodeTooltip(nodeReference, false);
+                    }
+                }
+                //}
+            }
+        }
+        private void SetNodeToSkip(ComparisonObject node)
+        {
+            ComparisonVisibilityMap nodeReference = FindNodeByInternalName(node.SourceObjectName
+                        , node.SourceObjectInternalName, node.TargetObjectName, node.TargetObjectInternalName, node.ComparisonObjectType);
+            if (nodeReference.composite.ngComparison.AvailableActions.Contains("Skip"))
+            {
+                nodeReference.composite.ngComparison.MergeAction = MergeAction.Skip.ToString();
+                nodeReference.composite.dotNetComparison.MergeAction = MergeAction.Skip;
+                nodeReference.composite.ngComparison.DropdownDisabled = true;
+
+                SetNodeTooltip(nodeReference, true);
+            }
+            foreach (ComparisonObject childNode in node.ChildComparisonObjects)
+            {
+                SetNodeToSkip(childNode);
+            }
+        }
+        private void SetNodeTooltip(ComparisonVisibilityMap node, bool disabledDueToParent)
+        {
+            //foreach (DataGridViewCell cell in node.Cells)
+            //{
+            //    cell.ToolTipText = (disabledDueToParent ? "This object's action option is disabled due to a parent object selection" : "");
+            //}
+
+            node.composite.ngComparison.DisableMessage = (disabledDueToParent ? "This object's action option is disabled due to a parent object selection" : "");
+
+        }
+
+        /************* End section ****************/
         #endregion
     }
 }
