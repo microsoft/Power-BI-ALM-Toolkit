@@ -74,8 +74,54 @@ export class GridComponent implements OnInit {
     * Handle key events on the grid
     * @param event - Check if the key pressed requires selection of rows
     */
-  onKeydown(event: any){
-    // Do nothing for now
+  onKeydown(event: any) {
+
+    event.preventDefault();
+    let siblingRow;
+    // Handle up arrow and down arrow alone
+    if ((event.which === 38 || event.which === 40) && !event.ctrlKey && !event.shiftKey) {
+      const selectedRows = document.querySelectorAll('.selected-row');
+      for (let iRowCounter = 0; iRowCounter < selectedRows.length; iRowCounter++) {
+        selectedRows[iRowCounter].classList.remove('selected-row');
+      }
+
+      // Remove the transparent background color from existing cells
+      const transparentCells = document.querySelectorAll('.transparent-cell');
+      for (let iTransparentCellCounter = 0; iTransparentCellCounter < transparentCells.length; iTransparentCellCounter += 1) {
+        transparentCells[iTransparentCellCounter].classList.remove('transparent-cell');
+      }
+
+      if (event.which === 38) {
+        siblingRow = document.getElementById(event.target.id).previousSibling;
+      }
+      else {
+        siblingRow = document.getElementById(event.target.id).nextSibling;
+      }
+    }
+
+    // Handle shift up and shift down
+    else if (event.shiftKey && !event.ctrlKey && (event.which === 38 || event.which === 40)) {
+      if (event.which === 38) {
+        siblingRow = document.getElementById(event.target.id).previousSibling;
+      }
+      else {
+        siblingRow = document.getElementById(event.target.id).nextSibling;
+      }
+    }
+    
+    siblingRow.classList.add('selected-row');
+    siblingRow.focus();
+    let rowId = siblingRow.id;
+
+    // Get the greyed out cells in the selected row to make them transparent
+    const greyedOutCells = document.querySelectorAll('#' + rowId + ' .greyed-out-cell');
+
+    for (let iCellCounter = 0; iCellCounter < greyedOutCells.length; iCellCounter += 1) {
+      greyedOutCells[iCellCounter].classList.add('transparent-cell');
+    }
+
+    rowId = rowId.split('node-')[1];
+    this.selectedObject = this.comparisonDataToDisplay.find(comparisonNode => comparisonNode.Id === parseInt(rowId, 10));
   }
 
   /**

@@ -9,7 +9,8 @@
         <td class='grid-column grid-column action-options'>Action</td>
 
     </tr>
-    <tr *ngFor='let dataObject of comparisonDataToDisplay; let first = first' class='grid-row object-level-{{dataObject.Level}}' [class.hide-row]='!dataObject.ShowNode' [class.selected-row] = 'first' id='node-{{dataObject.Id}}' tabindex='0' (keydown)='onKeydown($event)'>
+    <tr *ngFor='let dataObject of comparisonDataToDisplay; let first = first' class='grid-row object-level-{{dataObject.Level}}' [class.hide-row]='!dataObject.ShowNode'
+    [class.selected-row] = 'first' id='node-{{dataObject.Id}}' tabindex='0' (keydown)='onKeydown($event)'>
         <td class='grid-column node-type-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject, $event)'>
             <span>
                 <img [src]='getImage(dataObject,1)' class='node-images' />
