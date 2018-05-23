@@ -29,17 +29,53 @@ export class GridComponent implements OnInit {
   /**
     * Handle selection for each row on comparison tree
     * @param objectSelected - Clicked node on comparison tree
+    * @param event - Event to check if CTRL key was pressed
     */
-  onSelect(objectSelected: ComparisonNode, event: Event): void {
+  onSelect(objectSelected: ComparisonNode, event: any): void {
     this.appLog.add('Grid: Row selected', 'info');
-    const selectedRows = document.getElementsByClassName('selected-row');
-
-    for (let iRowCounter = 0; iRowCounter < selectedRows.length; iRowCounter += 1) {
-      selectedRows[iRowCounter].classList.remove('selected-row');
-    }
     const rowId = 'node-' + objectSelected.Id;
+    const controlKeyDown = event.ctrlKey;
+
+    // Remove the transparent background color from existing cells
+    const transparentCells = document.querySelectorAll('.transparent-cell');
+
+    if (!controlKeyDown) {
+      for (let iTransparentCellCounter = 0; iTransparentCellCounter < transparentCells.length; iTransparentCellCounter += 1) {
+        transparentCells[iTransparentCellCounter].classList.remove('transparent-cell');
+      }
+    }
+    
+
+    // Get the greyed out cells in the selected row to make them transparent
+    const greyedOutCells = document.querySelectorAll('#' + rowId + ' .greyed-out-cell');
+
+    for (let iCellCounter = 0; iCellCounter < greyedOutCells.length; iCellCounter += 1) {
+      greyedOutCells[iCellCounter].classList.add('transparent-cell');
+    }
+    
+
+    // Remove selection from already selected rows
+    const selectedRows = document.querySelectorAll('.selected-row');
+
+    if(!controlKeyDown){
+      for (let iRowCounter = 0; iRowCounter < selectedRows.length; iRowCounter += 1) {
+        selectedRows[iRowCounter].classList.remove('selected-row');
+      }
+    }
+    
+
+    // Highlight the currently selected row
     document.getElementById(rowId).classList.add('selected-row');
     this.selectedObject = objectSelected;
+  }
+
+
+  /**
+    * Handle key events on the grid
+    * @param event - Check if the key pressed requires selection of rows
+    */
+  onKeydown(event: any){
+    // Do nothing for now
   }
 
   /**
@@ -88,16 +124,15 @@ export class GridComponent implements OnInit {
    */
   getDataToDisplay(): void {
     this.appLog.add('Grid: Get users called', 'info');
+
     this.gridService.getGridDataToDisplay().subscribe(
       (data) => {
         this.comparisonDataToDisplay = data;
+        if (this.comparisonDataToDisplay.length > 0) {
+          this.selectedObject = this.comparisonDataToDisplay[0];
+        }
       }
     );
-    // if the container already contains an editor, remove it
-    const codeEditorContainer = document.getElementById('code-editor-container');
-    if (codeEditorContainer.firstChild) {
-      codeEditorContainer.removeChild(codeEditorContainer.firstChild);
-    }
   }
 
   /**
