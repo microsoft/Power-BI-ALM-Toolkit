@@ -158,11 +158,11 @@ export class GridComponent implements OnInit {
           }
         }
       }
-    } else if ((event.which === 37 || event.which === 39) && !event.ctrlKey && !event.shiftKey) {
+    } else if ((event.which === 37 || event.which === 39 || event.which === 9) && !event.ctrlKey && !event.shiftKey) {
       // to handle left and right keys
       let prev = true;
       let rowChild;
-      if (event.which === 39) {
+      if (event.which === 39 || event.which === 9) {
         prev = false;
       }
       siblingRow = this.getSiblingElement(prev, event.target.id);
