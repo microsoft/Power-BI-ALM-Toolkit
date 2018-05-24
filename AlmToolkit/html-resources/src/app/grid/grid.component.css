@@ -1,4 +1,4 @@
-#comparison-table-container{
+#comparison-table-container {
     height: 650px;
     overflow-y: auto;
 }
@@ -7,23 +7,26 @@
     border: 1px solid rgba(112, 112, 112, 0.64);
     margin: 10px;
     border-collapse: collapse;
-  
 }
 
 .grid-column {
     padding: 1px;
     border: 1px solid rgba(112, 112, 112, 0.64);
-    max-width:300px;
-    text-overflow:ellipsis;
+    max-width: 300px;
+    text-overflow: ellipsis;
     overflow: hidden;
-    white-space:nowrap;
+    white-space: nowrap;
 }
 
-.grid-row {
+.grid-column:focus {
+    border: 0.5px dotted #000;
+}
+
+.grid-data-row, .grid-row {
     font-weight: 600;
     font-size: 12px;
     font-family: 'Segoe UI';
-    font-color:#000;
+    color: #000;
     height: 10px;
 }
 
@@ -40,7 +43,7 @@
     font-size: 12px;
     font-weight: 600;
     font-family: 'Segoe UI';
-    font-color: #000;
+    color: #000;
     position: relative;
     top: 1px;
 }
@@ -55,10 +58,11 @@
     top: -3px;
 }
 
-.selected-row{
-    background-color:#376fe8;
+.selected-row {
+    background-color: #0078d7;
+    color: #FFF;
 }
 
-.transparent-cell{
+.transparent-cell {
     background-color: transparent;
 }

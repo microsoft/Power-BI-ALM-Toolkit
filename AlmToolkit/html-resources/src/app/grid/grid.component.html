@@ -1,37 +1,44 @@
 <div id='comparison-table-container'>
-<table class='comparison-grid'>
+  <table class='comparison-grid'>
     <tr id='header-row' class='grid-row'>
-        <td class='grid-column node-type-column'>Type</td>
-        <td class='grid-column source-name-column'>Source Name</td>
-        <td class='grid-column status-column'>Status</td>
-        <td class='grid-column target-name-column'>Target Name</td>
-        <td class='grid-column action-icon-column'></td>
-        <td class='grid-column grid-column action-options'>Action</td>
+      <td class='grid-column node-type-column'>Type</td>
+      <td class='grid-column source-name-column'>Source Name</td>
+      <td class='grid-column status-column'>Status</td>
+      <td class='grid-column target-name-column'>Target Name</td>
+      <td class='grid-column action-icon-column'></td>
+      <td class='grid-column grid-column action-options'>Action</td>
 
     </tr>
-    <tr *ngFor='let dataObject of comparisonDataToDisplay; let first = first' class='grid-row object-level-{{dataObject.Level}}' [class.hide-row]='!dataObject.ShowNode'
-    [class.selected-row] = 'first' id='node-{{dataObject.Id}}' tabindex='0' (keydown)='onKeydown($event)'>
-        <td class='grid-column node-type-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject, $event)'>
-            <span>
-                <img [src]='getImage(dataObject,1)' class='node-images' />
-            </span>
-            <span class='node-type'>{{dataObject.NodeType}}</span>
-        </td>
-        <td class='grid-column source-name-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject, $event)' [class.greyed-out-cell]='!dataObject.SourceName' [class.transparent-cell]='first'>{{dataObject.SourceName}}</td>
-        <td class='grid-column status-column' (click)='onSelect(dataObject, $event)'>{{dataObject.Status}}</td>
-        <td class='grid-column target-name-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject, $event)' [class.greyed-out-cell]='!dataObject.TargetName' [class.transparent-cell]='first'>{{dataObject.TargetName}}</td>
-        <td class='grid-column action-icon-column'(click)='onSelect(dataObject, $event)'>
-            <span>
-                <img [src]='getImage(dataObject,2)' class='node-images' />
-            </span>
-        </td>
-        <td class='grid-column action-options'>
-            <select class='action-dropdown' (change)='optionChange(dataObject.Id, $event.target.value)' [disabled]="dataObject.Status == 'Same Definition' ? true : null">
-                <option *ngFor='let option of dataObject.AvailableActions' [selected]='option == dataObject.MergeAction ? true : null'>{{option}}</option>
-            </select>
-        </td>
-
+    <tr *ngFor='let dataObject of comparisonDataToDisplay; let first = first' class='grid-data-row object-level-{{dataObject.Level}}'
+      [class.hide-row]='!dataObject.ShowNode' [class.selected-row]='first' id='node-{{dataObject.Id}}'>
+      <td class='grid-column node-type-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject, $event)'
+        title='{{dataObject.NodeType}}' tabindex='0' (keydown)='onKeydown($event)' id='node-{{dataObject.Id}}-node-type' data-column-type='node-type'>
+        <span>
+          <img [src]='getImage(dataObject,1)' class='node-images' />
+        </span>
+        <span class='node-type'>{{dataObject.NodeType}}</span>
+      </td>
+      <td class='grid-column source-name-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject, $event)'
+        [class.greyed-out-cell]='!dataObject.SourceName' [class.transparent-cell]='first' title='{{dataObject.SourceName}}'
+        tabindex='0' (keydown)='onKeydown($event)' id='node-{{dataObject.Id}}-source-name' data-column-type='source-name'>{{dataObject.SourceName}} </td>
+      <td class='grid-column status-column' (click)='onSelect(dataObject, $event)' title='{{dataObject.Status}}' id='node-{{dataObject.Id}}-status'
+        data-column-type='status' tabindex='0' (keydown)='onKeydown($event)'>{{dataObject.Status}}</td>
+      <td class='grid-column target-name-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject, $event)'
+        [class.greyed-out-cell]='!dataObject.TargetName' [class.transparent-cell]='first' title='{{dataObject.TargetName}}'
+        id='node-{{dataObject.Id}}-target-name' data-column-type='target-name' tabindex='0' (keydown)='onKeydown($event)'>{{dataObject.TargetName}}</td>
+      <td class='grid-column action-icon-column' (click)='onSelect(dataObject, $event)' tabindex='0' (keydown)='onKeydown($event)'
+        id='node-{{dataObject.Id}}-selected-action' data-column-type='selected-action'>
+        <span>
+          <img [src]='getImage(dataObject,2)' class='node-images' />
+        </span>
+      </td>
+      <td class='grid-column action-options' tabindex='0' (keydown)='onKeydown($event)' id='node-{{dataObject.Id}}-action-dropdown'
+        data-column-type='action-dropdown'>
+        <select class='action-dropdown' (change)='optionChange(dataObject.Id, $event.target.value)' [disabled]="dataObject.Status == 'Same Definition' ? true : null">
+          <option *ngFor='let option of dataObject.AvailableActions' [selected]='option == dataObject.MergeAction ? true : null'>{{option}}</option>
+        </select>
+      </td>
     </tr>
-</table>
+  </table>
 </div>
 <app-codeeditor [comparisonData]="selectedObject"></app-codeeditor>

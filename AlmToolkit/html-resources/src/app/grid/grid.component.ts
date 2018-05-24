@@ -44,7 +44,7 @@ export class GridComponent implements OnInit {
         transparentCells[iTransparentCellCounter].classList.remove('transparent-cell');
       }
     }
-    
+
 
     // Get the greyed out cells in the selected row to make them transparent
     const greyedOutCells = document.querySelectorAll('#' + rowId + ' .greyed-out-cell');
@@ -52,17 +52,17 @@ export class GridComponent implements OnInit {
     for (let iCellCounter = 0; iCellCounter < greyedOutCells.length; iCellCounter += 1) {
       greyedOutCells[iCellCounter].classList.add('transparent-cell');
     }
-    
+
 
     // Remove selection from already selected rows
     const selectedRows = document.querySelectorAll('.selected-row');
 
-    if(!controlKeyDown){
+    if (!controlKeyDown) {
       for (let iRowCounter = 0; iRowCounter < selectedRows.length; iRowCounter += 1) {
         selectedRows[iRowCounter].classList.remove('selected-row');
       }
     }
-    
+
 
     // Highlight the currently selected row
     document.getElementById(rowId).classList.add('selected-row');
@@ -75,53 +75,134 @@ export class GridComponent implements OnInit {
     * @param event - Check if the key pressed requires selection of rows
     */
   onKeydown(event: any) {
-
     event.preventDefault();
     let siblingRow;
-    // Handle up arrow and down arrow alone
-    if ((event.which === 38 || event.which === 40) && !event.ctrlKey && !event.shiftKey) {
-      const selectedRows = document.querySelectorAll('.selected-row');
-      for (let iRowCounter = 0; iRowCounter < selectedRows.length; iRowCounter++) {
-        selectedRows[iRowCounter].classList.remove('selected-row');
-      }
+    let eventRow;
+    let columnType;
+    eventRow = event.target.parentElement;
+    columnType = document.getElementById(event.target.id).getAttribute('data-column-type');
 
-      // Remove the transparent background color from existing cells
-      const transparentCells = document.querySelectorAll('.transparent-cell');
-      for (let iTransparentCellCounter = 0; iTransparentCellCounter < transparentCells.length; iTransparentCellCounter += 1) {
-        transparentCells[iTransparentCellCounter].classList.remove('transparent-cell');
-      }
-
-      if (event.which === 38) {
-        siblingRow = document.getElementById(event.target.id).previousSibling;
-      }
-      else {
-        siblingRow = document.getElementById(event.target.id).nextSibling;
-      }
+    // Remove the transparent background color from existing cells
+    const transparentCells = document.querySelectorAll('.transparent-cell');
+    for (let iTransparentCellCounter = 0; iTransparentCellCounter < transparentCells.length; iTransparentCellCounter += 1) {
+      transparentCells[iTransparentCellCounter].classList.remove('transparent-cell');
     }
 
-    // Handle shift up and shift down
-    else if (event.shiftKey && !event.ctrlKey && (event.which === 38 || event.which === 40)) {
-      if (event.which === 38) {
-        siblingRow = document.getElementById(event.target.id).previousSibling;
+    // Handle up arrow, down arrow, Shift+Up, Shift+Down
+    if (event.which === 38 || event.which === 40) {
+      if (!event.ctrlKey) {
+        // If shift key is not pressed its a single select
+        if (!event.shiftKey) {
+          const selectedRows = document.querySelectorAll('.selected-row');
+          for (let iRowCounter = 0; iRowCounter < selectedRows.length; iRowCounter++) {
+            selectedRows[iRowCounter].classList.remove('selected-row');
+          }
+        }
+
+        // Find the sibling based on the key pressed
+        if (event.which === 38) {
+          siblingRow = this.getSiblingElement(true, eventRow.id);
+        } else {
+          siblingRow = this.getSiblingElement(false, eventRow.id);
+        }
+
+        // Select the current row
+        siblingRow.classList.add('selected-row');
+        let rowId = siblingRow.id;
+        document.getElementById(rowId + '-' + columnType).focus();
+
+        // Get the greyed out cells in the selected row to make them transparent
+        const greyedOutCells = document.querySelectorAll('#' + rowId + ' .greyed-out-cell');
+
+        for (let iCellCounter = 0; iCellCounter < greyedOutCells.length; iCellCounter += 1) {
+          greyedOutCells[iCellCounter].classList.add('transparent-cell');
+        }
+
+        // Set this as current object so that editor can be refreshed
+        rowId = rowId.split('node-')[1];
+        this.selectedObject = this.comparisonDataToDisplay.find(comparisonNode => comparisonNode.Id === parseInt(rowId, 10));
+      } else {
+        // This is for Ctrl+Shift+Up and Ctrl+Shift+Down
+        if (event.shiftKey) {
+          let isSiblingAvailable = true;
+          let prev = true;
+
+          // Decide if previous elements are to be fetched or next elements
+          if (event.which === 38) {
+            prev = true;
+          } else {
+            prev = false;
+          }
+          let rowId = event.target.id;
+          // Find all elements above or below this row and select them as well
+          while (isSiblingAvailable) {
+            siblingRow = this.getSiblingElement(prev, rowId);
+            if (siblingRow && siblingRow.classList && siblingRow.classList.contains('grid-data-row')) {
+              rowId = siblingRow.id;
+              siblingRow.classList.add('selected-row');
+              document.getElementById(rowId + '-' + columnType).focus();
+              this.selectedObject = this.comparisonDataToDisplay
+                .find(comparisonNode => comparisonNode.Id === parseInt(rowId.split('node-')[1], 10));
+              siblingRow.focus();
+              siblingRow = this.getSiblingElement(prev, rowId);
+            } else {
+              isSiblingAvailable = false;
+            }
+          }
+
+          // Get the greyed out cells in the selected row to make them transparent
+          const greyedOutCells = document.querySelectorAll('.selected-row .greyed-out-cell');
+
+          for (let iCellCounter = 0; iCellCounter < greyedOutCells.length; iCellCounter += 1) {
+            greyedOutCells[iCellCounter].classList.add('transparent-cell');
+          }
+        }
       }
-      else {
-        siblingRow = document.getElementById(event.target.id).nextSibling;
+    } else if ((event.which === 37 || event.which === 39) && !event.ctrlKey && !event.shiftKey) {
+      // to handle left and right keys
+      let prev = true;
+      let rowChild;
+      if (event.which === 39) {
+        prev = false;
+      }
+      siblingRow = this.getSiblingElement(prev, event.target.id);
+      if (!siblingRow) {
+        columnType = document.getElementById(event.target.id).getAttribute('data-column-type');
+        eventRow.classList.remove('selected-row');
+        siblingRow = this.getSiblingElement(prev, eventRow.id);
+        siblingRow.classList.add('selected-row');
+        this.selectedObject = this.comparisonDataToDisplay
+          .find(comparisonNode => comparisonNode.Id === parseInt(siblingRow.id.split('node-')[1], 10));
+         if (prev) {
+          rowChild = document.getElementById(siblingRow.id).lastElementChild;
+        } else {
+          rowChild = document.getElementById(siblingRow.id).firstElementChild;
+        }
+        document.getElementById(rowChild.id).focus();
+      } else {
+        siblingRow.focus();
+      }
+
+      // Get the greyed out cells in the selected row to make them transparent
+      const greyedOutCells = document.querySelectorAll('.selected-row .greyed-out-cell');
+
+      for (let iCellCounter = 0; iCellCounter < greyedOutCells.length; iCellCounter += 1) {
+        greyedOutCells[iCellCounter].classList.add('transparent-cell');
       }
     }
-    
-    siblingRow.classList.add('selected-row');
-    siblingRow.focus();
-    let rowId = siblingRow.id;
+  }
 
-    // Get the greyed out cells in the selected row to make them transparent
-    const greyedOutCells = document.querySelectorAll('#' + rowId + ' .greyed-out-cell');
-
-    for (let iCellCounter = 0; iCellCounter < greyedOutCells.length; iCellCounter += 1) {
-      greyedOutCells[iCellCounter].classList.add('transparent-cell');
+  /**
+   * Get the sibling for the elements
+   * @param prev - True if previous sibling is to be fetched and false if next sibling is to be fetched
+   * @param id - Id of the element for which sibling is to be fetched
+   */
+  getSiblingElement(prev: boolean, id: string): Node {
+    if (prev) {
+      return document.getElementById(id).previousElementSibling;
+    } else {
+      return document.getElementById(id).nextElementSibling;
     }
-
-    rowId = rowId.split('node-')[1];
-    this.selectedObject = this.comparisonDataToDisplay.find(comparisonNode => comparisonNode.Id === parseInt(rowId, 10));
   }
 
   /**
@@ -146,8 +227,8 @@ export class GridComponent implements OnInit {
     if (type === 1) {
       roleImageLocation = './assets/node-type-' + nodeData.NodeType.replace(' ', '-') + '.png';
     } else if (type === 2) {
-      if ( nodeData.Status.toLowerCase() === 'same definition' ) {
-            roleImageLocation = './assets/action-Skip-Grey.png';
+      if (nodeData.Status.toLowerCase() === 'same definition') {
+        roleImageLocation = './assets/action-Skip-Grey.png';
       } else {
         roleImageLocation = './assets/action-' + nodeData.MergeAction.replace(' ', '-') + '.png';
       }
