@@ -34,7 +34,7 @@
       </td>
       <td class='grid-column action-options' tabindex='0' (keydown)='onKeydown($event)' id='node-{{dataObject.Id}}-action-dropdown'
         data-column-type='action-dropdown'>
-        <select class='action-dropdown' (change)='optionChange(dataObject.Id, $event.target.value)' [disabled]="dataObject.Status == 'Same Definition' ? true : null">
+        <select class='action-dropdown' (change)='optionChange(dataObject.Id, $event.target.value)' [disabled]='dataObject.DropdownDisabled ? true : null'>
           <option *ngFor='let option of dataObject.AvailableActions' [selected]='option == dataObject.MergeAction ? true : null'>{{option}}</option>
         </select>
       </td>

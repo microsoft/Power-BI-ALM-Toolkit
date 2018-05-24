@@ -173,7 +173,7 @@ export class GridComponent implements OnInit {
         siblingRow.classList.add('selected-row');
         this.selectedObject = this.comparisonDataToDisplay
           .find(comparisonNode => comparisonNode.Id === parseInt(siblingRow.id.split('node-')[1], 10));
-         if (prev) {
+        if (prev) {
           rowChild = document.getElementById(siblingRow.id).lastElementChild;
         } else {
           rowChild = document.getElementById(siblingRow.id).firstElementChild;
@@ -227,8 +227,8 @@ export class GridComponent implements OnInit {
     if (type === 1) {
       roleImageLocation = './assets/node-type-' + nodeData.NodeType.replace(' ', '-') + '.png';
     } else if (type === 2) {
-      if (nodeData.Status.toLowerCase() === 'same definition') {
-        roleImageLocation = './assets/action-Skip-Grey.png';
+      if (nodeData.DropdownDisabled) {
+        roleImageLocation = './assets/action-' + nodeData.MergeAction.replace(' ', '-') + '-Grey' + '.png';
       } else {
         roleImageLocation = './assets/action-' + nodeData.MergeAction.replace(' ', '-') + '.png';
       }
