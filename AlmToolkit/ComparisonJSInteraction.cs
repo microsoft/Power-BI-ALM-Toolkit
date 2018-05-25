@@ -10,11 +10,23 @@
     public class ComparisonJSInteraction
     {
         private Comparison _comparison;
+        // The form class needs to be changed according to yours
+        private static ComparisonForm _instanceMainForm = null;
 
-        public static List<ComparisonNode> comparisonList = new List<ComparisonNode>(); // List to be used to populate data in grid control
-        private Dictionary<int, AngularComposite> _directAccessList = new Dictionary<int, AngularComposite>(); // Used to maintain a dictionary with direct access to the Angular node and C# comparison object
-        private List<ComparisonVisibilityMap> _avMap = new List<ComparisonVisibilityMap>();  // Used to maintain visibility associated with object and mapping between internal name and tree identifier
+        // List to be used to populate data in grid control. This needs to be static, since everytime  CEF Sharp invokes the method, it creates a new instance
+        // Need to revisit initialization to evaluate removal strategy
+        public static List<ComparisonNode> comparisonList = new List<ComparisonNode>();
 
+        // Used to maintain a dictionary with direct access to the Angular node and C# comparison object
+        private Dictionary<int, AngularComposite> _directAccessList = new Dictionary<int, AngularComposite>();
+
+        // Used to maintain visibility associated with object and mapping between internal name and tree identifier
+        private List<ComparisonVisibilityMap> _avMap = new List<ComparisonVisibilityMap>();
+
+        public ComparisonJSInteraction(ComparisonForm mainForm)
+        {
+            _instanceMainForm = mainForm;
+        }
 
         #region Public properties
         public Comparison Comparison
@@ -46,15 +58,41 @@
         /// <param name="oldAction">Old selected action</param>
         public void ChangeOccurred(int id, string newAction, string oldAction)
         {
-            foreach (ComparisonNode databaseObject in comparisonList)
+            if (_directAccessList.ContainsKey(id))
             {
-                if (databaseObject.Id == id)
+                AngularComposite currentNode = _directAccessList[id];
+
+                // if set parent to skip/create/delete, MAY need to set all children to skip/create/delete too (only the read only cells)
+
+                switch (newAction)
                 {
-                    databaseObject.MergeAction = newAction;
-                    break;
+                    case "Skip":
+                        currentNode.dotNetComparison.MergeAction = MergeAction.Skip;
+                        currentNode.ngComparison.MergeAction = MergeAction.Skip.ToString();
+                        CheckToSkipChildren(currentNode.dotNetComparison);
+                        break;
+                    case "Create":
+                        currentNode.dotNetComparison.MergeAction = MergeAction.Create;
+                        currentNode.ngComparison.MergeAction = MergeAction.Create.ToString();
+                        CheckToCreateChildren(currentNode.ngComparison);
+                        break;
+                    case "Delete":
+                        currentNode.dotNetComparison.MergeAction = MergeAction.Delete;
+                        currentNode.ngComparison.MergeAction = MergeAction.Delete.ToString();
+                        CheckToDeleteChildren(currentNode.ngComparison);
+                        break;
+                    case "Update":
+                        currentNode.dotNetComparison.MergeAction = MergeAction.Update;
+                        currentNode.ngComparison.MergeAction = MergeAction.Update.ToString();
+                        break;
+                    default:
+                        break;
                 }
+                _instanceMainForm.refreshGridControl();
             }
+
         }
+
 
         #endregion
 
@@ -386,28 +424,7 @@
             return containsChildren;
         }
 
-        /// <summary>
-        /// Set actions for node with different definitions to update
-        /// </summary>
-        /// <param name="selectedOnly">Set for selected nodes or all nodes</param>
-        public void UpdateItems(bool selectedOnly)
-        {
-            // If selected only, pick items from selected list
-
-            // Not necessary to run twice with internal method because Updates don't impact children
-            foreach (ComparisonNode item in comparisonList)
-            {
-                if (item.AvailableActions.Contains("Update"))
-                {
-                    item.MergeAction = "Update";
-                    // Set merge action in corresponding comparison list
-                    _directAccessList[item.Id].dotNetComparison.MergeAction = MergeAction.Update;
-                }
-            }
-        }
-
-
-        /********** Set node to skip for depending on comparison object status ****************/
+        /********** Set node to skip depending on comparison object status ****************/
         /// <summary>
         /// Sets Action property of objects to Skip within given range.
         /// </summary>
@@ -416,35 +433,22 @@
         public void SkipItems(bool selectedOnly, ComparisonObjectStatus comparisonObjectStatus = ComparisonObjectStatus.Na) //Na because won't take null cos it's an enum
         {
             //Int32 selectedRowCount = (selectedOnly ? this.Rows.GetRowCount(DataGridViewElementStates.Selected) : this.Rows.Count);
-            //if (selectedRowCount > 0)
-            //{
-            // fudge to ensure child objects Missing in Source are skipped (this is because we have to iterate DataGridViewRow object which isn't hierarchical)
-            SkipItemsPrivate(selectedOnly, comparisonObjectStatus);
-            SkipItemsPrivate(selectedOnly, comparisonObjectStatus);
-            SkipItemsPrivate(selectedOnly, comparisonObjectStatus);
 
-            // Need to check if this is still needed
-            //SkipItemsPrivate(selectedOnly, comparisonObjectStatus, selectedRowCount);
-            //SkipItemsPrivate(selectedOnly, comparisonObjectStatus, selectedRowCount);
+            SkipItemsPrivate(selectedOnly, comparisonObjectStatus, this._comparison.ComparisonObjects);
 
-            //    _cellEditCallBack.Invoke();
-            //}
         }
 
-        private void SkipItemsPrivate(bool selectedOnly, ComparisonObjectStatus comparisonObjectStatus)
+        private void SkipItemsPrivate(bool selectedOnly, ComparisonObjectStatus comparisonObjectStatus, List<ComparisonObject> comparisonObject)
         {
-            //for (int i = 0; i < selectedRowCount; i++)
-            //{
-            //    DataGridViewRow row = (selectedOnly ? this.SelectedRows[i] : this.Rows[i]);
-
-            //    SkipItemPrivate(comparisonObjectStatus, row);
-            //}
-
-            foreach (ComparisonObject node in this._comparison.ComparisonObjects)
+            foreach (ComparisonObject node in comparisonObject)
             {
                 // In case of selected only, check if item is present in selected objects
                 SkipItemPrivate(comparisonObjectStatus, node);
+
+                // Check status of children
+                SkipItemsPrivate(selectedOnly, comparisonObjectStatus, node.ChildComparisonObjects);
             }
+
         }
 
         private void SkipItemPrivate(ComparisonObjectStatus comparisonObjectStatus, ComparisonObject row)
@@ -525,15 +529,140 @@
         }
         private void SetNodeTooltip(ComparisonVisibilityMap node, bool disabledDueToParent)
         {
-            //foreach (DataGridViewCell cell in node.Cells)
-            //{
-            //    cell.ToolTipText = (disabledDueToParent ? "This object's action option is disabled due to a parent object selection" : "");
-            //}
-
             node.composite.ngComparison.DisableMessage = (disabledDueToParent ? "This object's action option is disabled due to a parent object selection" : "");
 
         }
+        private void SetNodeTooltip(AngularComposite node, bool disabledDueToParent)
+        {
+            node.ngComparison.DisableMessage = (disabledDueToParent ? "This object's action option is disabled due to a parent object selection" : "");
 
+        }
+
+        /************* End section ****************/
+
+        /********** Set node to update ****************/
+        /// <summary>
+        /// Set actions for node with different definitions to update
+        /// </summary>
+        /// <param name="selectedOnly">Set for selected nodes or all nodes</param>
+        public void UpdateItems(bool selectedOnly)
+        {
+            // If selected only, pick items from selected list
+
+            // Not necessary to run twice with internal method because Updates don't impact children
+            foreach (ComparisonNode item in comparisonList)
+            {
+                if (item.AvailableActions.Contains("Update"))
+                {
+                    item.MergeAction = "Update";
+                    // Set merge action in corresponding comparison list
+                    _directAccessList[item.Id].dotNetComparison.MergeAction = MergeAction.Update;
+                }
+            }
+        }
+        /************* End section ****************/
+
+        /********** Set node to create ****************/
+        /// <summary>
+        /// Sets Action property of objects to Create within given range.
+        /// </summary>
+        /// <param name="selectedOnly"></param>
+        public void CreateItems(bool selectedOnly)
+        {
+            foreach (ComparisonNode item in comparisonList)
+            {
+                //DataGridViewRow row = (selectedOnly ? this.SelectedRows[i] : this.Rows[i]);
+
+                bool isReadOnly = item.DropdownDisabled;
+                if (!isReadOnly && item.MergeAction != "Skip "
+                    && item.AvailableActions.Contains(MergeAction.Create.ToString()))
+                {
+                    item.MergeAction = MergeAction.Create.ToString();
+                    // Set merge action in corresponding comparison list
+                    _directAccessList[item.Id].dotNetComparison.MergeAction = MergeAction.Create;
+
+                    // Check status of children
+                    CheckToCreateChildren(item);
+                }
+            }
+        }
+        private void CheckToCreateChildren(ComparisonNode selectedRow)
+        {
+            // if Missing in Target (default is create) and user selects create, he may still want to skip some child objects, so ensure they are enabled
+            if (selectedRow.Status.ToString() == "Missing in Target")
+            {
+
+                foreach (int nodeId in selectedRow.ChildNodes)
+                {
+                    AngularComposite node = _directAccessList[nodeId];
+                    if (node.ngComparison.AvailableActions.Contains(MergeAction.Create.ToString()))
+                    {
+                        node.ngComparison.DropdownDisabled = false;
+                        SetNodeTooltip(node, false);
+                    }
+                }
+            }
+        }
+        /************* End section ****************/
+
+        /********** Set node to delete ****************/
+        /// <summary>
+        /// Sets Action property of objects to Delete within given range.
+        /// </summary>
+        /// <param name="selectedOnly"></param>
+        public void DeleteItems(bool selectedOnly)
+        {
+            //Int32 selectedRowCount = (selectedOnly ? this.Rows.GetRowCount(DataGridViewElementStates.Selected) : this.Rows.Count);
+
+            foreach (ComparisonNode item in comparisonList)
+            {
+                bool isReadOnly = item.DropdownDisabled;
+                if (!isReadOnly
+                    && item.MergeAction != "Skip " // This condition is not working in existing code
+                    && item.AvailableActions.Contains(MergeAction.Delete.ToString()))
+                {
+                    item.MergeAction = "Delete";
+                    // Set merge action in corresponding comparison list
+                    _directAccessList[item.Id].dotNetComparison.MergeAction = MergeAction.Update;
+
+                    // Check status of children
+                    CheckToDeleteChildren(item);
+                }
+            }
+        }
+        private void CheckToDeleteChildren(ComparisonNode selectedRow)
+        {
+            // if Missing in Source (default is delete) and user selects delete, definitely can't skip child objects, so set them to delete too and disable them
+            if (selectedRow.Status == "Missing in Source")
+            {
+
+                foreach (int node in selectedRow.ChildNodes)
+                {
+                    SetNodeToDelete(node);
+                }
+            }
+        }
+        private void SetNodeToDelete(int nodeId)
+        {
+            if (_directAccessList.ContainsKey(nodeId))
+            {
+                AngularComposite node = _directAccessList[nodeId];
+
+                if (node.ngComparison.AvailableActions.Contains("Delete"))
+                {
+                    node.ngComparison.MergeAction = MergeAction.Delete.ToString();
+                    node.ngComparison.DropdownDisabled = true;
+                    node.dotNetComparison.MergeAction = MergeAction.Delete;
+
+                    SetNodeTooltip(node, true);
+                }
+
+                foreach (int childNode in node.ngComparison.ChildNodes)
+                {
+                    SetNodeToDelete(childNode);
+                }
+            }
+        }
         /************* End section ****************/
         #endregion
     }
