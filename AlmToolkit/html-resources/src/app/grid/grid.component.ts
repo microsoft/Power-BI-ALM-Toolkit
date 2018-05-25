@@ -13,7 +13,7 @@ export class GridComponent implements OnInit {
 
   comparisonDataToDisplay: ComparisonNode[] = [];
   selectedObject: ComparisonNode;
-
+  selectedNodes: number[] = [];
   constructor(private gridService: GridDataService, private appLog: AppLogService, private zone: NgZone) {
     window['angularComponentRef'] = {
       zone: this.zone,
@@ -26,6 +26,39 @@ export class GridComponent implements OnInit {
     this.getDataToDisplay();
   }
 
+  /**
+   * Retain the previous row selection if any
+   */
+  retainSelection(): void {
+    if (sessionStorage['selectedNodes']) {
+      this.selectedNodes = JSON.parse(sessionStorage.getItem('selectedNodes'))
+      // Remove the transparent background color from existing cells
+      const transparentCells = document.querySelectorAll('.transparent-cell');
+
+
+      for (let iTransparentCellCounter = 0; iTransparentCellCounter < transparentCells.length; iTransparentCellCounter += 1) {
+        transparentCells[iTransparentCellCounter].classList.remove('transparent-cell');
+      }
+
+      // Remove selection from already selected rows
+      const selectedRows = document.querySelectorAll('.selected-row');
+
+      for (let iRowCounter = 0; iRowCounter < selectedRows.length; iRowCounter += 1) {
+        selectedRows[iRowCounter].classList.remove('selected-row');
+      }
+
+      for (let iSelectedNodeCounter = 0; iSelectedNodeCounter < this.selectedNodes.length; iSelectedNodeCounter += 1) {
+        document.getElementById('node-' + this.selectedNodes[iSelectedNodeCounter]).classList.add('selected-row');
+      }
+
+      // Get the greyed out cells in the selected row to make them transparent
+      const greyedOutCells = document.querySelectorAll('.selected-row .greyed-out-cell');
+
+      for (let iCellCounter = 0; iCellCounter < greyedOutCells.length; iCellCounter += 1) {
+        greyedOutCells[iCellCounter].classList.add('transparent-cell');
+      }
+    }
+  }
   /**
     * Handle selection for each row on comparison tree
     * @param objectSelected - Clicked node on comparison tree
@@ -58,6 +91,7 @@ export class GridComponent implements OnInit {
     const selectedRows = document.querySelectorAll('.selected-row');
 
     if (!controlKeyDown) {
+      this.selectedNodes = [];
       for (let iRowCounter = 0; iRowCounter < selectedRows.length; iRowCounter += 1) {
         selectedRows[iRowCounter].classList.remove('selected-row');
       }
@@ -66,9 +100,12 @@ export class GridComponent implements OnInit {
 
     // Highlight the currently selected row
     document.getElementById(rowId).classList.add('selected-row');
+      if (this.selectedNodes.indexOf(objectSelected.Id) === -1) {
+        this.selectedNodes.push(objectSelected.Id);
+      }
+    
     this.selectedObject = objectSelected;
   }
-
 
   /**
     * Handle key events on the grid
@@ -79,6 +116,7 @@ export class GridComponent implements OnInit {
     let siblingRow;
     let eventRow;
     let columnType;
+    let nodeSelected: ComparisonNode;
     eventRow = event.target.parentElement;
     columnType = document.getElementById(event.target.id).getAttribute('data-column-type');
 
@@ -93,34 +131,65 @@ export class GridComponent implements OnInit {
       if (!event.ctrlKey) {
         // If shift key is not pressed its a single select
         if (!event.shiftKey) {
-          const selectedRows = document.querySelectorAll('.selected-row');
-          for (let iRowCounter = 0; iRowCounter < selectedRows.length; iRowCounter++) {
-            selectedRows[iRowCounter].classList.remove('selected-row');
+          if (columnType === 'action-dropdown') {
+            let dropdownElement: HTMLSelectElement
+            dropdownElement = <HTMLSelectElement>document.getElementById(event.target.id).firstElementChild;
+            nodeSelected = this.comparisonDataToDisplay
+              .find(comparisonNode => comparisonNode.Id === parseInt(event.target.id.split('node-')[1], 10));
+            let selectedOption = dropdownElement.selectedOptions[0];
+            const oldOption = selectedOption.innerHTML;
+            if (event.which === 38) {
+              siblingRow = this.getSiblingElement(true, selectedOption.id);
+            } else {
+              siblingRow = this.getSiblingElement(false, selectedOption.id);
+            }
+            if (siblingRow) {
+              if (event.which === 38) {
+                dropdownElement.selectedIndex = dropdownElement.selectedIndex - 1;
+              }
+              else {
+                dropdownElement.selectedIndex = dropdownElement.selectedIndex + 1;
+              }
+              const option = dropdownElement.selectedOptions[0].innerHTML;
+              if (option !== oldOption) {
+                this.gridService.sendChange(nodeSelected.Id, option, oldOption);
+                sessionStorage.setItem('selectedNodes', JSON.stringify(this.selectedNodes));
+                this.getDataToDisplay();
+                this.retainSelection();
+              }
+            }
+          } else {
+            this.selectedNodes = [];
+            const selectedRows = document.querySelectorAll('.selected-row');
+            for (let iRowCounter = 0; iRowCounter < selectedRows.length; iRowCounter++) {
+              selectedRows[iRowCounter].classList.remove('selected-row');
+            }
           }
         }
 
-        // Find the sibling based on the key pressed
-        if (event.which === 38) {
-          siblingRow = this.getSiblingElement(true, eventRow.id);
-        } else {
-          siblingRow = this.getSiblingElement(false, eventRow.id);
+        if (columnType !== 'action-dropdown') {
+          // Find the sibling based on the key pressed
+          if (event.which === 38) {
+            siblingRow = this.getSiblingElement(true, eventRow.id);
+          } else {
+            siblingRow = this.getSiblingElement(false, eventRow.id);
+          }
+
+          // Select the current row
+          siblingRow.classList.add('selected-row');
+          let rowId = siblingRow.id;
+          document.getElementById(rowId + '-' + columnType).focus();
+
+          // Set this as current object so that editor can be refreshed
+          rowId = rowId.split('node-')[1];
+          nodeSelected = this.comparisonDataToDisplay.find(comparisonNode => comparisonNode.Id === parseInt(rowId, 10));
+         
+            if (this.selectedNodes.indexOf(nodeSelected.Id) === -1) {
+              this.selectedNodes.push(nodeSelected.Id);
+            }
+         
+          this.selectedObject = nodeSelected;
         }
-
-        // Select the current row
-        siblingRow.classList.add('selected-row');
-        let rowId = siblingRow.id;
-        document.getElementById(rowId + '-' + columnType).focus();
-
-        // Get the greyed out cells in the selected row to make them transparent
-        const greyedOutCells = document.querySelectorAll('#' + rowId + ' .greyed-out-cell');
-
-        for (let iCellCounter = 0; iCellCounter < greyedOutCells.length; iCellCounter += 1) {
-          greyedOutCells[iCellCounter].classList.add('transparent-cell');
-        }
-
-        // Set this as current object so that editor can be refreshed
-        rowId = rowId.split('node-')[1];
-        this.selectedObject = this.comparisonDataToDisplay.find(comparisonNode => comparisonNode.Id === parseInt(rowId, 10));
       } else {
         // This is for Ctrl+Shift+Up and Ctrl+Shift+Down
         if (event.shiftKey) {
@@ -141,25 +210,24 @@ export class GridComponent implements OnInit {
               rowId = siblingRow.id;
               siblingRow.classList.add('selected-row');
               document.getElementById(rowId + '-' + columnType).focus();
-              this.selectedObject = this.comparisonDataToDisplay
+              nodeSelected = this.comparisonDataToDisplay
                 .find(comparisonNode => comparisonNode.Id === parseInt(rowId.split('node-')[1], 10));
+              this.selectedObject = nodeSelected;
+             
+                if (this.selectedNodes.indexOf(nodeSelected.Id) === -1) {
+                  this.selectedNodes.push(nodeSelected.Id);
+                }
+             
               siblingRow.focus();
               siblingRow = this.getSiblingElement(prev, rowId);
             } else {
               isSiblingAvailable = false;
             }
           }
-
-          // Get the greyed out cells in the selected row to make them transparent
-          const greyedOutCells = document.querySelectorAll('.selected-row .greyed-out-cell');
-
-          for (let iCellCounter = 0; iCellCounter < greyedOutCells.length; iCellCounter += 1) {
-            greyedOutCells[iCellCounter].classList.add('transparent-cell');
-          }
         }
       }
     } else if ((event.which === 37 || event.which === 39 || event.which === 9) && !event.ctrlKey && !event.shiftKey) {
-      // to handle left and right keys
+      // To handle left and right keys
       let prev = true;
       let rowChild;
       if (event.which === 39 || event.which === 9) {
@@ -169,10 +237,21 @@ export class GridComponent implements OnInit {
       if (!siblingRow) {
         columnType = document.getElementById(event.target.id).getAttribute('data-column-type');
         eventRow.classList.remove('selected-row');
+        nodeSelected = this.comparisonDataToDisplay
+          .find(comparisonNode => comparisonNode.Id === parseInt(eventRow.id.split('node-')[1], 10));
+        if (this.selectedNodes.indexOf(nodeSelected.Id) > -1) {
+          this.selectedNodes.splice(this.selectedNodes.indexOf(nodeSelected.Id), 1);
+        }
+
         siblingRow = this.getSiblingElement(prev, eventRow.id);
         siblingRow.classList.add('selected-row');
-        this.selectedObject = this.comparisonDataToDisplay
+        nodeSelected = this.comparisonDataToDisplay
           .find(comparisonNode => comparisonNode.Id === parseInt(siblingRow.id.split('node-')[1], 10));
+        this.selectedObject = nodeSelected;
+          if (this.selectedNodes.indexOf(nodeSelected.Id) === -1) {
+            this.selectedNodes.push(nodeSelected.Id);
+          }
+        
         if (prev) {
           rowChild = document.getElementById(siblingRow.id).lastElementChild;
         } else {
@@ -183,12 +262,14 @@ export class GridComponent implements OnInit {
         siblingRow.focus();
       }
 
-      // Get the greyed out cells in the selected row to make them transparent
-      const greyedOutCells = document.querySelectorAll('.selected-row .greyed-out-cell');
 
-      for (let iCellCounter = 0; iCellCounter < greyedOutCells.length; iCellCounter += 1) {
-        greyedOutCells[iCellCounter].classList.add('transparent-cell');
-      }
+    }
+
+    // Get the greyed out cells in the selected row to make them transparent
+    const greyedOutCells = document.querySelectorAll('.selected-row .greyed-out-cell');
+
+    for (let iCellCounter = 0; iCellCounter < greyedOutCells.length; iCellCounter += 1) {
+      greyedOutCells[iCellCounter].classList.add('transparent-cell');
     }
   }
 
@@ -213,8 +294,10 @@ export class GridComponent implements OnInit {
   optionChange(id: number, option: string) {
     let oldOption: string;
     oldOption = this.comparisonDataToDisplay.find(node => node.Id === id).MergeAction;
-    this.comparisonDataToDisplay.find(node => node.Id === id).MergeAction = option;
     this.gridService.sendChange(id, option, oldOption);
+    sessionStorage.setItem('selectedNodes', JSON.stringify(this.selectedNodes));
+    this.getDataToDisplay();
+    this.retainSelection();
   }
 
   /**

@@ -44,7 +44,7 @@
         /// <param name="id">Id of the node updated</param>
         /// <param name="newAction">New selected action</param>
         /// <param name="oldAction">Old selected action</param>
-        public void changeOccurred(int id, string newAction, string oldAction)
+        public void ChangeOccurred(int id, string newAction, string oldAction)
         {
             foreach (ComparisonNode databaseObject in comparisonList)
             {
