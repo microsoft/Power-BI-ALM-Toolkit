@@ -64,12 +64,13 @@ namespace AlmToolkit
 
             CefSharpSettings.LegacyJavascriptBindingEnabled = true;
 
+            // Initialize the interaction variable
+            _comparisonInter = new ComparisonJSInteraction(this);
+
             // Register C# objects
             chromeBrowser.RegisterAsyncJsObject("chromeDebugger", new ChromeDebugger(chromeBrowser, this));
-            chromeBrowser.RegisterAsyncJsObject("comparisonJSInteraction", new ComparisonJSInteraction());
+            chromeBrowser.RegisterAsyncJsObject("comparisonJSInteraction", _comparisonInter);
 
-            // Initialize the interaction variable
-            _comparisonInter = new ComparisonJSInteraction();
         }
 
         private void ComparisonForm_Load(object sender, EventArgs e)
@@ -277,7 +278,7 @@ namespace AlmToolkit
         /// <summary>
         /// Send notification to refresh the grid control on UI
         /// </summary>
-        private void refreshGridControl()
+        public void refreshGridControl()
         {
             // Invoke method in Angular
             string script = "window.angularComponentRef.zone.run(() => { window.angularComponentRef.showTree(); })";
@@ -489,6 +490,8 @@ namespace AlmToolkit
             SetComparedState();
 
             _comparisonInter.ShowHideSkipNodes(false);
+            _comparisonInter.DeleteItems(false);
+            refreshGridControl();
         }
 
         private void mnuSkipAllObjectsMissingInTarget_Click(object sender, EventArgs e)
@@ -507,6 +510,8 @@ namespace AlmToolkit
             SetComparedState();
 
             _comparisonInter.ShowHideSkipNodes(false);
+            _comparisonInter.CreateItems(false);
+            refreshGridControl();
         }
 
         private void mnuSkipAllObjectsWithDifferentDefinitions_Click(object sender, EventArgs e)
