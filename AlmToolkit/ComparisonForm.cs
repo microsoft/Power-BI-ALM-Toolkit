@@ -27,6 +27,7 @@ namespace AlmToolkit
         private ComparisonJSInteraction _comparisonInter; // CEFSharp Interface to connect to Angular Tree Control
         private ChromiumWebBrowser chromeBrowser;
         private const string _appCaption = "ALM Toolkit for Power BI";
+        private CompareState _compareState = CompareState.NotCompared;
 
         #endregion
 
@@ -114,6 +115,8 @@ namespace AlmToolkit
             toolStripStatusLabel1.Text = "";
 
             ComparisonCtrl.SetNotComparedState();
+
+            _compareState = CompareState.NotCompared;
             SetGridState(false);
         }
 
@@ -137,6 +140,8 @@ namespace AlmToolkit
             ComparisonCtrl.SetComparedState();
 
             // NG: Disable skip and other actions for the control here
+            _compareState = CompareState.Compared;
+
             SetGridState(true);
         }
 
@@ -145,6 +150,7 @@ namespace AlmToolkit
             btnUpdate.Enabled = true;
             btnGenerateScript.Enabled = true;
 
+            _compareState = CompareState.Validated;
             // This method needs to be moved out of comparison control during clean up
             ComparisonCtrl.SetValidatedState();
         }
@@ -192,11 +198,18 @@ namespace AlmToolkit
 
         private bool ShowConnectionsForm()
         {
-            if (ComparisonCtrl.CompareState != CompareState.NotCompared)
+            //if (ComparisonCtrl.CompareState != CompareState.NotCompared)
+            //{
+            //    
+            //    ComparisonCtrl.RefreshSkipSelections();
+            //}
+
+            if (_compareState != CompareState.NotCompared)
             {
                 //just in case user has some selections, store them to the SkipSelections collection
-                ComparisonCtrl.RefreshSkipSelections();
+                _comparison.RefreshSkipSelectionsFromComparisonObjects();
             }
+
 
             Connections connForm = new Connections();
             connForm.ComparisonInfo = _comparisonInfo;
@@ -416,7 +429,13 @@ namespace AlmToolkit
             if (optionsForm.DialogResult == DialogResult.OK)
             {
                 ComparisonCtrl.TriggerComparisonChanged();
-                if (ComparisonCtrl.CompareState != CompareState.NotCompared)
+                //if (ComparisonCtrl.CompareState != CompareState.NotCompared)
+                //{
+                //    SetNotComparedState();
+                //    toolStripStatusLabel1.Text = "Comparison invalidated. Please re-run the comparison.";
+                //}
+
+                if (_compareState != CompareState.NotCompared)
                 {
                     SetNotComparedState();
                     toolStripStatusLabel1.Text = "Comparison invalidated. Please re-run the comparison.";
@@ -561,7 +580,7 @@ namespace AlmToolkit
                 warningList.StartPosition = FormStartPosition.CenterParent;
                 warningList.ShowDialog();
 
-                SetValidatedState(); 
+                SetValidatedState();
                 toolStripStatusLabel1.Text = "ALM Toolkit - finished validating";
             }
             catch (Exception exc)
@@ -589,8 +608,7 @@ namespace AlmToolkit
                 // Not required since _comparison object is always updated with latest updates
                 //ComparisonCtrl.RefreshSkipSelections();
 
-                // Pending: Maintain compare state in the form itself
-                if (ComparisonCtrl.CompareState != CompareState.NotCompared && _comparison != null)
+                if (_compareState != CompareState.NotCompared && _comparison != null)
                 {
                     _comparison.RefreshSkipSelectionsFromComparisonObjects();
 
@@ -644,7 +662,7 @@ namespace AlmToolkit
         public void HandleComparisonChanged()
         {
             //If user changes a skip selection after validation, need to disable Update button
-            if (ComparisonCtrl.CompareState == CompareState.Validated)
+            if (_compareState == CompareState.Validated)
             {
                 if (InvokeRequired)
                 {
