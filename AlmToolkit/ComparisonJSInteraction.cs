@@ -88,7 +88,7 @@
                     default:
                         break;
                 }
-                _instanceMainForm.refreshGridControl();
+                _instanceMainForm.refreshGridControl(true);
             }
 
         }

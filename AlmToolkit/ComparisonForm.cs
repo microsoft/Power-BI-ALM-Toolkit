@@ -272,16 +272,16 @@ namespace AlmToolkit
         {
             _comparisonInter.SetComparisonData();
             // Send notification to refresh the grid
-            refreshGridControl();
+            refreshGridControl(false);
         }
 
         /// <summary>
         /// Send notification to refresh the grid control on UI
         /// </summary>
-        public void refreshGridControl()
+        public void refreshGridControl(bool mergeActions)
         {
             // Invoke method in Angular
-            string script = "window.angularComponentRef.zone.run(() => { window.angularComponentRef.showTree(); })";
+            string script = "window.angularComponentRef.zone.run(() => { window.angularComponentRef.showTree(" + (mergeActions ? "true" : "false") + "); })";
             chromeBrowser.ExecuteScriptAsync(script);
         }
 
@@ -455,7 +455,7 @@ namespace AlmToolkit
             ComparisonCtrl.ShowHideNodes(true);
 
             _comparisonInter.ShowHideSkipNodes(true);
-            refreshGridControl();
+            refreshGridControl(true);
         }
 
         private void mnuHideSkipObjectsWithSameDefinition_Click(object sender, EventArgs e)
@@ -463,7 +463,7 @@ namespace AlmToolkit
             ComparisonCtrl.ShowHideNodes(true, sameDefinitionFilter: true);
 
             _comparisonInter.ShowHideSkipNodes(true, sameDefinitionFilter: true);
-            refreshGridControl();
+            refreshGridControl(true);
         }
 
         private void mnuShowSkipObjects_Click(object sender, EventArgs e)
@@ -471,7 +471,7 @@ namespace AlmToolkit
             ComparisonCtrl.ShowHideNodes(false);
 
             _comparisonInter.ShowHideSkipNodes(false);
-            refreshGridControl();
+            refreshGridControl(true);
         }
 
         private void mnuSkipAllObjectsMissingInSource_Click(object sender, EventArgs e)
@@ -480,7 +480,7 @@ namespace AlmToolkit
             SetComparedState();
 
             _comparisonInter.SkipItems(false, ComparisonObjectStatus.MissingInSource);
-            refreshGridControl();
+            refreshGridControl(true);
         }
 
         private void mnuDeleteAllObjectsMissingInSource_Click(object sender, EventArgs e)
@@ -491,7 +491,7 @@ namespace AlmToolkit
 
             _comparisonInter.ShowHideSkipNodes(false);
             _comparisonInter.DeleteItems(false);
-            refreshGridControl();
+            refreshGridControl(true);
         }
 
         private void mnuSkipAllObjectsMissingInTarget_Click(object sender, EventArgs e)
@@ -500,7 +500,7 @@ namespace AlmToolkit
             SetComparedState();
 
             _comparisonInter.SkipItems(false, ComparisonObjectStatus.MissingInTarget);
-            refreshGridControl();
+            refreshGridControl(true);
         }
 
         private void mnuCreateAllObjectsMissingInTarget_Click(object sender, EventArgs e)
@@ -511,7 +511,7 @@ namespace AlmToolkit
 
             _comparisonInter.ShowHideSkipNodes(false);
             _comparisonInter.CreateItems(false);
-            refreshGridControl();
+            refreshGridControl(true);
         }
 
         private void mnuSkipAllObjectsWithDifferentDefinitions_Click(object sender, EventArgs e)
@@ -520,7 +520,7 @@ namespace AlmToolkit
             SetComparedState();
 
             _comparisonInter.SkipItems(false, ComparisonObjectStatus.DifferentDefinitions);
-            refreshGridControl();
+            refreshGridControl(true);
         }
 
         private void mnuUpdateAllObjectsWithDifferentDefinitions_Click(object sender, EventArgs e)
@@ -531,7 +531,7 @@ namespace AlmToolkit
 
             _comparisonInter.ShowHideSkipNodes(false);
             _comparisonInter.UpdateItems(false);
-            refreshGridControl();
+            refreshGridControl(true);
         }
 
         private void btnValidateSelection_Click(object sender, EventArgs e)

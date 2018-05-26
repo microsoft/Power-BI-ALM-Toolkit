@@ -8,13 +8,15 @@ import { GridDataService } from './service/grid-data.service';
 import { AppLogService } from './app-log/app-log.service';
 import { CodeeditorComponent } from './codeeditor/codeeditor.component';
 import { WindowReferenceService } from './service/window-reference.service';
+import { TreeControlContextMenuComponent } from './tree-control-context-menu/tree-control-context-menu.component';
 
 
 @NgModule({
     declarations: [
         AppComponent,
         GridComponent,
-        CodeeditorComponent
+        CodeeditorComponent,
+        TreeControlContextMenuComponent
     ],
     imports: [
         BrowserModule,

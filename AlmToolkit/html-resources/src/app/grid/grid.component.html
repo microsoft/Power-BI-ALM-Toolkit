@@ -1,5 +1,5 @@
 <div id='comparison-table-container'>
-  <table class='comparison-grid'>
+  <table class='comparison-grid' (contextmenu)='showTreeControlContextMenu($event)'>
     <tr id='header-row' class='grid-row'>
       <td class='grid-column node-type-column'>Type</td>
       <td class='grid-column source-name-column'>Source Name</td>
@@ -34,11 +34,17 @@
       </td>
       <td class='grid-column action-options' tabindex='0' (keydown)='onKeydown($event)' id='node-{{dataObject.Id}}-action-dropdown'
         data-column-type='action-dropdown'>
-        <select class='action-dropdown' (change)='optionChange(dataObject.Id, $event.target.value)' [disabled]='dataObject.DropdownDisabled ? true : null' id='node-{{dataObject.Id}}-select'>
-          <option *ngFor='let option of dataObject.AvailableActions; let index = index' [selected]='option == dataObject.MergeAction ? true : null' id='node-{{dataObject.Id}}-option-{{index}}'>{{option}}</option>
+        <select class='action-dropdown' (change)='optionChange(dataObject.Id, $event.target.value)' [disabled]='dataObject.DropdownDisabled ? true : null'
+          id='node-{{dataObject.Id}}-select'>
+          <option *ngFor='let option of dataObject.AvailableActions; let index = index' [selected]='option == dataObject.MergeAction ? true : null'
+            id='node-{{dataObject.Id}}-option-{{index}}'>{{option}}</option>
         </select>
       </td>
     </tr>
   </table>
 </div>
-<app-codeeditor [comparisonData]="selectedObject"></app-codeeditor>
+<app-codeeditor [comparisonData]='selectedObject'></app-codeeditor>
+<div *ngIf='showContextMenu == true'>
+  <app-tree-control-context-menu [contextMenuPositionX]='treeControlContextMenuX' [contextMenuPositionY]='treeControlContextMenuY'
+    [selectedNodes]='selectedNodes'></app-tree-control-context-menu>
+</div>

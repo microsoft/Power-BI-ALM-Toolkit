@@ -337,6 +337,10 @@
     <Content Include="html-resources\src\app\shared\model\database-objects.ts">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="html-resources\src\app\tree-control-context-menu\tree-control-context-menu.component.css" />
+    <Content Include="html-resources\src\app\tree-control-context-menu\tree-control-context-menu.component.html" />
+    <Content Include="html-resources\src\app\tree-control-context-menu\tree-control-context-menu.component.spec.ts" />
+    <Content Include="html-resources\src\app\tree-control-context-menu\tree-control-context-menu.component.ts" />
     <Content Include="html-resources\src\assets\action-Create-Grey.png" />
     <Content Include="html-resources\src\assets\action-Create.png" />
     <Content Include="html-resources\src\assets\action-Delete-Grey.png" />

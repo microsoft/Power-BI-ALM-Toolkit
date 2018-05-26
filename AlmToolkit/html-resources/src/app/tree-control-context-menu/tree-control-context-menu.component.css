@@ -1,0 +1,24 @@
+.tree-control-context-menu {
+    position: absolute;
+    height: 150px;
+    width:500px;
+    border: 1px solid #707070;
+    z-index: 30;
+    background-color: #fff;
+}
+
+.action-list{
+  list-style-type:none;
+}
+
+.tree-control-context-menu-options{
+  cursor:pointer;
+  font-family:'Segoe UI';
+  font-size:15px;
+  color: #000;
+  padding:2px;
+}
+
+.tree-control-context-menu-options:hover{
+  background-color: #707070;
+}

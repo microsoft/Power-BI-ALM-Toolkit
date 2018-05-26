@@ -1,0 +1,8 @@
+<div class='tree-control-context-menu' [style.left.px] = 'contextMenuPositionX' [style.top.px] = 'contextMenuPositionY'>
+  <ul class='action-list'>
+    <li id='skip-selected'class='tree-control-context-menu-options' (click)='performAction("skip","all")'>Skip selected objects</li>
+    <li id='create-selected' class='tree-control-context-menu-options' (click)='performAction("create","Missing in Target")'>Create selected objects Missing in Target</li>
+    <li id='delete-selected' class='tree-control-context-menu-options' (click)='performAction("delete","Missing in Source")'>Delete selected objects Missing in Source</li>
+    <li id='update-selected' class='tree-control-context-menu-options' (click)='performAction("udpate","Different Definitions")'>Update selected objects with Different Definitions</li>
+  </ul>
+</div>

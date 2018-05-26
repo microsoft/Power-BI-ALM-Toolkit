@@ -14,57 +14,39 @@ export class GridComponent implements OnInit {
   comparisonDataToDisplay: ComparisonNode[] = [];
   selectedObject: ComparisonNode;
   selectedNodes: number[] = [];
+  showContextMenu = false;
+  treeControlContextMenuX = 0;
+  treeControlContextMenuY = 0;
   constructor(private gridService: GridDataService, private appLog: AppLogService, private zone: NgZone) {
     window['angularComponentRef'] = {
       zone: this.zone,
-      showTree: () => this.getDataToDisplay(),
+      showTree: (mergeActions: boolean) => this.getDataToDisplay(mergeActions),
       getTree: () => this.getGridData()
     };
   }
 
   ngOnInit() {
-    this.getDataToDisplay();
+    this.getDataToDisplay(true);
   }
 
   /**
-   * Retain the previous row selection if any
+   * Handle right click on grid
+   * @param event - Event to get the position clicked
    */
-  retainSelection(): void {
-    if (sessionStorage['selectedNodes']) {
-      this.selectedNodes = JSON.parse(sessionStorage.getItem('selectedNodes'))
-      // Remove the transparent background color from existing cells
-      const transparentCells = document.querySelectorAll('.transparent-cell');
-
-
-      for (let iTransparentCellCounter = 0; iTransparentCellCounter < transparentCells.length; iTransparentCellCounter += 1) {
-        transparentCells[iTransparentCellCounter].classList.remove('transparent-cell');
-      }
-
-      // Remove selection from already selected rows
-      const selectedRows = document.querySelectorAll('.selected-row');
-
-      for (let iRowCounter = 0; iRowCounter < selectedRows.length; iRowCounter += 1) {
-        selectedRows[iRowCounter].classList.remove('selected-row');
-      }
-
-      for (let iSelectedNodeCounter = 0; iSelectedNodeCounter < this.selectedNodes.length; iSelectedNodeCounter += 1) {
-        document.getElementById('node-' + this.selectedNodes[iSelectedNodeCounter]).classList.add('selected-row');
-      }
-
-      // Get the greyed out cells in the selected row to make them transparent
-      const greyedOutCells = document.querySelectorAll('.selected-row .greyed-out-cell');
-
-      for (let iCellCounter = 0; iCellCounter < greyedOutCells.length; iCellCounter += 1) {
-        greyedOutCells[iCellCounter].classList.add('transparent-cell');
-      }
-    }
+  showTreeControlContextMenu(event: any) {
+    event.preventDefault();
+    this.showContextMenu = true;
+    this.treeControlContextMenuX = event.clientX;
+    this.treeControlContextMenuY = event.clientY;
   }
+
   /**
     * Handle selection for each row on comparison tree
     * @param objectSelected - Clicked node on comparison tree
     * @param event - Event to check if CTRL key was pressed
     */
   onSelect(objectSelected: ComparisonNode, event: any): void {
+    this.showContextMenu = false;
     this.appLog.add('Grid: Row selected', 'info');
     const rowId = 'node-' + objectSelected.Id;
     const controlKeyDown = event.ctrlKey;
@@ -100,10 +82,10 @@ export class GridComponent implements OnInit {
 
     // Highlight the currently selected row
     document.getElementById(rowId).classList.add('selected-row');
-      if (this.selectedNodes.indexOf(objectSelected.Id) === -1) {
-        this.selectedNodes.push(objectSelected.Id);
-      }
-    
+    if (this.selectedNodes.indexOf(objectSelected.Id) === -1) {
+      this.selectedNodes.push(objectSelected.Id);
+    }
+
     this.selectedObject = objectSelected;
   }
 
@@ -113,6 +95,12 @@ export class GridComponent implements OnInit {
     */
   onKeydown(event: any) {
     event.preventDefault();
+    this.showContextMenu = false;
+
+    if (event.which === 93) {
+      this.showTreeControlContextMenu(event);
+      return;
+    }
     let siblingRow;
     let eventRow;
     let columnType;
@@ -132,11 +120,11 @@ export class GridComponent implements OnInit {
         // If shift key is not pressed its a single select
         if (!event.shiftKey) {
           if (columnType === 'action-dropdown') {
-            let dropdownElement: HTMLSelectElement
+            let dropdownElement: HTMLSelectElement;
             dropdownElement = <HTMLSelectElement>document.getElementById(event.target.id).firstElementChild;
             nodeSelected = this.comparisonDataToDisplay
               .find(comparisonNode => comparisonNode.Id === parseInt(event.target.id.split('node-')[1], 10));
-            let selectedOption = dropdownElement.selectedOptions[0];
+            const selectedOption = dropdownElement.selectedOptions[0];
             const oldOption = selectedOption.innerHTML;
             if (event.which === 38) {
               siblingRow = this.getSiblingElement(true, selectedOption.id);
@@ -146,16 +134,13 @@ export class GridComponent implements OnInit {
             if (siblingRow) {
               if (event.which === 38) {
                 dropdownElement.selectedIndex = dropdownElement.selectedIndex - 1;
-              }
-              else {
+              } else {
                 dropdownElement.selectedIndex = dropdownElement.selectedIndex + 1;
               }
               const option = dropdownElement.selectedOptions[0].innerHTML;
               if (option !== oldOption) {
                 this.gridService.sendChange(nodeSelected.Id, option, oldOption);
-                sessionStorage.setItem('selectedNodes', JSON.stringify(this.selectedNodes));
-                this.getDataToDisplay();
-                this.retainSelection();
+                this.getDataToDisplay(false);
               }
             }
           } else {
@@ -183,11 +168,11 @@ export class GridComponent implements OnInit {
           // Set this as current object so that editor can be refreshed
           rowId = rowId.split('node-')[1];
           nodeSelected = this.comparisonDataToDisplay.find(comparisonNode => comparisonNode.Id === parseInt(rowId, 10));
-         
-            if (this.selectedNodes.indexOf(nodeSelected.Id) === -1) {
-              this.selectedNodes.push(nodeSelected.Id);
-            }
-         
+
+          if (this.selectedNodes.indexOf(nodeSelected.Id) === -1) {
+            this.selectedNodes.push(nodeSelected.Id);
+          }
+
           this.selectedObject = nodeSelected;
         }
       } else {
@@ -213,11 +198,11 @@ export class GridComponent implements OnInit {
               nodeSelected = this.comparisonDataToDisplay
                 .find(comparisonNode => comparisonNode.Id === parseInt(rowId.split('node-')[1], 10));
               this.selectedObject = nodeSelected;
-             
-                if (this.selectedNodes.indexOf(nodeSelected.Id) === -1) {
-                  this.selectedNodes.push(nodeSelected.Id);
-                }
-             
+
+              if (this.selectedNodes.indexOf(nodeSelected.Id) === -1) {
+                this.selectedNodes.push(nodeSelected.Id);
+              }
+
               siblingRow.focus();
               siblingRow = this.getSiblingElement(prev, rowId);
             } else {
@@ -248,10 +233,10 @@ export class GridComponent implements OnInit {
         nodeSelected = this.comparisonDataToDisplay
           .find(comparisonNode => comparisonNode.Id === parseInt(siblingRow.id.split('node-')[1], 10));
         this.selectedObject = nodeSelected;
-          if (this.selectedNodes.indexOf(nodeSelected.Id) === -1) {
-            this.selectedNodes.push(nodeSelected.Id);
-          }
-        
+        if (this.selectedNodes.indexOf(nodeSelected.Id) === -1) {
+          this.selectedNodes.push(nodeSelected.Id);
+        }
+
         if (prev) {
           rowChild = document.getElementById(siblingRow.id).lastElementChild;
         } else {
@@ -295,9 +280,7 @@ export class GridComponent implements OnInit {
     let oldOption: string;
     oldOption = this.comparisonDataToDisplay.find(node => node.Id === id).MergeAction;
     this.gridService.sendChange(id, option, oldOption);
-    sessionStorage.setItem('selectedNodes', JSON.stringify(this.selectedNodes));
-    this.getDataToDisplay();
-    this.retainSelection();
+    this.getDataToDisplay(false);
   }
 
   /**
@@ -332,17 +315,37 @@ export class GridComponent implements OnInit {
   /**
    * Get the data to be displayed from service
    */
-  getDataToDisplay(): void {
+  getDataToDisplay(mergeActions: boolean): void {
     this.appLog.add('Grid: Get users called', 'info');
 
     this.gridService.getGridDataToDisplay().subscribe(
       (data) => {
-        this.comparisonDataToDisplay = data;
-        if (this.comparisonDataToDisplay.length > 0) {
-          this.selectedObject = this.comparisonDataToDisplay[0];
+        if (mergeActions) {
+          this.changeOptions(data);
+        } else {
+          this.comparisonDataToDisplay = data;
+          if (this.comparisonDataToDisplay.length > 0) {
+            this.selectedObject = this.comparisonDataToDisplay[0];
+          }
         }
       }
     );
+  }
+
+  /**
+   * Change the options by comparing the existing object with the one returned from C# application
+   * @param changedData - Data returned from C# application
+   */
+  changeOptions(changedData: ComparisonNode[]) {
+    let nodeId: number;
+    let gridNode: ComparisonNode;
+    for (let iRowCounter = 0; iRowCounter < changedData.length; iRowCounter += 1) {
+      nodeId = changedData[iRowCounter].Id;
+      gridNode = this.comparisonDataToDisplay.find(node => node.Id === nodeId);
+      gridNode.MergeAction = changedData[iRowCounter].MergeAction;
+      gridNode.DropdownDisabled = changedData[iRowCounter].DropdownDisabled;
+      gridNode.DisableMessage = changedData[iRowCounter].DisableMessage;
+    }
   }
 
   /**
