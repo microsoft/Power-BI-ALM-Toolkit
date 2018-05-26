@@ -9,26 +9,27 @@
 
     public class ComparisonJSInteraction
     {
+        #region Private members
+
         private Comparison _comparison;
         // The form class needs to be changed according to yours
         private static ComparisonForm _instanceMainForm = null;
 
-        // List to be used to populate data in grid control. This needs to be static, since everytime  CEF Sharp invokes the method, it creates a new instance
-        // Need to revisit initialization to evaluate removal strategy
-        public static List<ComparisonNode> comparisonList = new List<ComparisonNode>();
 
         // Used to maintain a dictionary with direct access to the Angular node and C# comparison object
         private Dictionary<int, AngularComposite> _directAccessList = new Dictionary<int, AngularComposite>();
 
-        // Used to maintain visibility associated with object and mapping between internal name and tree identifier
-        private List<ComparisonVisibilityMap> _avMap = new List<ComparisonVisibilityMap>();
+        #endregion
+
+        #region Public properties
+        // List to be used to populate data in grid control. This needs to be static, since everytime  CEF Sharp invokes the method, it creates a new instance
+        // Need to revisit initialization to evaluate removal strategy
+        public static List<ComparisonNode> comparisonList = new List<ComparisonNode>();
 
         public ComparisonJSInteraction(ComparisonForm mainForm)
         {
             _instanceMainForm = mainForm;
         }
-
-        #region Public properties
         public Comparison Comparison
         {
             get { return _comparison; }
@@ -88,11 +89,14 @@
                     default:
                         break;
                 }
+                // Disable update menu on comparison change
+                _instanceMainForm.HandleComparisonChanged();
+
+                // Refresh the tree control, since grid is maintained here
                 _instanceMainForm.refreshGridControl();
             }
 
         }
-
 
         #endregion
 
@@ -107,7 +111,6 @@
             {
                 comparisonList.Clear();
                 _directAccessList.Clear();
-                _avMap.Clear();
 
                 foreach (ComparisonObject comparisonObject in this._comparison.ComparisonObjects)
                 {
@@ -174,18 +177,6 @@
                 AngularComposite angularComposite = new AngularComposite(currentNode, comparisonObject);
                 _directAccessList.Add(currentNode.Id, angularComposite);
 
-                ComparisonVisibilityMap visibilityMap = new ComparisonVisibilityMap
-                {
-                    SourceObjectName = currentNode.SourceName,
-                    SourceObjectInternalName = currentNode.SourceInternalName,
-                    TargetObjectName = currentNode.TargetName,
-                    TargetObjectInternalName = currentNode.TargetInternalName,
-                    ObjType = currentNode.NodeType.ToString(),
-                    composite = angularComposite,
-                    IsVisible = true,
-                    ComparisonTreeId = currentNode.Id
-                };
-                _avMap.Add(visibilityMap);
 
                 // set drop-down to have limited members based on what is available
                 switch (comparisonObject.MergeAction)
@@ -198,7 +189,7 @@
                             comparisonObject.MergeAction = MergeAction.Skip;
                             currentNode.MergeAction = MergeAction.Skip.ToString();
                             currentNode.DropdownDisabled = true;
-                            SetNodeTooltip(visibilityMap, true);
+                            SetNodeTooltip(angularComposite, true);
                         }
                         break;
                     case MergeAction.Update:
@@ -211,7 +202,7 @@
                         if (parentNode != null && string.Equals(parentNode.MergeAction, "Delete"))
                         {
                             currentNode.DropdownDisabled = true;
-                            SetNodeTooltip(visibilityMap, true);
+                            SetNodeTooltip(angularComposite, true);
                         }
                         break;
                     case MergeAction.Skip:
@@ -225,7 +216,7 @@
                                 if (parentNode != null && string.Equals(parentNode.Status, "Missing in Target") && string.Equals(parentNode.MergeAction, "Skip"))
                                 {
                                     currentNode.DropdownDisabled = true;
-                                    SetNodeTooltip(visibilityMap, true);
+                                    SetNodeTooltip(angularComposite, true);
                                 }
 
                                 break;
@@ -239,7 +230,7 @@
                                 //default covers ComparisonObjectStatus.SameDefinition: which is most common case (above cases are for saved skip selections from file)
                                 currentNode.AvailableActions = new List<string> { "Skip" };
                                 currentNode.DropdownDisabled = true;
-                                SetNodeTooltip(visibilityMap, true);
+                                SetNodeTooltip(angularComposite, true);
                                 break;
                         }
 
@@ -262,32 +253,6 @@
         #endregion
 
         #region Helper functions
-        /// <summary>
-        /// Find a node by its internal name from visibilty map
-        /// </summary>
-        /// <param name="sourceObjectName">Display name of the node for source</param>
-        /// <param name="sourceObjectId">Internal name of the node for source</param>
-        /// <param name="targetObjectName">Display name of the node for target</param>
-        /// <param name="targetObjectId">Internal name of the node for target</param>
-        /// <param name="objType">Object type i.e. Data source, KPI, Measure</param>
-        /// <returns>Visibility node with reference to Comparison object as well as Angular node. Null in case not found </returns>
-        private ComparisonVisibilityMap FindNodeByInternalName(string sourceObjectName, string sourceObjectId, string targetObjectName, string targetObjectId, ComparisonObjectType objType)
-        {
-            foreach (ComparisonVisibilityMap node in _avMap)
-            {
-                // Directly use composite instead
-                if (string.Equals(node.composite.dotNetComparison.SourceObjectName, sourceObjectName, StringComparison.InvariantCultureIgnoreCase)
-                    && string.Equals(node.composite.dotNetComparison.SourceObjectInternalName, sourceObjectId, StringComparison.InvariantCultureIgnoreCase)
-                    && string.Equals(node.composite.dotNetComparison.TargetObjectName, targetObjectName, StringComparison.InvariantCultureIgnoreCase)
-                    && string.Equals(node.composite.dotNetComparison.TargetObjectInternalName, targetObjectId, StringComparison.InvariantCultureIgnoreCase)
-                    && node.composite.dotNetComparison.ComparisonObjectType == objType)
-                {
-                    return node;
-                }
-            }
-
-            return null;
-        }
 
         /// <summary>
         /// Set visibility of Angular node
@@ -306,11 +271,7 @@
                 node.ngComparison.ShowNode = IsVisible;
             }
         }
-        private void SetNodeTooltip(ComparisonVisibilityMap node, bool disabledDueToParent)
-        {
-            node.composite.ngComparison.DisableMessage = (disabledDueToParent ? "This object's action option is disabled due to a parent object selection" : "");
 
-        }
         private void SetNodeTooltip(AngularComposite node, bool disabledDueToParent)
         {
             node.ngComparison.DisableMessage = (disabledDueToParent ? "This object's action option is disabled due to a parent object selection" : "");
