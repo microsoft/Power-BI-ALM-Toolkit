@@ -187,7 +187,7 @@ export class GridComponent implements OnInit {
           } else {
             prev = false;
           }
-          let rowId = event.target.id;
+          let rowId = eventRow.id;
           // Find all elements above or below this row and select them as well
           while (isSiblingAvailable) {
             siblingRow = this.getSiblingElement(prev, rowId);
@@ -246,8 +246,6 @@ export class GridComponent implements OnInit {
       } else {
         siblingRow.focus();
       }
-
-
     }
 
     // Get the greyed out cells in the selected row to make them transparent
