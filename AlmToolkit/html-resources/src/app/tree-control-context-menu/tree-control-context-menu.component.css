@@ -1,24 +1,27 @@
 .tree-control-context-menu {
     position: absolute;
-    height: 150px;
-    width:500px;
-    border: 1px solid #707070;
+    height: 88px;
+    width:350px;
     z-index: 30;
-    background-color: #fff;
+    background-color: #F2F2F2;
+    box-shadow: 2px 2px #D4D4D4;
 }
 
 .action-list{
   list-style-type:none;
+  -webkit-margin-after: 0;
+  -webkit-margin-before: 0;
+  -webkit-padding-start: 0;
+  margin-top: 2px;
 }
 
 .tree-control-context-menu-options{
-  cursor:pointer;
   font-family:'Segoe UI';
-  font-size:15px;
+  font-size:12px;
   color: #000;
-  padding:2px;
+  padding:2px 0 2px 40px;
 }
 
 .tree-control-context-menu-options:hover{
-  background-color: #707070;
+  background-color: #91C9F7;
 }

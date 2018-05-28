@@ -49,5 +49,6 @@ export class GridDataService {
    */
   sendSelectedNodesAndAction ( action: string, status: string, selectedNodes: number[] ) {
     this.logService.add('Grid data service: Sending the selected nodes and the action to be performed to C#', 'info');
+    this._window['comparisonJSInteraction'].performActionsOnSelectedActions(action, status, selectedNodes);
   }
 }

@@ -35,7 +35,7 @@
 }
 
 .greyed-out-cell {
-    background-color: rgba(112, 112, 112, 0.37);
+    background-color: #D3D3D3;
 }
 
 .action-dropdown {

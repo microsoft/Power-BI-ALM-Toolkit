@@ -280,7 +280,7 @@ export class GridComponent implements OnInit {
     let oldOption: string;
     oldOption = this.comparisonDataToDisplay.find(node => node.Id === id).MergeAction;
     this.gridService.sendChange(id, option, oldOption);
-    this.getDataToDisplay(false);
+    this.getDataToDisplay(true);
   }
 
   /**
@@ -328,6 +328,7 @@ export class GridComponent implements OnInit {
             this.selectedObject = this.comparisonDataToDisplay[0];
           }
         }
+        this.showContextMenu = false;
       }
     );
   }

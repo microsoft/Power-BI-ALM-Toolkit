@@ -25,6 +25,7 @@
         // List to be used to populate data in grid control. This needs to be static, since everytime  CEF Sharp invokes the method, it creates a new instance
         // Need to revisit initialization to evaluate removal strategy
         public static List<ComparisonNode> comparisonList = new List<ComparisonNode>();
+        public static List<ComparisonNode> selectedNodes = new List<ComparisonNode>();
 
         public ComparisonJSInteraction(ComparisonForm mainForm)
         {
@@ -98,6 +99,44 @@
 
         }
 
+        /// <summary>
+        /// Perform required action on selected nodes
+        /// </summary>
+        /// <param name="action">Action to be performed: Skip, Update, Create or Delete</param>
+        /// <param name="status">Status of the nodes that are to be changed</param>
+        /// <param name="selectedNodesUI">List of Node Ids which are selected on Angular control</param>
+        public void PerformActionsOnSelectedActions(string action, string status, List<object> selectedNodesUI)
+        {
+            ComparisonNode nodeToAdd;
+            for(int nodeCounter = 0; nodeCounter < selectedNodesUI.Count; nodeCounter++)
+            {
+                nodeToAdd = comparisonList.Find(node => node.Id == Convert.ToInt32(selectedNodesUI[nodeCounter]));
+                selectedNodes.Add(nodeToAdd);
+            }
+
+            switch (action)
+            {
+                case "skip":
+                    SkipItems(true);
+                    break;
+                case "create":
+                    CreateItems(true);
+                    break;
+                case "delete":
+                    DeleteItems(true);
+                    break;
+                case "update":
+                    UpdateItems(true);
+                    break;             
+            }
+
+            // Disable update menu on comparison change
+            _instanceMainForm.HandleComparisonChanged();
+
+            // Refresh the tree control, since grid is maintained here
+            _instanceMainForm.refreshGridControl(true);
+        }
+       
         #endregion
 
         #region Data transformation and population
@@ -419,9 +458,8 @@
         /// <param name="comparisonStatus"></param>
         public void SkipItems(bool selectedOnly, ComparisonObjectStatus comparisonObjectStatus = ComparisonObjectStatus.Na) //Na because won't take null cos it's an enum
         {
-            //Int32 selectedRowCount = (selectedOnly ? this.Rows.GetRowCount(DataGridViewElementStates.Selected) : this.Rows.Count);
-
-            foreach (ComparisonNode node in comparisonList)
+            List<ComparisonNode> listToUse = (selectedOnly ? selectedNodes : comparisonList);
+            foreach (ComparisonNode node in listToUse)
             {
                 // In case of selected only, check if item is present in selected objects
                 SkipItemPrivate(comparisonObjectStatus, node);
@@ -520,9 +558,10 @@
         public void UpdateItems(bool selectedOnly)
         {
             // If selected only, pick items from selected list
+            List<ComparisonNode> listToUse = (selectedOnly ? selectedNodes : comparisonList);
 
             // Not necessary to run twice with internal method because Updates don't impact children
-            foreach (ComparisonNode item in comparisonList)
+            foreach (ComparisonNode item in listToUse)
             {
                 if (item.AvailableActions.Contains("Update"))
                 {
@@ -541,7 +580,9 @@
         /// <param name="selectedOnly"></param>
         public void CreateItems(bool selectedOnly)
         {
-            foreach (ComparisonNode item in comparisonList)
+            List<ComparisonNode> listToUse = (selectedOnly ? selectedNodes : comparisonList);
+
+            foreach (ComparisonNode item in listToUse)
             {
                 //DataGridViewRow row = (selectedOnly ? this.SelectedRows[i] : this.Rows[i]);
 
@@ -584,9 +625,9 @@
         /// <param name="selectedOnly"></param>
         public void DeleteItems(bool selectedOnly)
         {
-            //Int32 selectedRowCount = (selectedOnly ? this.Rows.GetRowCount(DataGridViewElementStates.Selected) : this.Rows.Count);
+            List<ComparisonNode> listToUse = (selectedOnly ? selectedNodes : comparisonList);
 
-            foreach (ComparisonNode item in comparisonList)
+            foreach (ComparisonNode item in listToUse)
             {
                 bool isReadOnly = item.DropdownDisabled;
                 if (!isReadOnly
