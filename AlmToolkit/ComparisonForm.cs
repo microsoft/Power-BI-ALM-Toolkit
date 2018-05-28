@@ -27,6 +27,7 @@ namespace AlmToolkit
         private ComparisonJSInteraction _comparisonInter; // CEFSharp Interface to connect to Angular Tree Control
         private ChromiumWebBrowser chromeBrowser;
         private const string _appCaption = "ALM Toolkit for Power BI";
+        private CompareState _compareState = CompareState.NotCompared;
 
         #endregion
 
@@ -114,6 +115,9 @@ namespace AlmToolkit
             toolStripStatusLabel1.Text = "";
 
             ComparisonCtrl.SetNotComparedState();
+
+            _compareState = CompareState.NotCompared;
+            SetGridState(false);
         }
 
         private void SetComparedState()
@@ -136,6 +140,9 @@ namespace AlmToolkit
             ComparisonCtrl.SetComparedState();
 
             // NG: Disable skip and other actions for the control here
+            _compareState = CompareState.Compared;
+
+            SetGridState(true);
         }
 
         private void SetValidatedState()
@@ -143,6 +150,8 @@ namespace AlmToolkit
             btnUpdate.Enabled = true;
             btnGenerateScript.Enabled = true;
 
+            _compareState = CompareState.Validated;
+            // This method needs to be moved out of comparison control during clean up
             ComparisonCtrl.SetValidatedState();
         }
 
@@ -189,11 +198,18 @@ namespace AlmToolkit
 
         private bool ShowConnectionsForm()
         {
-            if (ComparisonCtrl.CompareState != CompareState.NotCompared)
+            //if (ComparisonCtrl.CompareState != CompareState.NotCompared)
+            //{
+            //    
+            //    ComparisonCtrl.RefreshSkipSelections();
+            //}
+
+            if (_compareState != CompareState.NotCompared)
             {
                 //just in case user has some selections, store them to the SkipSelections collection
-                ComparisonCtrl.RefreshSkipSelections();
+                _comparison.RefreshSkipSelectionsFromComparisonObjects();
             }
+
 
             Connections connForm = new Connections();
             connForm.ComparisonInfo = _comparisonInfo;
@@ -256,7 +272,8 @@ namespace AlmToolkit
                 SetAutoComplete();
                 _comparison.CompareTabularModels();
 
-                ComparisonCtrl.ComparisonChanged += HandleComparisonChanged;
+                // Avoid conflict for validate with existing control
+                //ComparisonCtrl.ComparisonChanged += HandleComparisonChanged;
                 ComparisonCtrl.Comparison = _comparison;
                 ComparisonCtrl.DataBindComparison();
 
@@ -285,6 +302,13 @@ namespace AlmToolkit
             chromeBrowser.ExecuteScriptAsync(script);
         }
 
+        private void SetGridState(bool showGrid)
+        {
+            // Check if we need to clear the comparison node and comparison list as well
+
+
+            // Call Angular method to show/hide grid here
+        }
         #endregion
 
 
@@ -405,7 +429,13 @@ namespace AlmToolkit
             if (optionsForm.DialogResult == DialogResult.OK)
             {
                 ComparisonCtrl.TriggerComparisonChanged();
-                if (ComparisonCtrl.CompareState != CompareState.NotCompared)
+                //if (ComparisonCtrl.CompareState != CompareState.NotCompared)
+                //{
+                //    SetNotComparedState();
+                //    toolStripStatusLabel1.Text = "Comparison invalidated. Please re-run the comparison.";
+                //}
+
+                if (_compareState != CompareState.NotCompared)
                 {
                     SetNotComparedState();
                     toolStripStatusLabel1.Text = "Comparison invalidated. Please re-run the comparison.";
@@ -540,7 +570,9 @@ namespace AlmToolkit
             {
                 Cursor.Current = Cursors.WaitCursor;
                 toolStripStatusLabel1.Text = "ALM Toolkit - validating ...";
-                ComparisonCtrl.RefreshDiffResultsFromGrid();
+
+                // Not required since _comparison object is always updated with latest updates
+                //ComparisonCtrl.RefreshDiffResultsFromGrid();
 
                 WarningListForm warningList = new WarningListForm();
                 warningList.Comparison = _comparison;
@@ -573,14 +605,25 @@ namespace AlmToolkit
             {
                 Cursor.Current = Cursors.WaitCursor;
                 toolStripStatusLabel1.Text = "ALM Toolkit - committing changes ...";
-                ComparisonCtrl.RefreshSkipSelections();
-                bool update = _comparison.Update();
-                toolStripStatusLabel1.Text = "ALM Toolkit - finished committing changes";
+                // Not required since _comparison object is always updated with latest updates
+                //ComparisonCtrl.RefreshSkipSelections();
 
-                SetNotComparedState();
-                if (update && MessageBox.Show($"Updated {(_comparisonInfo.ConnectionInfoTarget.UseProject ? "project " + _comparisonInfo.ConnectionInfoTarget.ProjectName : "database " + _comparisonInfo.ConnectionInfoTarget.DatabaseName)}.\n\nDo you want to refresh the comparison?", _appCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (_compareState != CompareState.NotCompared && _comparison != null)
                 {
-                    this.CompareTabularModels();
+                    _comparison.RefreshSkipSelectionsFromComparisonObjects();
+
+                    bool update = _comparison.Update();
+                    toolStripStatusLabel1.Text = "ALM Toolkit - finished committing changes";
+
+                    SetNotComparedState();
+                    if (update && MessageBox.Show($"Updated {(_comparisonInfo.ConnectionInfoTarget.UseProject ? "project " + _comparisonInfo.ConnectionInfoTarget.ProjectName : "database " + _comparisonInfo.ConnectionInfoTarget.DatabaseName)}.\n\nDo you want to refresh the comparison?", _appCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        this.CompareTabularModels();
+                    }
+                }
+                else
+                {
+                    toolStripStatusLabel1.Text = "ALM Toolkit - require validation for changes";
                 }
             }
 
@@ -615,6 +658,23 @@ namespace AlmToolkit
                 toolStripStatusLabel1.Text = "ALM Toolkit - models compared";
             }
         }
+
+        public void HandleComparisonChanged()
+        {
+            //If user changes a skip selection after validation, need to disable Update button
+            if (_compareState == CompareState.Validated)
+            {
+                if (InvokeRequired)
+                {
+                    this.Invoke(new MethodInvoker(delegate
+                    {
+                        SetComparedState();
+                        toolStripStatusLabel1.Text = "ALM Toolkit - models compared";
+                    }));
+                }
+            }
+        }
+
 
         #endregion
 

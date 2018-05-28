@@ -112,7 +112,7 @@
             // 
             // txtSource
             // 
-            this.txtSource.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtSource.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSource.BackColor = System.Drawing.SystemColors.Control;
             this.txtSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -123,7 +123,7 @@
             // 
             // txtTarget
             // 
-            this.txtTarget.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.txtTarget.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtTarget.BackColor = System.Drawing.SystemColors.Control;
             this.txtTarget.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -134,7 +134,7 @@
             // 
             // label2
             // 
-            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(3, 8);
@@ -365,7 +365,7 @@
             comparisonInfo1.OptionsInfo = optionsInfo1;
             comparisonInfo1.PromptForDatabaseProcessing = false;
             this.ComparisonCtrl.ComparisonInfo = comparisonInfo1;
-            this.ComparisonCtrl.Dock = System.Windows.Forms.DockStyle.Left;
+            this.ComparisonCtrl.Dock = System.Windows.Forms.DockStyle.None;
             this.ComparisonCtrl.Location = new System.Drawing.Point(0, 55);
             this.ComparisonCtrl.Name = "ComparisonCtrl";
             this.ComparisonCtrl.Size = new System.Drawing.Size(979, 581);

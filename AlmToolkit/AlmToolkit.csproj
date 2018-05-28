@@ -72,7 +72,6 @@
     <Compile Include="ComparisonJSInteraction.cs" />
     <Compile Include="Model\AngularComposite.cs" />
     <Compile Include="Model\ComparisonNode.cs" />
-    <Compile Include="Model\ComparisonVisibilityMap.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WarningListForm.cs">
