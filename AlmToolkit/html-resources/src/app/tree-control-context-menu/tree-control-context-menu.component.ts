@@ -25,4 +25,38 @@ export class TreeControlContextMenuComponent implements OnInit {
   performAction(action: string, status: string) {
     this.gridService.sendSelectedNodesAndAction(action, status, this.selectedNodes);
   }
+
+  /**
+   * Handle key events on context menu
+   * @param event - Take appropriate actions if key events are on context menu
+   */
+  onKeydown(event: any) {
+    let siblingRow;
+    if (event.which === 38) {
+      siblingRow = this.getSiblingElement(true, event.target.id);
+    } else {
+      siblingRow = this.getSiblingElement(false, event.target.id);
+    }
+    if (!siblingRow) {
+      if (event.which === 38) {
+        siblingRow = document.getElementById(event.target.id).parentElement.lastElementChild;
+      } else {
+        siblingRow = document.getElementById(event.target.id).parentElement.firstElementChild;
+      }
+    }
+    siblingRow.focus();
+  }
+
+  /**
+   * Get the sibling for the elements
+   * @param prev - True if previous sibling is to be fetched and false if next sibling is to be fetched
+   * @param id - Id of the element for which sibling is to be fetched
+   */
+  getSiblingElement(prev: boolean, id: string): Node {
+    if (prev) {
+      return document.getElementById(id).previousElementSibling;
+    } else {
+      return document.getElementById(id).nextElementSibling;
+    }
+  }
 }
