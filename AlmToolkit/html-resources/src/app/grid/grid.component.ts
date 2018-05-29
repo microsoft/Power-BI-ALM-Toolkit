@@ -36,10 +36,11 @@ export class GridComponent implements OnInit {
    */
   showTreeControlContextMenu(event: any) {
     event.preventDefault();
-    if(event.clientX){
+    event.stopPropagation();
+    if (event.clientX) {
       this.treeControlContextMenuX = event.clientX;
       this.treeControlContextMenuY = event.clientY;
-    } else{
+    } else {
       const comparisonGrid = <HTMLElement>document.getElementsByClassName('comparison-grid')[0];
       this.treeControlContextMenuX = Number((comparisonGrid.offsetHeight / 3).toFixed(2));
       this.treeControlContextMenuY = Number((comparisonGrid.offsetWidth / 3).toFixed(2));
@@ -103,11 +104,12 @@ export class GridComponent implements OnInit {
     */
   onKeydown(event: any) {
     event.preventDefault();
+    event.stopPropagation();
     this.showContextMenu = false;
 
     if (event.which === 93) {
       this.showTreeControlContextMenu(event);
-      return;
+      return false;
     }
     let siblingRow;
     let eventRow;
@@ -167,7 +169,13 @@ export class GridComponent implements OnInit {
           } else {
             siblingRow = this.getSiblingElement(false, eventRow.id);
           }
-
+          if (!(siblingRow && siblingRow.classList.contains('grid-data-row'))) {
+            if (event.which === 38) {
+              siblingRow = document.getElementById(eventRow.id).parentElement.lastElementChild;
+            } else {
+              siblingRow = this.getSiblingElement(false, document.getElementById(eventRow.id).parentElement.firstElementChild.id);
+            }
+          }
           // Select the current row
           siblingRow.classList.add('selected-row');
           let rowId = siblingRow.id;

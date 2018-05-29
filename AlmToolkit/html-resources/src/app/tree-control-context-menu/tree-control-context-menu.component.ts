@@ -34,6 +34,7 @@ export class TreeControlContextMenuComponent implements OnInit {
    */
   onKeydown(event: any) {
     event.preventDefault();
+    event.stopPropagation();
     let siblingRow;
     if(event.which === 38 || event.which === 40){
     if (event.which === 38) {

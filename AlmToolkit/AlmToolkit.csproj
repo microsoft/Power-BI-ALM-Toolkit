@@ -282,6 +282,9 @@
     <Content Include="html-resources\dist\assets\action-Update.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="html-resources\dist\assets\dropdown.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="html-resources\dist\assets\node-type-Action.png" />
     <Content Include="html-resources\dist\assets\node-type-Culture.png" />
     <Content Include="html-resources\dist\assets\node-type-Data-Source.png">
@@ -347,6 +350,9 @@
     <Content Include="html-resources\src\assets\action-Skip-Grey.png" />
     <Content Include="html-resources\src\assets\action-Skip.png" />
     <Content Include="html-resources\src\assets\action-Update.png" />
+    <Content Include="html-resources\src\assets\dropdown.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="html-resources\src\assets\node-type-Action.png" />
     <Content Include="html-resources\src\assets\node-type-Culture.png" />
     <Content Include="html-resources\src\assets\node-type-Data-Source.png" />

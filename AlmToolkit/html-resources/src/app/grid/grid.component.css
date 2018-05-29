@@ -44,8 +44,25 @@
     font-weight: 600;
     font-family: 'Segoe UI';
     color: #000;
-    position: relative;
-    top: 1px;
+}
+
+.action-options select{
+  border:none;
+  background-color:transparent;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url(../../assets/dropdown.png);
+  background-repeat: no-repeat;
+  background-size: 25px 25px;
+  background-position: center right;
+}
+
+.action-options select:focus{
+  outline: none;
+}
+
+.action-options .action-dropdown option:hover{
+  background-color: #0078d7;
 }
 
 .node-images {

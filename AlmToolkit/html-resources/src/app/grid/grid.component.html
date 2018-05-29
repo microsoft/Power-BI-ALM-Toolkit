@@ -32,9 +32,9 @@
           <img [src]='getImage(dataObject,2)' class='node-images' />
         </span>
       </td>
-      <td class='grid-column action-options' tabindex='0' (keydown)='onKeydown($event)' id='node-{{dataObject.Id}}-action-dropdown'
+      <td class='grid-column action-options' (click)='onSelect(dataObject, $event)' tabindex='0' (keydown)='onKeydown($event)' id='node-{{dataObject.Id}}-action-dropdown'
         data-column-type='action-dropdown'>
-        <select class='action-dropdown' (change)='optionChange(dataObject.Id, $event.target.value)' [disabled]='dataObject.DropdownDisabled ? true : null'
+        <select class='action-dropdown' (click)='onSelect(dataObject, $event)' (change)='optionChange(dataObject.Id, $event.target.value)' [disabled]='dataObject.DropdownDisabled ? true : null'
           id='node-{{dataObject.Id}}-select'>
           <option *ngFor='let option of dataObject.AvailableActions; let index = index' [selected]='option == dataObject.MergeAction ? true : null'
             id='node-{{dataObject.Id}}-option-{{index}}'>{{option}}</option>
