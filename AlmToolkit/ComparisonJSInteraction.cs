@@ -107,10 +107,14 @@
         public void PerformActionsOnSelectedActions(string action, List<object> selectedNodesUI)
         {
             ComparisonNode nodeToAdd;
-            for(int nodeCounter = 0; nodeCounter < selectedNodesUI.Count; nodeCounter++)
+            for (int nodeCounter = 0; nodeCounter < selectedNodesUI.Count; nodeCounter++)
             {
-                nodeToAdd = comparisonList.Find(node => node.Id == Convert.ToInt32(selectedNodesUI[nodeCounter]));
-                selectedNodes.Add(nodeToAdd);
+                if (_directAccessList.ContainsKey(Convert.ToInt32(selectedNodesUI[nodeCounter])))
+                {
+                    AngularComposite currentNode = _directAccessList[Convert.ToInt32(selectedNodesUI[nodeCounter])];
+                    nodeToAdd = currentNode.ngComparison;
+                    selectedNodes.Add(nodeToAdd);
+                }
             }
 
             switch (action)
@@ -126,7 +130,7 @@
                     break;
                 case "update":
                     UpdateItems(true);
-                    break;             
+                    break;
             }
 
             // Disable update menu on comparison change
@@ -135,7 +139,7 @@
             // Refresh the tree control, since grid is maintained here
             _instanceMainForm.refreshGridControl(true);
         }
-       
+
         #endregion
 
         #region Data transformation and population
@@ -170,7 +174,7 @@
 
                 ComparisonNode currentNode = new ComparisonNode
                 {
-                    NodeType = string.Equals(ComparisonObjectType.DataSource, comparisonObject.ComparisonObjectType) ? "Data Source" : comparisonObject.ComparisonObjectType.ToString(),
+                    NodeType = Equals(ComparisonObjectType.DataSource, comparisonObject.ComparisonObjectType) ? "Data Source" : comparisonObject.ComparisonObjectType.ToString(),
 
                     SourceName = comparisonObject.SourceObjectName,
                     TargetName = comparisonObject.TargetObjectName,
