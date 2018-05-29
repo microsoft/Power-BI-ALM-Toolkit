@@ -12,9 +12,11 @@ export class TreeControlContextMenuComponent implements OnInit {
   @Input() contextMenuPositionX = 0;
   @Input() contextMenuPositionY = 0;
   @Input() selectedNodes = [];
+  @Input() selectedCell;
   constructor(private gridService: GridDataService, private appLog: AppLogService) { }
 
   ngOnInit() {
+    document.getElementById('skip-selected').focus();
   }
 
   /**
@@ -22,8 +24,8 @@ export class TreeControlContextMenuComponent implements OnInit {
    * @param action - the action to be performed
    * @param status - the status of objects for which action is to be performed
    */
-  performAction(action: string, status: string) {
-    this.gridService.sendSelectedNodesAndAction(action, status, this.selectedNodes);
+  performAction(action: string) {
+    this.gridService.sendSelectedNodesAndAction(action, this.selectedNodes);
   }
 
   /**
@@ -31,7 +33,9 @@ export class TreeControlContextMenuComponent implements OnInit {
    * @param event - Take appropriate actions if key events are on context menu
    */
   onKeydown(event: any) {
+    event.preventDefault();
     let siblingRow;
+    if(event.which === 38 || event.which === 40){
     if (event.which === 38) {
       siblingRow = this.getSiblingElement(true, event.target.id);
     } else {
@@ -45,6 +49,16 @@ export class TreeControlContextMenuComponent implements OnInit {
       }
     }
     siblingRow.focus();
+    } else if(event.which === 13){
+      const action = document.getElementById(event.target.id).getAttribute('data-action');
+      if(action){
+        this.performAction(action);
+        document.getElementById(this.selectedCell).focus();
+      }
+    } else if(event.which === 27){
+      this.performAction("");
+      document.getElementById(this.selectedCell).focus();
+    }
   }
 
   /**

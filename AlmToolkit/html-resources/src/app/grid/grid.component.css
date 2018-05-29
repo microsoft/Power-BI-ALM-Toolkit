@@ -19,7 +19,7 @@
 }
 
 .grid-column:focus {
-    border: 0.5px dotted #000;
+    outline: 1px dotted #000;
 }
 
 .grid-data-row, .grid-row {

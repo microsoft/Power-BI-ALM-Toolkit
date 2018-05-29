@@ -47,8 +47,8 @@ export class GridDataService {
    * @param status - Status of nodes for which the action is to be performed
    * @param selectedNodes - List of node Ids which are selected
    */
-  sendSelectedNodesAndAction ( action: string, status: string, selectedNodes: number[] ) {
+  sendSelectedNodesAndAction ( action: string, selectedNodes: number[] ) {
     this.logService.add('Grid data service: Sending the selected nodes and the action to be performed to C#', 'info');
-    this._window['comparisonJSInteraction'].performActionsOnSelectedActions(action, status, selectedNodes);
+    this._window['comparisonJSInteraction'].performActionsOnSelectedActions(action, selectedNodes);
   }
 }

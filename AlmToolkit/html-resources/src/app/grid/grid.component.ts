@@ -17,6 +17,7 @@ export class GridComponent implements OnInit {
   showContextMenu = false;
   treeControlContextMenuX = 0;
   treeControlContextMenuY = 0;
+  selectedCell;
   constructor(private gridService: GridDataService, private appLog: AppLogService, private zone: NgZone) {
     window['angularComponentRef'] = {
       zone: this.zone,
@@ -35,9 +36,16 @@ export class GridComponent implements OnInit {
    */
   showTreeControlContextMenu(event: any) {
     event.preventDefault();
+    if(event.clientX){
+      this.treeControlContextMenuX = event.clientX;
+      this.treeControlContextMenuY = event.clientY;
+    } else{
+      const comparisonGrid = <HTMLElement>document.getElementsByClassName('comparison-grid')[0];
+      this.treeControlContextMenuX = Number((comparisonGrid.offsetHeight / 3).toFixed(2));
+      this.treeControlContextMenuY = Number((comparisonGrid.offsetWidth / 3).toFixed(2));
+    }
     this.showContextMenu = true;
-    this.treeControlContextMenuX = event.clientX;
-    this.treeControlContextMenuY = event.clientY;
+    this.selectedCell = event.target.id;
   }
 
   /**
@@ -140,7 +148,7 @@ export class GridComponent implements OnInit {
               const option = dropdownElement.selectedOptions[0].innerHTML;
               if (option !== oldOption) {
                 this.gridService.sendChange(nodeSelected.Id, option, oldOption);
-                this.getDataToDisplay(false);
+                this.getDataToDisplay(true);
               }
             }
           } else {
@@ -344,6 +352,7 @@ export class GridComponent implements OnInit {
       gridNode.MergeAction = changedData[iRowCounter].MergeAction;
       gridNode.DropdownDisabled = changedData[iRowCounter].DropdownDisabled;
       gridNode.DisableMessage = changedData[iRowCounter].DisableMessage;
+      gridNode.ShowNode = changedData[iRowCounter].ShowNode;
     }
   }
 

@@ -103,9 +103,8 @@
         /// Perform required action on selected nodes
         /// </summary>
         /// <param name="action">Action to be performed: Skip, Update, Create or Delete</param>
-        /// <param name="status">Status of the nodes that are to be changed</param>
         /// <param name="selectedNodesUI">List of Node Ids which are selected on Angular control</param>
-        public void PerformActionsOnSelectedActions(string action, string status, List<object> selectedNodesUI)
+        public void PerformActionsOnSelectedActions(string action, List<object> selectedNodesUI)
         {
             ComparisonNode nodeToAdd;
             for(int nodeCounter = 0; nodeCounter < selectedNodesUI.Count; nodeCounter++)
