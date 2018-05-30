@@ -36,28 +36,28 @@ export class TreeControlContextMenuComponent implements OnInit {
     event.preventDefault();
     event.stopPropagation();
     let siblingRow;
-    if(event.which === 38 || event.which === 40){
-    if (event.which === 38) {
-      siblingRow = this.getSiblingElement(true, event.target.id);
-    } else {
-      siblingRow = this.getSiblingElement(false, event.target.id);
-    }
-    if (!siblingRow) {
+    if (event.which === 38 || event.which === 40) {
       if (event.which === 38) {
-        siblingRow = document.getElementById(event.target.id).parentElement.lastElementChild;
+        siblingRow = this.getSiblingElement(true, event.target.id);
       } else {
-        siblingRow = document.getElementById(event.target.id).parentElement.firstElementChild;
+        siblingRow = this.getSiblingElement(false, event.target.id);
       }
-    }
-    siblingRow.focus();
-    } else if(event.which === 13){
+      if (!siblingRow) {
+        if (event.which === 38) {
+          siblingRow = document.getElementById(event.target.id).parentElement.lastElementChild;
+        } else {
+          siblingRow = document.getElementById(event.target.id).parentElement.firstElementChild;
+        }
+      }
+      siblingRow.focus();
+    } else if (event.which === 13) {
       const action = document.getElementById(event.target.id).getAttribute('data-action');
-      if(action){
+      if (action) {
         this.performAction(action);
         document.getElementById(this.selectedCell).focus();
       }
-    } else if(event.which === 27){
-      this.performAction("");
+    } else if (event.which === 27) {
+      this.performAction('');
       document.getElementById(this.selectedCell).focus();
     }
   }

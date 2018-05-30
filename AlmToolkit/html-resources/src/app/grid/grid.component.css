@@ -65,6 +65,17 @@
   background-color: #0078d7;
 }
 
+.action-dropdown:disabled{
+  color: #707070;
+}
+.selected-row .action-dropdown{
+  color: #FFF;
+}
+
+.selected-row .action-dropdown option{
+  color: #000;
+}
+
 .node-images {
     height: 15px;
     width: 15px;
