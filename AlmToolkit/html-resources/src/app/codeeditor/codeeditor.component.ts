@@ -34,7 +34,10 @@ export class CodeeditorComponent implements OnChanges {
       codeEditorContainer.removeChild(codeEditorContainer.firstChild);
     }
 
-    const diffEditor = monaco.editor.createDiffEditor(codeEditorContainer);
+    const diffEditor = monaco.editor.createDiffEditor(codeEditorContainer,{
+      scrollBeyondLastLine: false,
+      automaticLayout: true
+    });
     diffEditor.setModel({
       original: sourceDataModel,
       modified: targetDataModel

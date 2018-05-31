@@ -171,7 +171,7 @@ export class GridComponent implements OnInit {
           }
         }
 
-        // Select previous/next row
+        // Select previous/next row (Up, Down, Shift+Up, Shift+Down)
         if (columnType !== 'action-dropdown') {
           // Find the sibling based on the key pressed
           if (event.which === 38) {
@@ -199,6 +199,8 @@ export class GridComponent implements OnInit {
             siblingRow.classList.remove('selected-row');
             this.selectedNodes.splice(this.selectedNodes.indexOf(nodeSelected.Id), 1);
           }
+
+
           this.selectedObject = nodeSelected;
         }
       } else {
@@ -220,16 +222,16 @@ export class GridComponent implements OnInit {
           }
 
           // If last selected row exists, get its ID
-          if(this.lastSelectedRow){
+          if (this.lastSelectedRow) {
             rowId = this.lastSelectedRow.id;
             nodeSelected = this.comparisonDataToDisplay
-            .find(comparisonNode => comparisonNode.Id === parseInt(rowId.split('node-')[1], 10));
+              .find(comparisonNode => comparisonNode.Id === parseInt(rowId.split('node-')[1], 10));
           }
 
           // if the direction changes and lastSelectedRow is not same as 
           if (this.oldDirection && this.oldDirection !== this.direction
-              && this.lastSelectedRow && this.lastSelectedRow !== eventRow) {
-            if(this.selectedNodes.indexOf(nodeSelected.Id) > -1){
+            && this.lastSelectedRow && this.lastSelectedRow !== eventRow) {
+            if (this.selectedNodes.indexOf(nodeSelected.Id) > -1) {
               this.lastSelectedRow.classList.remove('selected-row');
               this.selectedNodes.splice(this.selectedNodes.indexOf(nodeSelected.Id), 1);
             } else {
@@ -244,7 +246,7 @@ export class GridComponent implements OnInit {
           nodeSelected = this.comparisonDataToDisplay
             .find(comparisonNode => comparisonNode.Id === parseInt(rowId.split('node-')[1], 10));
           if (this.oldDirection && this.oldDirection !== this.direction
-            && (firstRow === eventRow || lastRow === eventRow)){
+            && (firstRow === eventRow || lastRow === eventRow)) {
             if (this.selectedNodes.indexOf(nodeSelected.Id) > -1) {
               eventRow.classList.remove('selected-row');
               this.selectedNodes.splice(this.selectedNodes.indexOf(nodeSelected.Id), 1);
