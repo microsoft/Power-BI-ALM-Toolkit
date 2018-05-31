@@ -322,6 +322,9 @@
     <Content Include="html-resources\dist\polyfills.bundle.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="html-resources\dist\styles.bundle.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="html-resources\dist\symbol-sprite.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
