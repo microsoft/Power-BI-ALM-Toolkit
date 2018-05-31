@@ -1,5 +1,5 @@
-<div id='comparison-table-container'>
-  <table class='comparison-grid' (contextmenu)='showTreeControlContextMenu($event)'>
+<div *ngIf='comparisonDataToDisplay.length > 0' id='comparison-table-container'>
+  <table id='comparison-grid' (contextmenu)='showTreeControlContextMenu($event)'>
     <tr id='header-row' class='grid-row'>
       <td class='grid-column node-type-column'>Type</td>
       <td class='grid-column source-name-column'>Source Name</td>
@@ -43,7 +43,7 @@
     </tr>
   </table>
 </div>
-<app-codeeditor [comparisonData]='selectedObject'></app-codeeditor>
+<app-codeeditor *ngIf='comparisonDataToDisplay.length > 0' [comparisonData]='selectedObject'></app-codeeditor>
 <div *ngIf='showContextMenu == true'>
   <app-tree-control-context-menu [contextMenuPositionX]='treeControlContextMenuX' [contextMenuPositionY]='treeControlContextMenuY'
     [selectedNodes]='selectedNodes' [selectedCell]='selectedCell'></app-tree-control-context-menu>

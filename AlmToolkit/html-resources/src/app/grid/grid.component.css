@@ -1,12 +1,14 @@
 #comparison-table-container {
     height: 650px;
     overflow-y: auto;
+    background-color: #F2F2F2;
 }
 
-.comparison-grid {
+#comparison-grid {
     border: 1px solid rgba(112, 112, 112, 0.64);
     margin: 10px;
     border-collapse: collapse;
+    background-color: #FFF;
 }
 
 .grid-column {

@@ -17,6 +17,7 @@ export class GridComponent implements OnInit {
   showContextMenu = false;
   direction;
   oldDirection;
+  lastSelectedRow;
   treeControlContextMenuX = 0;
   treeControlContextMenuY = 0;
   selectedCell;
@@ -43,7 +44,7 @@ export class GridComponent implements OnInit {
       this.treeControlContextMenuX = event.clientX;
       this.treeControlContextMenuY = event.clientY;
     } else {
-      const comparisonGrid = <HTMLElement>document.getElementsByClassName('comparison-grid')[0];
+      const comparisonGrid = <HTMLElement>document.getElementById('comparison-grid');
       this.treeControlContextMenuX = Number((comparisonGrid.offsetHeight / 3).toFixed(2));
       this.treeControlContextMenuY = Number((comparisonGrid.offsetWidth / 3).toFixed(2));
     }
@@ -95,6 +96,7 @@ export class GridComponent implements OnInit {
     if (this.selectedNodes.indexOf(objectSelected.Id) === -1) {
       document.getElementById(rowId).classList.add('selected-row');
       this.selectedNodes.push(objectSelected.Id);
+      this.lastSelectedRow = document.getElementById(rowId);
     } else {
       document.getElementById(rowId).classList.remove('selected-row');
       this.selectedNodes.splice(this.selectedNodes.indexOf(objectSelected.Id), 1);
@@ -134,6 +136,8 @@ export class GridComponent implements OnInit {
       if (!event.ctrlKey) {
         // If shift key is not pressed its a single select
         if (!event.shiftKey) {
+          // Checking if the column in focus is dropdown
+          // If yes, change the option else empty the selected list and select the current row
           if (columnType === 'action-dropdown') {
             let dropdownElement: HTMLSelectElement;
             dropdownElement = <HTMLSelectElement>document.getElementById(event.target.id).firstElementChild;
@@ -167,6 +171,7 @@ export class GridComponent implements OnInit {
           }
         }
 
+        // Select previous/next row
         if (columnType !== 'action-dropdown') {
           // Find the sibling based on the key pressed
           if (event.which === 38) {
@@ -189,6 +194,7 @@ export class GridComponent implements OnInit {
           if (this.selectedNodes.indexOf(nodeSelected.Id) === -1) {
             siblingRow.classList.add('selected-row');
             this.selectedNodes.push(nodeSelected.Id);
+            this.lastSelectedRow = siblingRow;
           } else {
             siblingRow.classList.remove('selected-row');
             this.selectedNodes.splice(this.selectedNodes.indexOf(nodeSelected.Id), 1);
@@ -200,7 +206,10 @@ export class GridComponent implements OnInit {
         if (event.shiftKey) {
           let isSiblingAvailable = true;
           let prev = true;
-
+          let rowId;
+          let comparisonTable;
+          let firstRow;
+          let lastRow;
           // Decide if previous elements are to be fetched or next elements
           if (event.which === 38) {
             this.direction = 'up';
@@ -209,12 +218,40 @@ export class GridComponent implements OnInit {
             this.direction = 'down';
             prev = false;
           }
-          let rowId = eventRow.id;
+
+          // If last selected row exists, get its ID
+          if(this.lastSelectedRow){
+            rowId = this.lastSelectedRow.id;
+            nodeSelected = this.comparisonDataToDisplay
+            .find(comparisonNode => comparisonNode.Id === parseInt(rowId.split('node-')[1], 10));
+          }
+
+          // if the direction changes and lastSelectedRow is not same as 
+          if (this.oldDirection && this.oldDirection !== this.direction
+              && this.lastSelectedRow && this.lastSelectedRow !== eventRow) {
+            if(this.selectedNodes.indexOf(nodeSelected.Id) > -1){
+              this.lastSelectedRow.classList.remove('selected-row');
+              this.selectedNodes.splice(this.selectedNodes.indexOf(nodeSelected.Id), 1);
+            } else {
+              this.lastSelectedRow.classList.add('selected-row');
+              this.selectedNodes.push(nodeSelected.Id);
+            }
+          }
+          comparisonTable = document.getElementById('comparison-grid');
+          firstRow = this.getSiblingElement(false, comparisonTable.firstElementChild.firstElementChild.id);
+          lastRow = comparisonTable.firstElementChild.lastElementChild;
+          rowId = eventRow.id;
           nodeSelected = this.comparisonDataToDisplay
             .find(comparisonNode => comparisonNode.Id === parseInt(rowId.split('node-')[1], 10));
-          if (this.oldDirection && this.oldDirection !== this.direction && this.selectedNodes.indexOf(nodeSelected.Id) > -1) {
-            eventRow.classList.remove('selected-row');
-            this.selectedNodes.splice(this.selectedNodes.indexOf(nodeSelected.Id), 1);
+          if (this.oldDirection && this.oldDirection !== this.direction
+            && (firstRow === eventRow || lastRow === eventRow)){
+            if (this.selectedNodes.indexOf(nodeSelected.Id) > -1) {
+              eventRow.classList.remove('selected-row');
+              this.selectedNodes.splice(this.selectedNodes.indexOf(nodeSelected.Id), 1);
+            } else {
+              eventRow.classList.add('selected-row');
+              this.selectedNodes.push(nodeSelected.Id);
+            }
           }
           this.oldDirection = this.direction;
           // Find all elements above or below this row and select them as well
