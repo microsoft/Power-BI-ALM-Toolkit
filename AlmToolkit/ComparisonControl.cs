@@ -231,6 +231,7 @@ namespace AlmToolkit
                 //_diff.diff_cleanupSemanticLossless(_diffs);
                 //_diff.diff_cleanupEfficiency(_diffs);
 
+                // NG: Evaluate if this needs to be added
                 //Are we merging perspectives/cultures?
                 if (    (objType == ComparisonObjectType.Perspective && _comparisonInfo.OptionsInfo.OptionMergePerspectives) ||
                         (objType == ComparisonObjectType.Culture && _comparisonInfo.OptionsInfo.OptionMergeCultures)

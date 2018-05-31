@@ -13,6 +13,8 @@ using BismNormalizer;
 using BismNormalizer.TabularCompare;
 using BismNormalizer.TabularCompare.Core;
 using BismNormalizer.TabularCompare.UI;
+using CefSharp;
+using CefSharp.WinForms;
 
 namespace AlmToolkit
 {
@@ -22,7 +24,10 @@ namespace AlmToolkit
 
         private ComparisonInfo _comparisonInfo;
         private Comparison _comparison;
+        private ComparisonJSInteraction _comparisonInter; // CEFSharp Interface to connect to Angular Tree Control
+        private ChromiumWebBrowser chromeBrowser;
         private const string _appCaption = "ALM Toolkit for Power BI";
+        private CompareState _compareState = CompareState.NotCompared;
 
         #endregion
 
@@ -31,6 +36,42 @@ namespace AlmToolkit
         public ComparisonForm()
         {
             InitializeComponent();
+            InitializeChromium();
+        }
+
+        /// <summary>
+        /// Initialize the chrome browser with the html file to be opened
+        /// </summary>
+        private void InitializeChromium()
+        {
+            // Check if the page exists
+            string page = string.Format(@"{0}\html-resources\dist\index.html", Application.StartupPath);
+            if (!File.Exists(page))
+            {
+                MessageBox.Show("Error html file doesn't exist : " + page);
+            }
+
+            CefSettings settings = new CefSettings();
+            // Initialize cef with the provided settings
+            settings.BrowserSubprocessPath = @"x86\CefSharp.BrowserSubprocess.exe";
+
+            Cef.Initialize(settings, performDependencyCheck: false, browserProcessHandler: null);
+            // Create a browser component
+            chromeBrowser = new ChromiumWebBrowser(page);
+            // Add it to the form and fill it to the form window.
+            this.Controls.Add(chromeBrowser);
+            chromeBrowser.Dock = DockStyle.Fill;
+            chromeBrowser.BringToFront();
+
+            CefSharpSettings.LegacyJavascriptBindingEnabled = true;
+
+            // Initialize the interaction variable
+            _comparisonInter = new ComparisonJSInteraction(this);
+
+            // Register C# objects
+            chromeBrowser.RegisterAsyncJsObject("chromeDebugger", new ChromeDebugger(chromeBrowser, this));
+            chromeBrowser.RegisterAsyncJsObject("comparisonJSInteraction", _comparisonInter);
+
         }
 
         private void ComparisonForm_Load(object sender, EventArgs e)
@@ -74,6 +115,9 @@ namespace AlmToolkit
             toolStripStatusLabel1.Text = "";
 
             ComparisonCtrl.SetNotComparedState();
+
+            _compareState = CompareState.NotCompared;
+            SetGridState(false);
         }
 
         private void SetComparedState()
@@ -94,6 +138,11 @@ namespace AlmToolkit
             btnReportDifferences.Enabled = true;
 
             ComparisonCtrl.SetComparedState();
+
+            // NG: Disable skip and other actions for the control here
+            _compareState = CompareState.Compared;
+
+            SetGridState(true);
         }
 
         private void SetValidatedState()
@@ -101,6 +150,8 @@ namespace AlmToolkit
             btnUpdate.Enabled = true;
             btnGenerateScript.Enabled = true;
 
+            _compareState = CompareState.Validated;
+            // This method needs to be moved out of comparison control during clean up
             ComparisonCtrl.SetValidatedState();
         }
 
@@ -147,11 +198,18 @@ namespace AlmToolkit
 
         private bool ShowConnectionsForm()
         {
-            if (ComparisonCtrl.CompareState != CompareState.NotCompared)
+            //if (ComparisonCtrl.CompareState != CompareState.NotCompared)
+            //{
+            //    
+            //    ComparisonCtrl.RefreshSkipSelections();
+            //}
+
+            if (_compareState != CompareState.NotCompared)
             {
                 //just in case user has some selections, store them to the SkipSelections collection
-                ComparisonCtrl.RefreshSkipSelections();
+                _comparison.RefreshSkipSelectionsFromComparisonObjects();
             }
+
 
             Connections connForm = new Connections();
             connForm.ComparisonInfo = _comparisonInfo;
@@ -214,13 +272,46 @@ namespace AlmToolkit
                 SetAutoComplete();
                 _comparison.CompareTabularModels();
 
-                ComparisonCtrl.ComparisonChanged += HandleComparisonChanged;
+                // Avoid conflict for validate with existing control
+                //ComparisonCtrl.ComparisonChanged += HandleComparisonChanged;
                 ComparisonCtrl.Comparison = _comparison;
                 ComparisonCtrl.DataBindComparison();
+
+                _comparisonInter.Comparison = _comparison;
+                transformAndRefreshGridControl();
 
                 SetComparedState();
             }
         }
+
+        #region Angular tree control handlers
+        private void transformAndRefreshGridControl()
+        {
+            _comparisonInter.SetComparisonData();
+            // Send notification to refresh the grid
+            refreshGridControl(false);
+        }
+
+        /// <summary>
+        /// Send notification to refresh the grid control on UI
+        /// </summary>
+        public void refreshGridControl(bool mergeActions)
+        {
+            // Invoke method in Angular
+            string script = "window.angularComponentRef.zone.run(() => { window.angularComponentRef.showTree(" + (mergeActions ? "true" : "false") + "); })";
+            chromeBrowser.ExecuteScriptAsync(script);
+        }
+
+        private void SetGridState(bool showGrid)
+        {
+            // Check if we need to clear the comparison node and comparison list as well
+
+
+            // Call Angular method to show/hide grid here
+        }
+        #endregion
+
+
 
         private void GetFromAutoCompleteSource()
         {
@@ -338,7 +429,13 @@ namespace AlmToolkit
             if (optionsForm.DialogResult == DialogResult.OK)
             {
                 ComparisonCtrl.TriggerComparisonChanged();
-                if (ComparisonCtrl.CompareState != CompareState.NotCompared)
+                //if (ComparisonCtrl.CompareState != CompareState.NotCompared)
+                //{
+                //    SetNotComparedState();
+                //    toolStripStatusLabel1.Text = "Comparison invalidated. Please re-run the comparison.";
+                //}
+
+                if (_compareState != CompareState.NotCompared)
                 {
                     SetNotComparedState();
                     toolStripStatusLabel1.Text = "Comparison invalidated. Please re-run the comparison.";
@@ -386,22 +483,34 @@ namespace AlmToolkit
         private void mnuHideSkipObjects_Click(object sender, EventArgs e)
         {
             ComparisonCtrl.ShowHideNodes(true);
+
+            _comparisonInter.ShowHideSkipNodes(true);
+            refreshGridControl(true);
         }
 
         private void mnuHideSkipObjectsWithSameDefinition_Click(object sender, EventArgs e)
         {
             ComparisonCtrl.ShowHideNodes(true, sameDefinitionFilter: true);
+
+            _comparisonInter.ShowHideSkipNodes(true, sameDefinitionFilter: true);
+            refreshGridControl(true);
         }
 
         private void mnuShowSkipObjects_Click(object sender, EventArgs e)
         {
             ComparisonCtrl.ShowHideNodes(false);
+
+            _comparisonInter.ShowHideSkipNodes(false);
+            refreshGridControl(true);
         }
 
         private void mnuSkipAllObjectsMissingInSource_Click(object sender, EventArgs e)
         {
             ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.MissingInSource);
             SetComparedState();
+
+            _comparisonInter.SkipItems(false, ComparisonObjectStatus.MissingInSource);
+            refreshGridControl(true);
         }
 
         private void mnuDeleteAllObjectsMissingInSource_Click(object sender, EventArgs e)
@@ -409,12 +518,19 @@ namespace AlmToolkit
             ComparisonCtrl.ShowHideNodes(false);
             ComparisonCtrl.DeleteItems(false);
             SetComparedState();
+
+            _comparisonInter.ShowHideSkipNodes(false);
+            _comparisonInter.DeleteItems(false);
+            refreshGridControl(true);
         }
 
         private void mnuSkipAllObjectsMissingInTarget_Click(object sender, EventArgs e)
         {
             ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.MissingInTarget);
             SetComparedState();
+
+            _comparisonInter.SkipItems(false, ComparisonObjectStatus.MissingInTarget);
+            refreshGridControl(true);
         }
 
         private void mnuCreateAllObjectsMissingInTarget_Click(object sender, EventArgs e)
@@ -422,12 +538,19 @@ namespace AlmToolkit
             ComparisonCtrl.ShowHideNodes(false);
             ComparisonCtrl.CreateItems(false);
             SetComparedState();
+
+            _comparisonInter.ShowHideSkipNodes(false);
+            _comparisonInter.CreateItems(false);
+            refreshGridControl(true);
         }
 
         private void mnuSkipAllObjectsWithDifferentDefinitions_Click(object sender, EventArgs e)
         {
             ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.DifferentDefinitions);
             SetComparedState();
+
+            _comparisonInter.SkipItems(false, ComparisonObjectStatus.DifferentDefinitions);
+            refreshGridControl(true);
         }
 
         private void mnuUpdateAllObjectsWithDifferentDefinitions_Click(object sender, EventArgs e)
@@ -435,6 +558,10 @@ namespace AlmToolkit
             ComparisonCtrl.ShowHideNodes(false);
             ComparisonCtrl.UpdateItems(false);
             SetComparedState();
+
+            _comparisonInter.ShowHideSkipNodes(false);
+            _comparisonInter.UpdateItems(false);
+            refreshGridControl(true);
         }
 
         private void btnValidateSelection_Click(object sender, EventArgs e)
@@ -443,7 +570,9 @@ namespace AlmToolkit
             {
                 Cursor.Current = Cursors.WaitCursor;
                 toolStripStatusLabel1.Text = "ALM Toolkit - validating ...";
-                ComparisonCtrl.RefreshDiffResultsFromGrid();
+
+                // Not required since _comparison object is always updated with latest updates
+                //ComparisonCtrl.RefreshDiffResultsFromGrid();
 
                 WarningListForm warningList = new WarningListForm();
                 warningList.Comparison = _comparison;
@@ -476,14 +605,25 @@ namespace AlmToolkit
             {
                 Cursor.Current = Cursors.WaitCursor;
                 toolStripStatusLabel1.Text = "ALM Toolkit - committing changes ...";
-                ComparisonCtrl.RefreshSkipSelections();
-                bool update = _comparison.Update();
-                toolStripStatusLabel1.Text = "ALM Toolkit - finished committing changes";
+                // Not required since _comparison object is always updated with latest updates
+                //ComparisonCtrl.RefreshSkipSelections();
 
-                SetNotComparedState();
-                if (update && MessageBox.Show($"Updated {(_comparisonInfo.ConnectionInfoTarget.UseProject ? "project " + _comparisonInfo.ConnectionInfoTarget.ProjectName : "database " + _comparisonInfo.ConnectionInfoTarget.DatabaseName)}.\n\nDo you want to refresh the comparison?", _appCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (_compareState != CompareState.NotCompared && _comparison != null)
                 {
-                    this.CompareTabularModels();
+                    _comparison.RefreshSkipSelectionsFromComparisonObjects();
+
+                    bool update = _comparison.Update();
+                    toolStripStatusLabel1.Text = "ALM Toolkit - finished committing changes";
+
+                    SetNotComparedState();
+                    if (update && MessageBox.Show($"Updated {(_comparisonInfo.ConnectionInfoTarget.UseProject ? "project " + _comparisonInfo.ConnectionInfoTarget.ProjectName : "database " + _comparisonInfo.ConnectionInfoTarget.DatabaseName)}.\n\nDo you want to refresh the comparison?", _appCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        this.CompareTabularModels();
+                    }
+                }
+                else
+                {
+                    toolStripStatusLabel1.Text = "ALM Toolkit - require validation for changes";
                 }
             }
 
@@ -518,6 +658,23 @@ namespace AlmToolkit
                 toolStripStatusLabel1.Text = "ALM Toolkit - models compared";
             }
         }
+
+        public void HandleComparisonChanged()
+        {
+            //If user changes a skip selection after validation, need to disable Update button
+            if (_compareState == CompareState.Validated)
+            {
+                if (InvokeRequired)
+                {
+                    this.Invoke(new MethodInvoker(delegate
+                    {
+                        SetComparedState();
+                        toolStripStatusLabel1.Text = "ALM Toolkit - models compared";
+                    }));
+                }
+            }
+        }
+
 
         #endregion
 
