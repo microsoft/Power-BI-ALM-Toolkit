@@ -14,7 +14,6 @@ export class AppLogService {
   add(message: string, entryType: string) {
     this.messages.push(message);
 
-    if (!environment.production) {
       entryType = entryType ? entryType.toLowerCase() : '';
 
       switch (entryType) {
@@ -29,7 +28,7 @@ export class AppLogService {
           console.log(message);
       }
 
-    }
+    
   }
 
   /**

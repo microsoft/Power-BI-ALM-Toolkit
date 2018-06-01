@@ -21,6 +21,8 @@ export class GridComponent implements OnInit {
   treeControlContextMenuX = 0;
   treeControlContextMenuY = 0;
   selectedCell;
+  isDataAvailable = false;
+  intervalId;
   constructor(private gridService: GridDataService, private appLog: AppLogService, private zone: NgZone) {
     window['angularComponentRef'] = {
       zone: this.zone,
@@ -30,7 +32,28 @@ export class GridComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getDataToDisplay(true);
+    this.getDataToDisplay(false);
+  }
+
+  /**
+   * Focus on first row and bind click events to elements
+   * @param checkData- complete data to match the count of rendered elements and actual nodes
+   */
+  bindElements(checkData: ComparisonNode[]) {
+    if (!this.isDataAvailable) {
+      let disabledDropdowns;
+      const gridRow = document.querySelectorAll('.grid-data-row');
+      const dataRowCount = gridRow.length;
+      
+      if (checkData && dataRowCount === checkData.length) {
+        this.isDataAvailable = true;
+        document.getElementById('comparison-grid');
+        const firstDataCell = <HTMLElement>gridRow[0].firstElementChild;
+        this.appLog.add('Focus on first cell', 'info')
+        firstDataCell.focus();
+        clearInterval(this.intervalId);
+      }
+    }
   }
 
   /**
@@ -388,16 +411,21 @@ export class GridComponent implements OnInit {
    * Get the data to be displayed from service
    */
   getDataToDisplay(mergeActions: boolean): void {
-    this.appLog.add('Grid: Get users called', 'info');
-
     this.gridService.getGridDataToDisplay().subscribe(
       (data) => {
         if (mergeActions) {
           this.changeOptions(data);
         } else {
+          this.isDataAvailable = false;
           this.comparisonDataToDisplay = data;
+          const checkData = this.comparisonDataToDisplay;
           if (this.comparisonDataToDisplay.length > 0) {
             this.selectedObject = this.comparisonDataToDisplay[0];
+            const that = this;
+            const methodToCall = function () {
+              that.bindElements(checkData);
+            }
+            this.intervalId = setInterval(methodToCall, 1000);
           }
         }
         this.showContextMenu = false;
