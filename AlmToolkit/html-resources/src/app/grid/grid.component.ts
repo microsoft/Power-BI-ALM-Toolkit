@@ -35,6 +35,10 @@ export class GridComponent implements OnInit {
     this.getDataToDisplay(false);
   }
 
+  onDisableDropdownClick() {
+    this.appLog.add('Disabled dropdown clicked','info');
+  }
+
   /**
    * Focus on first row and bind click events to elements
    * @param checkData- complete data to match the count of rendered elements and actual nodes
@@ -43,15 +47,32 @@ export class GridComponent implements OnInit {
     if (!this.isDataAvailable) {
       let disabledDropdowns;
       const gridRow = document.querySelectorAll('.grid-data-row');
+
       const dataRowCount = gridRow.length;
-      
+
       if (checkData && dataRowCount === checkData.length) {
         this.isDataAvailable = true;
-        document.getElementById('comparison-grid');
+        disabledDropdowns = document.querySelectorAll('.dropdown-disabled');
+        for(let dropdownCounter = 0; dropdownCounter < disabledDropdowns.length; dropdownCounter+=1){
+          disabledDropdowns[dropdownCounter].onclick = this.onDisableDropdownClick;
+        }
         const firstDataCell = <HTMLElement>gridRow[0].firstElementChild;
         this.appLog.add('Focus on first cell', 'info')
         firstDataCell.focus();
+        this.appLog.add('Finding focus element','info');
+        let focused = document.activeElement;
+        if (!focused || focused == document.body){
+            this.appLog.add('Focus element was not correct', 'info');
+            focused = null;
+        } else if (document.querySelector) {
+          this.appLog.add('Finding focus using :focus', 'info');
+          focused = document.querySelector(":focus");
+          if(focused){
+            this.appLog.add('Focus element','info');
+          }
+        }
         clearInterval(this.intervalId);
+
       }
     }
   }
