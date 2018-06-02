@@ -27,7 +27,8 @@ export class GridComponent implements OnInit {
     window['angularComponentRef'] = {
       zone: this.zone,
       showTree: (mergeActions: boolean) => this.getDataToDisplay(mergeActions),
-      getTree: () => this.getGridData()
+      getTree: () => this.getGridData(),
+      clearTree: (dataCompared: boolean) => this.clearGrid(dataCompared)
     };
   }
 
@@ -35,8 +36,21 @@ export class GridComponent implements OnInit {
     this.getDataToDisplay(false);
   }
 
+  /**
+   * Clear the data object when the compared state is set to false
+   * @param dataCompared - Comparison status
+   */
+  clearGrid(dataCompared: boolean) {
+    if (!dataCompared) {
+      this.comparisonDataToDisplay = [];
+    }
+  }
+
+  /**
+   * Perform row selection when disabled dropdown is clicked
+   */
   onDisableDropdownClick() {
-    this.appLog.add('Disabled dropdown clicked','info');
+    this.appLog.add('Disabled dropdown clicked', 'info');
   }
 
   /**
@@ -53,22 +67,22 @@ export class GridComponent implements OnInit {
       if (checkData && dataRowCount === checkData.length) {
         this.isDataAvailable = true;
         disabledDropdowns = document.querySelectorAll('.dropdown-disabled');
-        for(let dropdownCounter = 0; dropdownCounter < disabledDropdowns.length; dropdownCounter+=1){
+        for (let dropdownCounter = 0; dropdownCounter < disabledDropdowns.length; dropdownCounter += 1) {
           disabledDropdowns[dropdownCounter].onclick = this.onDisableDropdownClick;
         }
         const firstDataCell = <HTMLElement>gridRow[0].firstElementChild;
         this.appLog.add('Focus on first cell', 'info')
         firstDataCell.focus();
-        this.appLog.add('Finding focus element','info');
+        this.appLog.add('Finding focus element', 'info');
         let focused = document.activeElement;
-        if (!focused || focused == document.body){
-            this.appLog.add('Focus element was not correct', 'info');
-            focused = null;
+        if (!focused || focused == document.body) {
+          this.appLog.add('Focus element was not correct', 'info');
+          focused = null;
         } else if (document.querySelector) {
           this.appLog.add('Finding focus using :focus', 'info');
           focused = document.querySelector(":focus");
-          if(focused){
-            this.appLog.add('Focus element','info');
+          if (focused) {
+            this.appLog.add('Focus element', 'info');
           }
         }
         clearInterval(this.intervalId);
@@ -102,6 +116,7 @@ export class GridComponent implements OnInit {
     * @param event - Event to check if CTRL key was pressed
     */
   onSelect(objectSelected: ComparisonNode, event: any): void {
+    event.stopPropagation();
     this.showContextMenu = false;
     this.appLog.add('Grid: Row selected', 'info');
     const rowId = 'node-' + objectSelected.Id;
