@@ -39,12 +39,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\BismNormalizer\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms.Ribbon">
+      <HintPath>.\System.Windows.Forms.Ribbon.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -366,6 +372,21 @@
     <Content Include="html-resources\src\favicon.ico" />
     <Content Include="html-resources\src\index.html" />
     <Content Include="html-resources\src\styles.css" />
+    <Content Include="Images\AlmToolkit.ico" />
+    <Content Include="Images\Compare.png" />
+    <Content Include="Images\Exit.png" />
+    <Content Include="Images\Help.png" />
+    <Content Include="Images\MAQSoftware.png" />
+    <Content Include="Images\Open.png" />
+    <Content Include="Images\Options.png" />
+    <Content Include="Images\PowerBi.png" />
+    <Content Include="Images\Report.png" />
+    <Content Include="Images\Save.png" />
+    <Content Include="Images\SaveAs.png" />
+    <Content Include="Images\Script.png" />
+    <Content Include="Images\SelectActions.png" />
+    <Content Include="Images\Update.png" />
+    <Content Include="Images\Validate.png" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="html-resources\e2e\app.e2e-spec.ts" />

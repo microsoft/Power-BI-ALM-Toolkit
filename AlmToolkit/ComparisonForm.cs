@@ -77,10 +77,12 @@ namespace AlmToolkit
         private void ComparisonForm_Load(object sender, EventArgs e)
         {
             _comparisonInfo = new ComparisonInfo();
-            ComparisonCtrl.ComparisonInfo = _comparisonInfo;
+            //ComparisonCtrl.ComparisonInfo = _comparisonInfo;
 
             GetFromAutoCompleteSource();
             GetFromAutoCompleteTarget();
+
+            SetNotComparedState();
 
             //hdpi
             Rescale();
@@ -114,7 +116,7 @@ namespace AlmToolkit
             btnReportDifferences.Enabled = false;
             toolStripStatusLabel1.Text = "";
 
-            ComparisonCtrl.SetNotComparedState();
+            //ComparisonCtrl.SetNotComparedState();
 
             _compareState = CompareState.NotCompared;
             SetGridState(false);
@@ -137,7 +139,7 @@ namespace AlmToolkit
             btnGenerateScript.Enabled = false;
             btnReportDifferences.Enabled = true;
 
-            ComparisonCtrl.SetComparedState();
+            //ComparisonCtrl.SetComparedState();
 
             // NG: Disable skip and other actions for the control here
             _compareState = CompareState.Compared;
@@ -152,7 +154,7 @@ namespace AlmToolkit
 
             _compareState = CompareState.Validated;
             // This method needs to be moved out of comparison control during clean up
-            ComparisonCtrl.SetValidatedState();
+            //ComparisonCtrl.SetValidatedState();
         }
 
         private void LoadFile(string fileName)
@@ -165,7 +167,7 @@ namespace AlmToolkit
                     return;
                 }
                 _comparisonInfo = ComparisonInfo.DeserializeBsmnFile(fileName);
-                ComparisonCtrl.ComparisonInfo = _comparisonInfo;
+                //ComparisonCtrl.ComparisonInfo = _comparisonInfo;
 
                 PopulateSourceTargetTextBoxes();
             }
@@ -183,7 +185,7 @@ namespace AlmToolkit
         {
             try
             {
-                ComparisonCtrl.RefreshSkipSelections();
+                //ComparisonCtrl.RefreshSkipSelections();
 
                 XmlSerializer writer = new XmlSerializer(typeof(ComparisonInfo));
                 StreamWriter file = new System.IO.StreamWriter(fileName);
@@ -233,19 +235,19 @@ namespace AlmToolkit
 
                 if (!ShowConnectionsForm()) return;
 
-                Cursor.Current = Cursors.WaitCursor;
-                toolStripStatusLabel1.Text = "ALM Toolkit - comparing models ...";
+                Cursor = Cursors.WaitCursor;
+                toolStripStatusLabel1.Text = "ALM Toolkit - comparing datasets ...";
 
                 PopulateSourceTargetTextBoxes();
                 if (sourceTemp != txtSource.Text || targetTemp != txtTarget.Text)
                 {
                     // New connections
-                    ComparisonCtrl.TriggerComparisonChanged();
+                    //ComparisonCtrl.TriggerComparisonChanged();
                     _comparisonInfo.SkipSelections.Clear();
                 }
 
                 this.CompareTabularModels();
-                toolStripStatusLabel1.Text = "ALM Toolkit - finished comparing models";
+                toolStripStatusLabel1.Text = "ALM Toolkit - finished comparing datasets";
             }
             catch (Exception exc)
             {
@@ -254,7 +256,7 @@ namespace AlmToolkit
             }
             finally
             {
-                Cursor.Current = Cursors.Default;
+                Cursor = Cursors.Default;
             }
         }
 
@@ -274,8 +276,8 @@ namespace AlmToolkit
 
                 // Avoid conflict for validate with existing control
                 //ComparisonCtrl.ComparisonChanged += HandleComparisonChanged;
-                ComparisonCtrl.Comparison = _comparison;
-                ComparisonCtrl.DataBindComparison();
+                //ComparisonCtrl.Comparison = _comparison;
+                //ComparisonCtrl.DataBindComparison();
 
                 _comparisonInter.Comparison = _comparison;
                 transformAndRefreshGridControl();
@@ -428,7 +430,7 @@ namespace AlmToolkit
             optionsForm.ShowDialog();
             if (optionsForm.DialogResult == DialogResult.OK)
             {
-                ComparisonCtrl.TriggerComparisonChanged();
+                //ComparisonCtrl.TriggerComparisonChanged();
                 //if (ComparisonCtrl.CompareState != CompareState.NotCompared)
                 //{
                 //    SetNotComparedState();
@@ -482,7 +484,7 @@ namespace AlmToolkit
 
         private void mnuHideSkipObjects_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.ShowHideNodes(true);
+            //ComparisonCtrl.ShowHideNodes(true);
 
             _comparisonInter.ShowHideSkipNodes(true);
             refreshGridControl(true);
@@ -490,7 +492,7 @@ namespace AlmToolkit
 
         private void mnuHideSkipObjectsWithSameDefinition_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.ShowHideNodes(true, sameDefinitionFilter: true);
+            //ComparisonCtrl.ShowHideNodes(true, sameDefinitionFilter: true);
 
             _comparisonInter.ShowHideSkipNodes(true, sameDefinitionFilter: true);
             refreshGridControl(true);
@@ -498,7 +500,7 @@ namespace AlmToolkit
 
         private void mnuShowSkipObjects_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.ShowHideNodes(false);
+            //ComparisonCtrl.ShowHideNodes(false);
 
             _comparisonInter.ShowHideSkipNodes(false);
             refreshGridControl(true);
@@ -506,7 +508,7 @@ namespace AlmToolkit
 
         private void mnuSkipAllObjectsMissingInSource_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.MissingInSource);
+            //ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.MissingInSource);
             SetComparedState();
 
             _comparisonInter.SkipItems(false, ComparisonObjectStatus.MissingInSource);
@@ -515,8 +517,8 @@ namespace AlmToolkit
 
         private void mnuDeleteAllObjectsMissingInSource_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.ShowHideNodes(false);
-            ComparisonCtrl.DeleteItems(false);
+            //ComparisonCtrl.ShowHideNodes(false);
+            //ComparisonCtrl.DeleteItems(false);
             SetComparedState();
 
             _comparisonInter.ShowHideSkipNodes(false);
@@ -526,7 +528,7 @@ namespace AlmToolkit
 
         private void mnuSkipAllObjectsMissingInTarget_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.MissingInTarget);
+            //ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.MissingInTarget);
             SetComparedState();
 
             _comparisonInter.SkipItems(false, ComparisonObjectStatus.MissingInTarget);
@@ -535,8 +537,8 @@ namespace AlmToolkit
 
         private void mnuCreateAllObjectsMissingInTarget_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.ShowHideNodes(false);
-            ComparisonCtrl.CreateItems(false);
+            //ComparisonCtrl.ShowHideNodes(false);
+            //ComparisonCtrl.CreateItems(false);
             SetComparedState();
 
             _comparisonInter.ShowHideSkipNodes(false);
@@ -546,7 +548,7 @@ namespace AlmToolkit
 
         private void mnuSkipAllObjectsWithDifferentDefinitions_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.DifferentDefinitions);
+            //ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.DifferentDefinitions);
             SetComparedState();
 
             _comparisonInter.SkipItems(false, ComparisonObjectStatus.DifferentDefinitions);
@@ -555,8 +557,8 @@ namespace AlmToolkit
 
         private void mnuUpdateAllObjectsWithDifferentDefinitions_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.ShowHideNodes(false);
-            ComparisonCtrl.UpdateItems(false);
+            //ComparisonCtrl.ShowHideNodes(false);
+            //ComparisonCtrl.UpdateItems(false);
             SetComparedState();
 
             _comparisonInter.ShowHideSkipNodes(false);
@@ -576,7 +578,7 @@ namespace AlmToolkit
 
                 WarningListForm warningList = new WarningListForm();
                 warningList.Comparison = _comparison;
-                warningList.TreeGridImageList = ComparisonCtrl.TreeGridImageList;
+                //warningList.TreeGridImageList = ComparisonCtrl.TreeGridImageList;
                 warningList.StartPosition = FormStartPosition.CenterParent;
                 warningList.ShowDialog();
 
@@ -652,11 +654,11 @@ namespace AlmToolkit
         private void HandleComparisonChanged(object sender, EventArgs e)
         {
             //If user changes a skip selection after validation, need to disable Update button
-            if (ComparisonCtrl.CompareState == CompareState.Validated)
-            {
-                SetComparedState();
-                toolStripStatusLabel1.Text = "ALM Toolkit - models compared";
-            }
+            //if (ComparisonCtrl.CompareState == CompareState.Validated)
+            //{
+            //    SetComparedState();
+            //    toolStripStatusLabel1.Text = "ALM Toolkit - datasets compared";
+            //}
         }
 
         public void HandleComparisonChanged()
@@ -669,10 +671,19 @@ namespace AlmToolkit
                     this.Invoke(new MethodInvoker(delegate
                     {
                         SetComparedState();
-                        toolStripStatusLabel1.Text = "ALM Toolkit - models compared";
+                        toolStripStatusLabel1.Text = "ALM Toolkit - datasets compared";
                     }));
                 }
             }
+        }
+
+        private void maqSoftwareLogo_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start("https://maqsoftware.com/");
+            }
+            catch { }
         }
 
 
@@ -683,9 +694,16 @@ namespace AlmToolkit
         private float _dpiScaleFactor = 1;
         private void Rescale()
         {
+            float fudgedDpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
+
+            //pnlRibbon.Height = Convert.ToInt32(Convert.ToDouble(ribbonMain.Height) * HighDPIUtils.SecondaryFudgeFactor * 0.93);
+            ribbonMain.Height = pnlRibbon.Height;
+            spltSourceTarget.SplitterDistance = Convert.ToInt32(Convert.ToDouble(spltSourceTarget.Width) * 0.5);
+            txtSource.Width = Convert.ToInt32(Convert.ToDouble(Convert.ToDouble(spltSourceTarget.Width) * 0.5) * 0.9);
+            txtTarget.Width = Convert.ToInt32(Convert.ToDouble(Convert.ToDouble(spltSourceTarget.Width) * 0.5) * 0.9);
+
             this._dpiScaleFactor = HighDPIUtils.GetDpiFactor();
             if (this._dpiScaleFactor == 1) return;
-            float fudgedDpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
 
             this.Scale(new SizeF(fudgedDpiScaleFactor, fudgedDpiScaleFactor));
 
@@ -696,11 +714,7 @@ namespace AlmToolkit
                                 pnlHeader.Font.Size * fudgedDpiScaleFactor,
                                 pnlHeader.Font.Style);
 
-            spltSourceTarget.SplitterDistance = Convert.ToInt32(Convert.ToDouble(spltSourceTarget.Width) * 0.5);
-            pnlHeader.Height = Convert.ToInt32(toolStrip1.Height * 2.3); // Convert.ToInt32(pnlHeader.Height * fudgedDpiScaleFactor * 0.68);
-            txtSource.Width = Convert.ToInt32(Convert.ToDouble(Convert.ToDouble(spltSourceTarget.Width) * 0.5) * 0.8);
             txtSource.Left = Convert.ToInt32(txtSource.Left * fudgedDpiScaleFactor * 0.9);
-            txtTarget.Width = Convert.ToInt32(Convert.ToDouble(Convert.ToDouble(spltSourceTarget.Width) * 0.5) * 0.8);
             txtTarget.Left = Convert.ToInt32(txtTarget.Left * fudgedDpiScaleFactor * 0.9);
         }
 
