@@ -119,49 +119,122 @@ export class GridComponent implements OnInit {
     event.stopPropagation();
     this.showContextMenu = false;
     this.appLog.add('Grid: Row selected', 'info');
-    const rowId = 'node-' + objectSelected.Id;
+    let rowId;
+
+    rowId = 'node-' + objectSelected.Id;
+
     const controlKeyDown = event.ctrlKey;
+    const shiftKeyDown = event.shiftKey;
 
     // Remove the transparent background color from existing cells
     const transparentCells = document.querySelectorAll('.transparent-cell');
 
-    if (!controlKeyDown) {
-      for (let iTransparentCellCounter = 0; iTransparentCellCounter < transparentCells.length; iTransparentCellCounter += 1) {
-        transparentCells[iTransparentCellCounter].classList.remove('transparent-cell');
-      }
+    for (let iTransparentCellCounter = 0; iTransparentCellCounter < transparentCells.length; iTransparentCellCounter += 1) {
+      transparentCells[iTransparentCellCounter].classList.remove('transparent-cell');
     }
 
+    if (!shiftKeyDown) {
+      // Remove selection from already selected rows
+      const selectedRows = document.querySelectorAll('.selected-row');
 
-    // Get the greyed out cells in the selected row to make them transparent
-    const greyedOutCells = document.querySelectorAll('#' + rowId + ' .greyed-out-cell');
+      if (!controlKeyDown) {
+        this.selectedNodes = [];
+        for (let iRowCounter = 0; iRowCounter < selectedRows.length; iRowCounter += 1) {
+          selectedRows[iRowCounter].classList.remove('selected-row');
+        }
+      }
 
-    for (let iCellCounter = 0; iCellCounter < greyedOutCells.length; iCellCounter += 1) {
+      // Highlight the currently selected row
+      if (this.selectedNodes.indexOf(objectSelected.Id) === -1) {
+        document.getElementById(rowId).classList.add('selected-row');
+        this.selectedNodes.push(objectSelected.Id);
+        this.lastSelectedRow = document.getElementById(rowId);
+      } else {
+        document.getElementById(rowId).classList.remove('selected-row');
+        this.selectedNodes.splice(this.selectedNodes.indexOf(objectSelected.Id), 1);
+      }
+      this.selectedObject = objectSelected;
+    } else {
+      let prev;
+      let startRow = document.getElementById(this.lastSelectedRow.id);
+      let endRow;
+      let columnType;
+      
+      endRow = document.getElementById(event.target.id).parentElement;
+      if (!(startRow.classList.contains('grid-row') && endRow.classList.contains('grid-row'))) {
+
+        if (startRow.classList.contains('grid-row')) {
+          startRow = <HTMLElement>this.getSiblingElement(false, startRow.id);
+        }
+        if (endRow.classList.contains('grid-row')) {
+          endRow = <HTMLElement>this.getSiblingElement(true, endRow.id);
+        }
+
+        columnType = document.getElementById(event.target.id).getAttribute('data-column-type');
+
+        const startIndex = parseInt(startRow.getAttribute('data-row-number'), 10);
+        const endIndex = parseInt(endRow.getAttribute('data-row-number'), 10);
+        if (startIndex !== endIndex) {
+          if (startIndex < endIndex) {
+            prev = false;
+          } else {
+            prev = true;
+          }
+          this.selectRange(prev, startRow.id, endRow.id, columnType);
+        } else {
+          document.getElementById(rowId).classList.add('selected-row');
+          this.selectedObject = objectSelected;
+        }
+      }
+    }
+    // add transparent cell class to all the rows selected
+    const greyedOutCells = document.querySelectorAll('.selected-row .greyed-out-cell');
+    for (let iCellCounter = 0; iCellCounter < greyedOutCells.length; iCellCounter++) {
       greyedOutCells[iCellCounter].classList.add('transparent-cell');
     }
+  }
 
+  /**
+   * Select all rows in the range specified
+   * @param directionToMove - Direction to select rows in
+   * @param startRowId - First row selected
+   * @param endRowId - Last row selected
+   * @param columnType - column that was selected
+   */
+  selectRange(directionToMove: boolean, startRowId, endRowId, columnType) {
+    let isSiblingAvailable = true;
+    let siblingRow;
+    let nodeSelected;
+    // Find all elements above or below this row and select them as well
+    while (isSiblingAvailable) {
+      siblingRow = this.getSiblingElement(directionToMove, startRowId);
+      if (siblingRow && siblingRow.id && siblingRow.id !== endRowId) {
+        startRowId = siblingRow.id;
+        document.getElementById(startRowId + '-' + columnType).focus();
+        nodeSelected = this.comparisonDataToDisplay
+          .find(comparisonNode => comparisonNode.Id === parseInt(startRowId.split('node-')[1], 10));
+        this.selectedObject = nodeSelected;
 
-    // Remove selection from already selected rows
-    const selectedRows = document.querySelectorAll('.selected-row');
+        if (this.selectedNodes.indexOf(nodeSelected.Id) === -1) {
+          siblingRow.classList.add('selected-row');
+          this.selectedNodes.push(nodeSelected.Id);
+        }
 
-    if (!controlKeyDown) {
-      this.selectedNodes = [];
-      for (let iRowCounter = 0; iRowCounter < selectedRows.length; iRowCounter += 1) {
-        selectedRows[iRowCounter].classList.remove('selected-row');
+        siblingRow.focus();
+        siblingRow = this.getSiblingElement(directionToMove, startRowId);
+      } else {
+        isSiblingAvailable = false;
       }
     }
-
-
-    // Highlight the currently selected row
-    if (this.selectedNodes.indexOf(objectSelected.Id) === -1) {
-      document.getElementById(rowId).classList.add('selected-row');
-      this.selectedNodes.push(objectSelected.Id);
-      this.lastSelectedRow = document.getElementById(rowId);
-    } else {
-      document.getElementById(rowId).classList.remove('selected-row');
-      this.selectedNodes.splice(this.selectedNodes.indexOf(objectSelected.Id), 1);
+    document.getElementById(endRowId).classList.add('selected-row');
+    nodeSelected = this.comparisonDataToDisplay
+      .find(comparisonNode => comparisonNode.Id === parseInt(endRowId.split('node-')[1], 10));
+    this.selectedObject = nodeSelected;
+    if (this.selectedNodes.indexOf(nodeSelected.Id) === -1) {
+      siblingRow.classList.add('selected-row');
+      this.selectedNodes.push(nodeSelected.Id);
     }
-
-    this.selectedObject = objectSelected;
+    document.getElementById(endRowId + '-' + columnType).focus();
   }
 
   /**

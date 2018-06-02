@@ -7,12 +7,12 @@
       <td class='grid-column target-name-column'>Target Name</td>
       <td class='grid-column action-icon-column'></td>
       <td class='grid-column grid-column action-options'>Action</td>
-
     </tr>
-    <tr *ngFor='let dataObject of comparisonDataToDisplay; let first = first' class='grid-data-row object-level-{{dataObject.Level}}'
-      [class.hide-row]='!dataObject.ShowNode' [class.selected-row]='first' id='node-{{dataObject.Id}}'>
+    <tr *ngFor='let dataObject of comparisonDataToDisplay; let first = first; let index = index;' class='grid-data-row object-level-{{dataObject.Level}}'
+      [class.hide-row]='!dataObject.ShowNode' [class.selected-row]='first' id='node-{{dataObject.Id}}' [attr.data-row-number] ='index'>
       <td class='grid-column node-type-column' [style.padding-left]='getIndentLevel(dataObject.Level)' (click)='onSelect(dataObject, $event)'
-        title='{{dataObject.NodeType}}' tabindex='0' (keydown)='onKeydown($event)' id='node-{{dataObject.Id}}-node-type' [class.first-column] = 'first' data-column-type='node-type'>
+        title='{{dataObject.NodeType}}' tabindex='0' (keydown)='onKeydown($event)' id='node-{{dataObject.Id}}-node-type' [class.first-column]='first'
+        data-column-type='node-type'>
         <span>
           <img [src]='getImage(dataObject,1)' class='node-images' />
         </span>
@@ -32,10 +32,10 @@
           <img [src]='getImage(dataObject,2)' class='node-images' />
         </span>
       </td>
-      <td class='grid-column action-options' (click)='onSelect(dataObject, $event)' tabindex='0' (keydown)='onKeydown($event)' id='node-{{dataObject.Id}}-action-dropdown'
-        data-column-type='action-dropdown'>
-        <select class='action-dropdown' (change)='optionChange(dataObject.Id, $event.target.value)' [class.dropdown-disabled] = 'dataObject.DropdownDisabled ? true : false' [disabled]='dataObject.DropdownDisabled ? true : null'
-          id='node-{{dataObject.Id}}-select'>
+      <td class='grid-column action-options' (click)='onSelect(dataObject, $event)' tabindex='0' (keydown)='onKeydown($event)'
+        id='node-{{dataObject.Id}}-action-dropdown' data-column-type='action-dropdown'>
+        <select class='action-dropdown' (change)='optionChange(dataObject.Id, $event.target.value)' [class.dropdown-disabled]='dataObject.DropdownDisabled ? true : false'
+          [disabled]='dataObject.DropdownDisabled ? true : null' id='node-{{dataObject.Id}}-select'>
           <option *ngFor='let option of dataObject.AvailableActions; let index = index' [selected]='option == dataObject.MergeAction ? true : null'
             id='node-{{dataObject.Id}}-option-{{index}}'>{{option}}</option>
         </select>
