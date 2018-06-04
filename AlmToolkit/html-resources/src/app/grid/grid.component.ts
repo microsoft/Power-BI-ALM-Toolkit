@@ -368,16 +368,35 @@ export class GridComponent implements OnInit {
         if (columnType !== 'action-dropdown') {
           // Find the sibling based on the key pressed
           if (event.which === 38) {
+            this.direction = 'up';
             siblingRow = this.getSiblingElement(true, eventRow.id);
           } else {
+            this.direction = 'down';
             siblingRow = this.getSiblingElement(false, eventRow.id);
+          }
+          let deselectNextRow = true;
+
+          let rowId = eventRow.id;
+          rowId = rowId.split('node-')[1];
+          nodeSelected = this.comparisonDataToDisplay.find(comparisonNode => comparisonNode.Id === parseInt(rowId, 10));
+
+          if (this.oldDirection && this.oldDirection !== this.direction && this.selectedNodes.length > 1) {
+            if (this.selectedNodes.indexOf(nodeSelected.Id) > -1) {
+              eventRow.classList.remove('selected-row');
+              this.selectedNodes.splice(this.selectedNodes.indexOf(nodeSelected.Id), 1);
+              deselectNextRow = false;
+            }
+          } else if (this.selectedNodes.length === 0 || this.selectedNodes.length === 1) {
+            this.oldDirection = this.direction;
           }
 
           if (!(siblingRow && siblingRow.classList.contains('grid-data-row'))) {
             siblingRow = eventRow;
+            deselectNextRow = false;
           }
+
           // Select the current row
-          let rowId = siblingRow.id;
+          rowId = siblingRow.id;
           document.getElementById(rowId + '-' + columnType).focus();
 
           // Set this as current object so that editor can be refreshed
@@ -388,11 +407,10 @@ export class GridComponent implements OnInit {
             siblingRow.classList.add('selected-row');
             this.selectedNodes.push(nodeSelected.Id);
             this.lastSelectedRow = siblingRow;
-          } else {
+          } else if (deselectNextRow) {
             siblingRow.classList.remove('selected-row');
             this.selectedNodes.splice(this.selectedNodes.indexOf(nodeSelected.Id), 1);
           }
-
 
           this.selectedObject = nodeSelected;
         }
