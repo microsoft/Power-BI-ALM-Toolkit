@@ -28,16 +28,16 @@ export class CodeeditorComponent implements OnChanges {
     const sourceDataModel = monaco.editor.createModel(this.comparisonData.SourceObjectDefinition, 'json');
     const targetDataModel = monaco.editor.createModel(this.comparisonData.TargetObjectDefinition, 'json');
 
-    // if the container already contains an editor, remove it
+    // If the container already contains an editor, remove it
     const codeEditorContainer = document.getElementById('code-editor-container');
     if (codeEditorContainer.firstChild) {
       codeEditorContainer.removeChild(codeEditorContainer.firstChild);
     }
 
-    const diffEditor = monaco.editor.createDiffEditor(codeEditorContainer,{
+    const diffEditor = monaco.editor.createDiffEditor(codeEditorContainer, {
       scrollBeyondLastLine: false,
       automaticLayout: true,
-      renderIndicators:false
+      renderIndicators: false
     });
     diffEditor.setModel({
       original: sourceDataModel,

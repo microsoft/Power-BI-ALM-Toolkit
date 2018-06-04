@@ -54,8 +54,23 @@ export class GridComponent implements OnInit {
       const codeEditorPercentageHeight = 100 - gridPercentageHeight;
       document.getElementById('comparison-table-container').style.height = gridPercentageHeight.toString() + '%';
       document.getElementById('code-editor-resizable').style.height = codeEditorPercentageHeight.toString() + '%';
+      document.removeEventListener('mousemove',this.changeCodeEditorHeight);
       this.mouseDragged = false;
     }
+  }
+
+  /**
+   * Change the height of code editor as the mouse moves
+   * @param mouseMoveEvent - Get the mouse position
+   */
+  changeCodeEditorHeight (mouseMoveEvent : any) {
+    const codeEditorResizable = document.getElementById('code-editor-resizable');
+    const comparisonTableContainer = document.getElementById('comparison-table-container');
+    const mainContainer = document.getElementById('main-container');
+    const gridPercentageHeight = ((mouseMoveEvent.pageY - mainContainer.offsetTop) / mainContainer.offsetHeight) * 100;
+    const codeEditorPercentageHeight = 100 - gridPercentageHeight;
+    comparisonTableContainer.style.height = gridPercentageHeight.toString() + '%';
+    codeEditorResizable.style.height = codeEditorPercentageHeight.toString() + '%';
   }
 
   /**
@@ -64,6 +79,7 @@ export class GridComponent implements OnInit {
    */
   startDragging(event: any) {
     this.mouseDragged = true;
+    document.addEventListener('mousemove', this.changeCodeEditorHeight, false);
   }
 
   /**
@@ -101,20 +117,7 @@ export class GridComponent implements OnInit {
           disabledDropdowns[dropdownCounter].onclick = this.onDisableDropdownClick;
         }
         const firstDataCell = <HTMLElement>gridRow[0].firstElementChild;
-        this.appLog.add('Focus on first cell', 'info')
         firstDataCell.focus();
-        this.appLog.add('Finding focus element', 'info');
-        let focused = document.activeElement;
-        if (!focused || focused == document.body) {
-          this.appLog.add('Focus element was not correct', 'info');
-          focused = null;
-        } else if (document.querySelector) {
-          this.appLog.add('Finding focus using :focus', 'info');
-          focused = document.querySelector(":focus");
-          if (focused) {
-            this.appLog.add('Focus element', 'info');
-          }
-        }
         clearInterval(this.intervalId);
 
       }
@@ -439,7 +442,7 @@ export class GridComponent implements OnInit {
               .find(comparisonNode => comparisonNode.Id === parseInt(rowId.split('node-')[1], 10));
           }
 
-          // if the direction changes and lastSelectedRow is not same as 
+          // If the direction changes and lastSelectedRow is not same as
           if (this.oldDirection && this.oldDirection !== this.direction
             && this.lastSelectedRow && this.lastSelectedRow !== eventRow) {
             if (this.selectedNodes.indexOf(nodeSelected.Id) > -1) {
@@ -612,7 +615,7 @@ export class GridComponent implements OnInit {
             const that = this;
             const methodToCall = function () {
               that.bindElements(checkData);
-            }
+            };
             this.intervalId = setInterval(methodToCall, 1000);
           }
         }
