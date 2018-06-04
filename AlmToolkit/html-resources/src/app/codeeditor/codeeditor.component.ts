@@ -36,11 +36,23 @@ export class CodeeditorComponent implements OnChanges {
 
     const diffEditor = monaco.editor.createDiffEditor(codeEditorContainer,{
       scrollBeyondLastLine: false,
-      automaticLayout: true
+      automaticLayout: true,
+      renderIndicators:false
     });
     diffEditor.setModel({
       original: sourceDataModel,
       modified: targetDataModel
     });
+
+    monaco.editor.defineTheme('flippedDiffTheme', {
+      base: 'vs',
+      inherit: true,
+      rules: [],
+      colors: {
+        'diffEditor.insertedTextBackground': '#ff000033',
+        'diffEditor.removedTextBackground': '#e2f6c5'
+      }
+    });
+    monaco.editor.setTheme('flippedDiffTheme');
   }
 }

@@ -1,7 +1,26 @@
+.clearfix:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+#main-container {
+  height: 900px;
+}
+
 #comparison-table-container {
-    height: 650px;
+    display:flex;
+    height: 72.22%;
     overflow-y: auto;
     background-color: #F2F2F2;
+    min-height: 100px;
+}
+
+#draggable-bar{
+    background-color: black;
+    height:3px;
+    width:100%;
+    cursor: row-resize;
 }
 
 #comparison-grid {
@@ -11,7 +30,7 @@
     background-color: #FFF;
 }
 
-.grid-column {
+.grid-column, .grid-header-column {
     padding: 1px;
     border: 1px solid rgba(112, 112, 112, 0.64);
     max-width: 300px;
@@ -97,4 +116,10 @@
 
 .transparent-cell {
     background-color: transparent;
+}
+
+#code-editor-resizable{
+    height:27.78%;
+    width:100%;
+    min-height: 50px;
 }
