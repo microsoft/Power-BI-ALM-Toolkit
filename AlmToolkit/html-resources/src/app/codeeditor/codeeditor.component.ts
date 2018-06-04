@@ -28,16 +28,31 @@ export class CodeeditorComponent implements OnChanges {
     const sourceDataModel = monaco.editor.createModel(this.comparisonData.SourceObjectDefinition, 'json');
     const targetDataModel = monaco.editor.createModel(this.comparisonData.TargetObjectDefinition, 'json');
 
-    // if the container already contains an editor, remove it
+    // If the container already contains an editor, remove it
     const codeEditorContainer = document.getElementById('code-editor-container');
     if (codeEditorContainer.firstChild) {
       codeEditorContainer.removeChild(codeEditorContainer.firstChild);
     }
 
-    const diffEditor = monaco.editor.createDiffEditor(codeEditorContainer);
+    const diffEditor = monaco.editor.createDiffEditor(codeEditorContainer, {
+      scrollBeyondLastLine: false,
+      automaticLayout: true,
+      renderIndicators: false
+    });
     diffEditor.setModel({
       original: sourceDataModel,
       modified: targetDataModel
     });
+
+    monaco.editor.defineTheme('flippedDiffTheme', {
+      base: 'vs',
+      inherit: true,
+      rules: [],
+      colors: {
+        'diffEditor.insertedTextBackground': '#ff000033',
+        'diffEditor.removedTextBackground': '#e2f6c5'
+      }
+    });
+    monaco.editor.setTheme('flippedDiffTheme');
   }
 }
