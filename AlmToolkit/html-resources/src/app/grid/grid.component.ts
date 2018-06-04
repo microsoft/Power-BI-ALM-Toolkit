@@ -136,10 +136,11 @@ export class GridComponent implements OnInit {
       this.treeControlContextMenuY = event.clientY;
     } else {
       const rowSelected = <HTMLElement>document.getElementById(event.target.id).parentElement;
-      this.treeControlContextMenuY = Number((rowSelected.offsetTop).toFixed(2));
+      this.treeControlContextMenuY = Number((rowSelected.offsetTop).toFixed(2)) + 1.2 * Number((rowSelected.offsetHeight).toFixed(2));
       this.treeControlContextMenuX = Number((rowSelected.offsetWidth / 2).toFixed(2));
     }
     this.showContextMenu = true;
+    document.getElementById('comparison-table-container').style.overflowY = 'hidden';
     this.selectedCell = event.target.id;
   }
 
@@ -151,6 +152,7 @@ export class GridComponent implements OnInit {
   onSelect(objectSelected: ComparisonNode, event: any): void {
     event.stopPropagation();
     this.showContextMenu = false;
+    document.getElementById('comparison-table-container').style.overflowY = 'auto';
     this.appLog.add('Grid: Row selected', 'info');
     let rowId;
 
@@ -287,11 +289,11 @@ export class GridComponent implements OnInit {
     document.getElementById(endRowId + '-' + columnType).focus();
   }
 
-
   /**
-   * 
+   * Perform actions when keyup is triggered (For context menu key)
+   * @param event - Event to check the key
    */
-  onKeyup(event:any){
+  onKeyup(event: any) {
     event.preventDefault();
     event.stopPropagation();
     if (event.which === 93) {
@@ -308,7 +310,7 @@ export class GridComponent implements OnInit {
     event.preventDefault();
     event.stopPropagation();
     this.showContextMenu = false;
-
+    document.getElementById('comparison-table-container').style.overflowY = 'auto';
     let siblingRow;
     let eventRow;
     let columnType;
@@ -597,6 +599,7 @@ export class GridComponent implements OnInit {
           }
         }
         this.showContextMenu = false;
+        document.getElementById('comparison-table-container').style.overflowY = 'auto';
       }
     );
   }
