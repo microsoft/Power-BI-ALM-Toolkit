@@ -26,8 +26,8 @@ export class GridDataService {
   getGridDataToDisplay(): Observable<ComparisonNode[]> {
     this.logService.add('Grid data service: Getting data from C#', 'info');
     return fromPromise(this._window['comparisonJSInteraction']
-      .getComparisonList())
-      .pipe(map((data: string) => JSON.parse(data)));
+       .getComparisonList())
+       .pipe(map((data: string) => JSON.parse(data)));
   }
 
   /**

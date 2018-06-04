@@ -22,8 +22,7 @@
   padding:2px 0 2px 40px;
 }
 
-.tree-control-context-menu-options:hover
-, .tree-control-context-menu-options:focus{
+.tree-control-context-menu-options:focus{
   background-color: #91C9F7;
   outline:none;
 }

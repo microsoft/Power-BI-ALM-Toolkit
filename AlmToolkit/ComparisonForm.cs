@@ -308,6 +308,8 @@ namespace AlmToolkit
 
 
             // Call Angular method to show/hide grid here
+            string script = "window.angularComponentRef.zone.run(() => { window.angularComponentRef.clearTree(" + (showGrid ? "true" : "false") + "); })";
+            chromeBrowser.ExecuteScriptAsync(script);
         }
         #endregion
 

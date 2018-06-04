@@ -106,6 +106,7 @@
         /// <param name="selectedNodesUI">List of Node Ids which are selected on Angular control</param>
         public void PerformActionsOnSelectedActions(string action, List<object> selectedNodesUI)
         {
+            selectedNodes.Clear();
             ComparisonNode nodeToAdd;
             for (int nodeCounter = 0; nodeCounter < selectedNodesUI.Count; nodeCounter++)
             {
