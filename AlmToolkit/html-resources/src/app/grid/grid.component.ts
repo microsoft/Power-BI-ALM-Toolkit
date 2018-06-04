@@ -54,8 +54,23 @@ export class GridComponent implements OnInit {
       const codeEditorPercentageHeight = 100 - gridPercentageHeight;
       document.getElementById('comparison-table-container').style.height = gridPercentageHeight.toString() + '%';
       document.getElementById('code-editor-resizable').style.height = codeEditorPercentageHeight.toString() + '%';
+      document.removeEventListener('mousemove',this.changeCodeEditorHeight);
       this.mouseDragged = false;
     }
+  }
+
+  /**
+   * Change the height of code editor as the mouse moves
+   * @param mouseMoveEvent - Get the mouse position
+   */
+  changeCodeEditorHeight (mouseMoveEvent : any) {
+    const codeEditorResizable = document.getElementById('code-editor-resizable');
+    const comparisonTableContainer = document.getElementById('comparison-table-container');
+    const mainContainer = document.getElementById('main-container');
+    const gridPercentageHeight = ((mouseMoveEvent.pageY - mainContainer.offsetTop) / mainContainer.offsetHeight) * 100;
+    const codeEditorPercentageHeight = 100 - gridPercentageHeight;
+    comparisonTableContainer.style.height = gridPercentageHeight.toString() + '%';
+    codeEditorResizable.style.height = codeEditorPercentageHeight.toString() + '%';
   }
 
   /**
@@ -64,6 +79,7 @@ export class GridComponent implements OnInit {
    */
   startDragging(event: any) {
     this.mouseDragged = true;
+    document.addEventListener('mousemove', this.changeCodeEditorHeight, false);
   }
 
   /**
@@ -101,20 +117,7 @@ export class GridComponent implements OnInit {
           disabledDropdowns[dropdownCounter].onclick = this.onDisableDropdownClick;
         }
         const firstDataCell = <HTMLElement>gridRow[0].firstElementChild;
-        this.appLog.add('Focus on first cell', 'info')
         firstDataCell.focus();
-        this.appLog.add('Finding focus element', 'info');
-        let focused = document.activeElement;
-        if (!focused || focused == document.body) {
-          this.appLog.add('Focus element was not correct', 'info');
-          focused = null;
-        } else if (document.querySelector) {
-          this.appLog.add('Finding focus using :focus', 'info');
-          focused = document.querySelector(":focus");
-          if (focused) {
-            this.appLog.add('Focus element', 'info');
-          }
-        }
         clearInterval(this.intervalId);
 
       }
@@ -136,10 +139,11 @@ export class GridComponent implements OnInit {
       this.treeControlContextMenuY = event.clientY;
     } else {
       const rowSelected = <HTMLElement>document.getElementById(event.target.id).parentElement;
-      this.treeControlContextMenuY = Number((rowSelected.offsetTop).toFixed(2));
+      this.treeControlContextMenuY = Number((rowSelected.offsetTop).toFixed(2)) + 1.2 * Number((rowSelected.offsetHeight).toFixed(2));
       this.treeControlContextMenuX = Number((rowSelected.offsetWidth / 2).toFixed(2));
     }
     this.showContextMenu = true;
+    document.getElementById('comparison-table-container').style.overflowY = 'hidden';
     this.selectedCell = event.target.id;
   }
 
@@ -151,6 +155,7 @@ export class GridComponent implements OnInit {
   onSelect(objectSelected: ComparisonNode, event: any): void {
     event.stopPropagation();
     this.showContextMenu = false;
+    document.getElementById('comparison-table-container').style.overflowY = 'auto';
     this.appLog.add('Grid: Row selected', 'info');
     let rowId;
 
@@ -287,11 +292,11 @@ export class GridComponent implements OnInit {
     document.getElementById(endRowId + '-' + columnType).focus();
   }
 
-
   /**
-   * 
+   * Perform actions when keyup is triggered (For context menu key)
+   * @param event - Event to check the key
    */
-  onKeyup(event:any){
+  onKeyup(event: any) {
     event.preventDefault();
     event.stopPropagation();
     if (event.which === 93) {
@@ -308,7 +313,7 @@ export class GridComponent implements OnInit {
     event.preventDefault();
     event.stopPropagation();
     this.showContextMenu = false;
-
+    document.getElementById('comparison-table-container').style.overflowY = 'auto';
     let siblingRow;
     let eventRow;
     let columnType;
@@ -366,16 +371,35 @@ export class GridComponent implements OnInit {
         if (columnType !== 'action-dropdown') {
           // Find the sibling based on the key pressed
           if (event.which === 38) {
+            this.direction = 'up';
             siblingRow = this.getSiblingElement(true, eventRow.id);
           } else {
+            this.direction = 'down';
             siblingRow = this.getSiblingElement(false, eventRow.id);
+          }
+          let deselectNextRow = true;
+
+          let rowId = eventRow.id;
+          rowId = rowId.split('node-')[1];
+          nodeSelected = this.comparisonDataToDisplay.find(comparisonNode => comparisonNode.Id === parseInt(rowId, 10));
+
+          if (this.oldDirection && this.oldDirection !== this.direction && this.selectedNodes.length > 1) {
+            if (this.selectedNodes.indexOf(nodeSelected.Id) > -1) {
+              eventRow.classList.remove('selected-row');
+              this.selectedNodes.splice(this.selectedNodes.indexOf(nodeSelected.Id), 1);
+              deselectNextRow = false;
+            }
+          } else if (this.selectedNodes.length === 0 || this.selectedNodes.length === 1) {
+            this.oldDirection = this.direction;
           }
 
           if (!(siblingRow && siblingRow.classList.contains('grid-data-row'))) {
             siblingRow = eventRow;
+            deselectNextRow = false;
           }
+
           // Select the current row
-          let rowId = siblingRow.id;
+          rowId = siblingRow.id;
           document.getElementById(rowId + '-' + columnType).focus();
 
           // Set this as current object so that editor can be refreshed
@@ -386,11 +410,10 @@ export class GridComponent implements OnInit {
             siblingRow.classList.add('selected-row');
             this.selectedNodes.push(nodeSelected.Id);
             this.lastSelectedRow = siblingRow;
-          } else {
+          } else if (deselectNextRow) {
             siblingRow.classList.remove('selected-row');
             this.selectedNodes.splice(this.selectedNodes.indexOf(nodeSelected.Id), 1);
           }
-
 
           this.selectedObject = nodeSelected;
         }
@@ -419,7 +442,7 @@ export class GridComponent implements OnInit {
               .find(comparisonNode => comparisonNode.Id === parseInt(rowId.split('node-')[1], 10));
           }
 
-          // if the direction changes and lastSelectedRow is not same as 
+          // If the direction changes and lastSelectedRow is not same as
           if (this.oldDirection && this.oldDirection !== this.direction
             && this.lastSelectedRow && this.lastSelectedRow !== eventRow) {
             if (this.selectedNodes.indexOf(nodeSelected.Id) > -1) {
@@ -592,11 +615,12 @@ export class GridComponent implements OnInit {
             const that = this;
             const methodToCall = function () {
               that.bindElements(checkData);
-            }
+            };
             this.intervalId = setInterval(methodToCall, 1000);
           }
         }
         this.showContextMenu = false;
+        document.getElementById('comparison-table-container').style.overflowY = 'auto';
       }
     );
   }

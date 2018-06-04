@@ -23,9 +23,9 @@ export class TreeControlContextMenuComponent implements OnInit {
    * When the element is hovered, focus on the same element
    * @param event - Event to get the target
    */
-  focusElement(event: any){
+  focusElement(event: any) {
     event.preventDefault();
-    if(event.target.classList && event.target.classList.contains('tree-control-context-menu-options')){
+    if (event.target.classList && event.target.classList.contains('tree-control-context-menu-options')) {
       document.getElementById(event.target.id).focus();
     }
   }
@@ -62,7 +62,7 @@ export class TreeControlContextMenuComponent implements OnInit {
       }
       const allOptions = document.querySelectorAll('.tree-control-context-menu-options');
       let optionCounter;
-      for(optionCounter = 0; optionCounter < allOptions.length; optionCounter+=1){
+      for (optionCounter = 0; optionCounter < allOptions.length; optionCounter += 1) {
         allOptions[optionCounter].classList.remove('hover');
       }
       siblingRow.focus();
