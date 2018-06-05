@@ -13,6 +13,7 @@ export class TreeControlContextMenuComponent implements OnInit {
   @Input() contextMenuPositionY = 0;
   @Input() selectedNodes = [];
   @Input() selectedCell;
+  @Input() showContextMenu = false;
   constructor(private gridService: GridDataService, private appLog: AppLogService) { }
 
   ngOnInit() {

@@ -15,14 +15,14 @@ export class GridComponent implements OnInit {
   selectedObject: ComparisonNode;
   selectedNodes: number[] = [];
   showContextMenu = false;
-  direction : string;
-  oldDirection : string;
-  lastSelectedRow : HTMLElement;
+  direction: string;
+  oldDirection: string;
+  lastSelectedRow: HTMLElement;
   treeControlContextMenuX = 0;
   treeControlContextMenuY = 0;
-  selectedCell : HTMLElement;
+  selectedCell: HTMLElement;
   isDataAvailable = false;
-  intervalId : number;
+  intervalId: number;
   mouseDragged = false;
 
   constructor(private gridService: GridDataService, private appLog: AppLogService, private zone: NgZone) {
@@ -54,7 +54,7 @@ export class GridComponent implements OnInit {
       const codeEditorPercentageHeight = 100 - gridPercentageHeight;
       document.getElementById('comparison-table-container').style.height = gridPercentageHeight.toString() + '%';
       document.getElementById('code-editor-resizable').style.height = codeEditorPercentageHeight.toString() + '%';
-      document.removeEventListener('mousemove',this.changeCodeEditorHeight);
+      document.removeEventListener('mousemove', this.changeCodeEditorHeight);
       this.mouseDragged = false;
       document.getElementById('comparison-table-container').style.overflowY = 'auto';
     }
@@ -64,7 +64,7 @@ export class GridComponent implements OnInit {
    * Change the height of code editor as the mouse moves
    * @param mouseMoveEvent - Get the mouse position
    */
-  changeCodeEditorHeight (mouseMoveEvent : any) {
+  changeCodeEditorHeight(mouseMoveEvent: any) {
     const codeEditorResizable = document.getElementById('code-editor-resizable');
     const comparisonTableContainer = document.getElementById('comparison-table-container');
     const mainContainer = document.getElementById('main-container');
@@ -87,7 +87,7 @@ export class GridComponent implements OnInit {
   /**
    * Hide the context menu on body click
    */
-  hideContextMenu(){
+  hideContextMenu() {
     this.showContextMenu = false;
   }
 
@@ -148,9 +148,10 @@ export class GridComponent implements OnInit {
       this.treeControlContextMenuY = event.clientY;
     } else {
       const rowSelected = <HTMLElement>document.getElementById(event.target.id).parentElement;
-      this.treeControlContextMenuY = Number((rowSelected.offsetTop).toFixed(2)) + 1.2 * Number((rowSelected.offsetHeight).toFixed(2));
-      this.treeControlContextMenuX = Number((rowSelected.offsetWidth / 2).toFixed(2));
+      this.treeControlContextMenuY = rowSelected.getBoundingClientRect().top + rowSelected.offsetHeight;
+      this.treeControlContextMenuX = rowSelected.getBoundingClientRect().left + (rowSelected.offsetWidth / 2);
     }
+   
     this.showContextMenu = true;
     document.getElementById('comparison-table-container').style.overflowY = 'hidden';
     this.selectedCell = event.target.id;
