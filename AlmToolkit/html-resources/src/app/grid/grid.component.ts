@@ -15,14 +15,14 @@ export class GridComponent implements OnInit {
   selectedObject: ComparisonNode;
   selectedNodes: number[] = [];
   showContextMenu = false;
-  direction;
-  oldDirection;
-  lastSelectedRow;
+  direction : string;
+  oldDirection : string;
+  lastSelectedRow : HTMLElement;
   treeControlContextMenuX = 0;
   treeControlContextMenuY = 0;
-  selectedCell;
+  selectedCell : HTMLElement;
   isDataAvailable = false;
-  intervalId;
+  intervalId : number;
   mouseDragged = false;
 
   constructor(private gridService: GridDataService, private appLog: AppLogService, private zone: NgZone) {
@@ -56,6 +56,7 @@ export class GridComponent implements OnInit {
       document.getElementById('code-editor-resizable').style.height = codeEditorPercentageHeight.toString() + '%';
       document.removeEventListener('mousemove',this.changeCodeEditorHeight);
       this.mouseDragged = false;
+      document.getElementById('comparison-table-container').style.overflowY = 'auto';
     }
   }
 
@@ -79,7 +80,15 @@ export class GridComponent implements OnInit {
    */
   startDragging(event: any) {
     this.mouseDragged = true;
+    document.getElementById('comparison-table-container').style.overflowY = 'hidden';
     document.addEventListener('mousemove', this.changeCodeEditorHeight, false);
+  }
+
+  /**
+   * Hide the context menu on body click
+   */
+  hideContextMenu(){
+    this.showContextMenu = false;
   }
 
   /**

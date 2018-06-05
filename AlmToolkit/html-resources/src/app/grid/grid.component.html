@@ -1,4 +1,4 @@
-<div class='clearfix' id='main-container'>
+<div class='clearfix' id='main-container' (click)='hideContextMenu()'>
   <div *ngIf='comparisonDataToDisplay.length > 0' id='comparison-table-container'>
     <table id='comparison-grid'>
       <tr id='header-row' class='grid-row' (contextmenu)='showTreeControlContextMenu($event)'>
