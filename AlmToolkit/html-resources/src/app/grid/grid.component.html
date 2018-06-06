@@ -1,4 +1,8 @@
-<div class='clearfix' id='main-container'>
+<div *ngIf='showContextMenu == true'>
+  <app-tree-control-context-menu [contextMenuPositionX]='treeControlContextMenuX' [contextMenuPositionY]='treeControlContextMenuY'
+    [selectedNodes]='selectedNodes' [selectedCell]='selectedCell'></app-tree-control-context-menu>
+</div>
+<div class='clearfix' id='main-container' (click)='hideContextMenu()'>
   <div *ngIf='comparisonDataToDisplay.length > 0' id='comparison-table-container'>
     <table id='comparison-grid'>
       <tr id='header-row' class='grid-row' (contextmenu)='showTreeControlContextMenu($event)'>
@@ -51,8 +55,4 @@
   <div id='code-editor-resizable' *ngIf='comparisonDataToDisplay.length > 0' (contextmenu)='showTreeControlContextMenu($event)'>
     <app-codeeditor [comparisonData]='selectedObject'></app-codeeditor>
   </div>
-</div>
-<div *ngIf='showContextMenu == true'>
-  <app-tree-control-context-menu [contextMenuPositionX]='treeControlContextMenuX' [contextMenuPositionY]='treeControlContextMenuY'
-    [selectedNodes]='selectedNodes' [selectedCell]='selectedCell'></app-tree-control-context-menu>
 </div>

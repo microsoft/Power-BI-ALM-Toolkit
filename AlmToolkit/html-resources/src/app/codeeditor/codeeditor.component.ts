@@ -34,16 +34,20 @@ export class CodeeditorComponent implements OnChanges {
       codeEditorContainer.removeChild(codeEditorContainer.firstChild);
     }
 
+    // Create diff editor with required settings
     const diffEditor = monaco.editor.createDiffEditor(codeEditorContainer, {
       scrollBeyondLastLine: false,
       automaticLayout: true,
       renderIndicators: false
     });
+
+    // Set the original and modified code
     diffEditor.setModel({
       original: sourceDataModel,
       modified: targetDataModel
     });
 
+    // Define the theme for original and modified code
     monaco.editor.defineTheme('flippedDiffTheme', {
       base: 'vs',
       inherit: true,
