@@ -15,14 +15,14 @@ export class GridComponent implements OnInit {
   selectedObject: ComparisonNode;
   selectedNodes: number[] = [];
   showContextMenu = false;
-  direction;
-  oldDirection;
-  lastSelectedRow;
+  direction: string;
+  oldDirection: string;
+  lastSelectedRow: HTMLElement;
   treeControlContextMenuX = 0;
   treeControlContextMenuY = 0;
-  selectedCell;
+  selectedCell: HTMLElement;
   isDataAvailable = false;
-  intervalId;
+  intervalId: number;
   mouseDragged = false;
 
   constructor(private gridService: GridDataService, private appLog: AppLogService, private zone: NgZone) {
@@ -34,13 +34,17 @@ export class GridComponent implements OnInit {
     };
   }
 
+  /**
+   * Add event listener for mouse up to stop resizing code editor
+   * @param event - Mouse up event
+   */
   @HostListener('document:mouseup', ['$event'])
   onMouseUp(event: MouseEvent) {
     this.stopDragging(event);
   }
 
+
   ngOnInit() {
-    this.getDataToDisplay(false);
   }
 
   /**
@@ -54,8 +58,9 @@ export class GridComponent implements OnInit {
       const codeEditorPercentageHeight = 100 - gridPercentageHeight;
       document.getElementById('comparison-table-container').style.height = gridPercentageHeight.toString() + '%';
       document.getElementById('code-editor-resizable').style.height = codeEditorPercentageHeight.toString() + '%';
-      document.removeEventListener('mousemove',this.changeCodeEditorHeight);
+      document.removeEventListener('mousemove', this.changeCodeEditorHeight);
       this.mouseDragged = false;
+      document.getElementById('comparison-table-container').style.overflowY = 'auto';
     }
   }
 
@@ -63,7 +68,7 @@ export class GridComponent implements OnInit {
    * Change the height of code editor as the mouse moves
    * @param mouseMoveEvent - Get the mouse position
    */
-  changeCodeEditorHeight (mouseMoveEvent : any) {
+  changeCodeEditorHeight(mouseMoveEvent: any) {
     const codeEditorResizable = document.getElementById('code-editor-resizable');
     const comparisonTableContainer = document.getElementById('comparison-table-container');
     const mainContainer = document.getElementById('main-container');
@@ -78,8 +83,18 @@ export class GridComponent implements OnInit {
    * @param event - event passed on mouse down
    */
   startDragging(event: any) {
+    this.showContextMenu = false;
     this.mouseDragged = true;
+    document.getElementById('comparison-table-container').style.overflowY = 'hidden';
     document.addEventListener('mousemove', this.changeCodeEditorHeight, false);
+  }
+
+  /**
+   * Hide the context menu on body click
+   */
+  hideContextMenu() {
+    this.showContextMenu = false;
+    document.getElementById('comparison-table-container').style.overflowY = 'auto';
   }
 
   /**
@@ -93,29 +108,17 @@ export class GridComponent implements OnInit {
   }
 
   /**
-   * Perform row selection when disabled dropdown is clicked
-   */
-  onDisableDropdownClick() {
-    this.appLog.add('Disabled dropdown clicked', 'info');
-  }
-
-  /**
    * Focus on first row and bind click events to elements
    * @param checkData- complete data to match the count of rendered elements and actual nodes
    */
   bindElements(checkData: ComparisonNode[]) {
     if (!this.isDataAvailable) {
-      let disabledDropdowns;
       const gridRow = document.querySelectorAll('.grid-data-row');
 
       const dataRowCount = gridRow.length;
 
       if (checkData && dataRowCount === checkData.length) {
         this.isDataAvailable = true;
-        disabledDropdowns = document.querySelectorAll('.dropdown-disabled');
-        for (let dropdownCounter = 0; dropdownCounter < disabledDropdowns.length; dropdownCounter += 1) {
-          disabledDropdowns[dropdownCounter].onclick = this.onDisableDropdownClick;
-        }
         const firstDataCell = <HTMLElement>gridRow[0].firstElementChild;
         firstDataCell.focus();
         clearInterval(this.intervalId);
@@ -131,6 +134,20 @@ export class GridComponent implements OnInit {
   showTreeControlContextMenu(event: any) {
     event.preventDefault();
     event.stopPropagation();
+    const mainElement = document.getElementsByTagName('html');
+    const comparisonTable = document.getElementById('comparison-grid');
+    let windowWidth;
+    let tableWidth;
+    let scrolledHeight = 0;
+    if (mainElement) {
+      if (mainElement[0]) {
+        scrolledHeight = mainElement[0].scrollTop;
+        windowWidth = mainElement[0].offsetWidth;
+      }
+    }
+    if (comparisonTable) {
+      tableWidth = comparisonTable.offsetWidth;
+    }
     if (!(event.target.classList && (event.target.classList.contains('grid-data-row') || event.target.classList.contains('grid-column')))) {
       return false;
     }
@@ -139,9 +156,14 @@ export class GridComponent implements OnInit {
       this.treeControlContextMenuY = event.clientY;
     } else {
       const rowSelected = <HTMLElement>document.getElementById(event.target.id).parentElement;
-      this.treeControlContextMenuY = Number((rowSelected.offsetTop).toFixed(2)) + 1.2 * Number((rowSelected.offsetHeight).toFixed(2));
-      this.treeControlContextMenuX = Number((rowSelected.offsetWidth / 2).toFixed(2));
+      this.treeControlContextMenuY = rowSelected.getBoundingClientRect().top + rowSelected.offsetHeight;
+      this.treeControlContextMenuX = rowSelected.getBoundingClientRect().left + (rowSelected.offsetWidth / 2);
+      if (tableWidth > windowWidth) {
+        this.treeControlContextMenuX = windowWidth / 2;
+      }
     }
+    this.treeControlContextMenuY = this.treeControlContextMenuY + scrolledHeight;
+
     this.showContextMenu = true;
     document.getElementById('comparison-table-container').style.overflowY = 'hidden';
     this.selectedCell = event.target.id;
@@ -500,37 +522,44 @@ export class GridComponent implements OnInit {
       // To handle left and right keys
       let prev = true;
       let rowChild;
-      if (event.which === 39 || event.which === 9) {
+      let comparisonTable;
+      let firstRow;
+      let lastRow;
+      comparisonTable = document.getElementById('comparison-grid');
+      firstRow = this.getSiblingElement(false, comparisonTable.firstElementChild.firstElementChild.id);
+      lastRow = comparisonTable.firstElementChild.lastElementChild; if (event.which === 39 || event.which === 9) {
         prev = false;
       }
       siblingRow = this.getSiblingElement(prev, event.target.id);
       if (!siblingRow) {
         columnType = document.getElementById(event.target.id).getAttribute('data-column-type');
-        eventRow.classList.remove('selected-row');
-        nodeSelected = this.comparisonDataToDisplay
-          .find(comparisonNode => comparisonNode.Id === parseInt(eventRow.id.split('node-')[1], 10));
-        if (this.selectedNodes.indexOf(nodeSelected.Id) > -1) {
-          this.selectedNodes.splice(this.selectedNodes.indexOf(nodeSelected.Id), 1);
-        }
+        if (!((eventRow === firstRow && columnType === 'node-type') || (eventRow === lastRow && columnType === 'action-dropdown'))) {
+          eventRow.classList.remove('selected-row');
+          nodeSelected = this.comparisonDataToDisplay
+            .find(comparisonNode => comparisonNode.Id === parseInt(eventRow.id.split('node-')[1], 10));
+          if (this.selectedNodes.indexOf(nodeSelected.Id) > -1) {
+            this.selectedNodes.splice(this.selectedNodes.indexOf(nodeSelected.Id), 1);
+          }
 
-        siblingRow = this.getSiblingElement(prev, eventRow.id);
-        nodeSelected = this.comparisonDataToDisplay
-          .find(comparisonNode => comparisonNode.Id === parseInt(siblingRow.id.split('node-')[1], 10));
-        this.selectedObject = nodeSelected;
-        if (this.selectedNodes.indexOf(nodeSelected.Id) === -1) {
-          siblingRow.classList.add('selected-row');
-          this.selectedNodes.push(nodeSelected.Id);
-        } else {
-          siblingRow.classList.remove('selected-row');
-          this.selectedNodes.splice(this.selectedNodes.indexOf(nodeSelected.Id), 1);
-        }
+          siblingRow = this.getSiblingElement(prev, eventRow.id);
+          nodeSelected = this.comparisonDataToDisplay
+            .find(comparisonNode => comparisonNode.Id === parseInt(siblingRow.id.split('node-')[1], 10));
+          this.selectedObject = nodeSelected;
+          if (this.selectedNodes.indexOf(nodeSelected.Id) === -1) {
+            siblingRow.classList.add('selected-row');
+            this.selectedNodes.push(nodeSelected.Id);
+          } else {
+            siblingRow.classList.remove('selected-row');
+            this.selectedNodes.splice(this.selectedNodes.indexOf(nodeSelected.Id), 1);
+          }
 
-        if (prev) {
-          rowChild = document.getElementById(siblingRow.id).lastElementChild;
-        } else {
-          rowChild = document.getElementById(siblingRow.id).firstElementChild;
+          if (prev) {
+            rowChild = document.getElementById(siblingRow.id).lastElementChild;
+          } else {
+            rowChild = document.getElementById(siblingRow.id).firstElementChild;
+          }
+          document.getElementById(rowChild.id).focus();
         }
-        document.getElementById(rowChild.id).focus();
       } else {
         siblingRow.focus();
       }
@@ -620,7 +649,6 @@ export class GridComponent implements OnInit {
           }
         }
         this.showContextMenu = false;
-        document.getElementById('comparison-table-container').style.overflowY = 'auto';
       }
     );
   }
