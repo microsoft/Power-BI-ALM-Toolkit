@@ -1,6 +1,7 @@
-<app-tree-control-context-menu [contextMenuPositionX]='treeControlContextMenuX' [contextMenuPositionY]='treeControlContextMenuY'
-  [showContextMenu]='showContextMenu' [selectedNodes]='selectedNodes' [selectedCell]='selectedCell'>
-</app-tree-control-context-menu>
+<div *ngIf='showContextMenu == true'>
+  <app-tree-control-context-menu [contextMenuPositionX]='treeControlContextMenuX' [contextMenuPositionY]='treeControlContextMenuY'
+    [selectedNodes]='selectedNodes' [selectedCell]='selectedCell'></app-tree-control-context-menu>
+</div>
 <div class='clearfix' id='main-container' (click)='hideContextMenu()'>
   <div *ngIf='comparisonDataToDisplay.length > 0' id='comparison-table-container'>
     <table id='comparison-grid'>

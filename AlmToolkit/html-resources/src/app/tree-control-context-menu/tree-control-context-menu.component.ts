@@ -13,7 +13,6 @@ export class TreeControlContextMenuComponent implements OnInit {
   @Input() contextMenuPositionY = 0;
   @Input() selectedNodes = [];
   @Input() selectedCell;
-  @Input() showContextMenu = false;
   constructor(private gridService: GridDataService, private appLog: AppLogService) { }
 
   ngOnInit() {
@@ -48,6 +47,7 @@ export class TreeControlContextMenuComponent implements OnInit {
     event.preventDefault();
     event.stopPropagation();
     let siblingRow;
+    // This is for up and down arrow keys
     if (event.which === 38 || event.which === 40) {
       if (event.which === 38) {
         siblingRow = this.getSiblingElement(true, event.target.id);
@@ -68,12 +68,14 @@ export class TreeControlContextMenuComponent implements OnInit {
       }
       siblingRow.focus();
     } else if (event.which === 13) {
+      // This is for selecting action when enter is pressed
       const action = document.getElementById(event.target.id).getAttribute('data-action');
       if (action) {
         this.performAction(action);
         document.getElementById(this.selectedCell).focus();
       }
     } else if (event.which === 27) {
+      // This is to exit from context menu when ESC is pressed
       this.performAction('');
       document.getElementById(this.selectedCell).focus();
     }
