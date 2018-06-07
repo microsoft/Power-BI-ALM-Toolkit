@@ -246,7 +246,7 @@
             this.Name = "Options";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.Text = "BISM Normalizer Options";
+            this.Text = "Options";
             this.Load += new System.EventHandler(this.Options_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Options_KeyDown);
             this.groupBox1.ResumeLayout(false);

@@ -37,6 +37,7 @@ namespace AlmToolkit
 
         private void WarningListForm_Load(object sender, EventArgs e)
         {
+            _treeGridImageList = this.TreeGridImageList2;
             validationOutput.ClearMessages(0);
             validationOutput.SetImageList(_treeGridImageList);
             _comparison.ValidationMessage += HandleValidationMessage;

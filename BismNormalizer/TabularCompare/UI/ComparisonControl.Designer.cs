@@ -92,15 +92,17 @@
             this.pnlHeader.Controls.Add(this.toolStrip1);
             this.pnlHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlHeader.Location = new System.Drawing.Point(0, 0);
+            this.pnlHeader.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
             this.pnlHeader.Name = "pnlHeader";
-            this.pnlHeader.Size = new System.Drawing.Size(653, 55);
+            this.pnlHeader.Size = new System.Drawing.Size(1524, 123);
             this.pnlHeader.TabIndex = 46;
             // 
             // spltSourceTarget
             // 
             this.spltSourceTarget.Dock = System.Windows.Forms.DockStyle.Fill;
             this.spltSourceTarget.IsSplitterFixed = true;
-            this.spltSourceTarget.Location = new System.Drawing.Point(0, 25);
+            this.spltSourceTarget.Location = new System.Drawing.Point(0, 44);
+            this.spltSourceTarget.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
             this.spltSourceTarget.Name = "spltSourceTarget";
             // 
             // spltSourceTarget.Panel1
@@ -112,16 +114,18 @@
             // 
             this.spltSourceTarget.Panel2.Controls.Add(this.txtTarget);
             this.spltSourceTarget.Panel2.Controls.Add(this.label2);
-            this.spltSourceTarget.Size = new System.Drawing.Size(653, 30);
-            this.spltSourceTarget.SplitterDistance = 321;
+            this.spltSourceTarget.Size = new System.Drawing.Size(1524, 79);
+            this.spltSourceTarget.SplitterDistance = 749;
+            this.spltSourceTarget.SplitterWidth = 9;
             this.spltSourceTarget.TabIndex = 45;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(2, 8);
+            this.label1.Location = new System.Drawing.Point(5, 18);
+            this.label1.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(41, 13);
+            this.label1.Size = new System.Drawing.Size(90, 29);
             this.label1.TabIndex = 39;
             this.label1.Text = "Source";
             // 
@@ -131,9 +135,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSource.BackColor = System.Drawing.SystemColors.Control;
             this.txtSource.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtSource.Location = new System.Drawing.Point(49, 7);
+            this.txtSource.Location = new System.Drawing.Point(114, 16);
+            this.txtSource.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
             this.txtSource.Name = "txtSource";
-            this.txtSource.Size = new System.Drawing.Size(269, 20);
+            this.txtSource.Size = new System.Drawing.Size(625, 35);
             this.txtSource.TabIndex = 41;
             this.txtSource.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txt_KeyDown);
             // 
@@ -143,9 +148,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtTarget.BackColor = System.Drawing.SystemColors.Control;
             this.txtTarget.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtTarget.Location = new System.Drawing.Point(45, 7);
+            this.txtTarget.Location = new System.Drawing.Point(105, 16);
+            this.txtTarget.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
             this.txtTarget.Name = "txtTarget";
-            this.txtTarget.Size = new System.Drawing.Size(272, 20);
+            this.txtTarget.Size = new System.Drawing.Size(633, 35);
             this.txtTarget.TabIndex = 42;
             this.txtTarget.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txt_KeyDown);
             // 
@@ -154,14 +160,16 @@
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 8);
+            this.label2.Location = new System.Drawing.Point(7, 18);
+            this.label2.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(38, 13);
+            this.label2.Size = new System.Drawing.Size(84, 29);
             this.label2.TabIndex = 40;
             this.label2.Text = "Target";
             // 
             // toolStrip1
             // 
+            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(36, 36);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnCompareTabularModels,
             this.ddSelectActions,
@@ -173,7 +181,8 @@
             this.btnReportDifferences});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(653, 25);
+            this.toolStrip1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
+            this.toolStrip1.Size = new System.Drawing.Size(1524, 44);
             this.toolStrip1.TabIndex = 46;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -182,7 +191,7 @@
             this.btnCompareTabularModels.Image = ((System.Drawing.Image)(resources.GetObject("btnCompareTabularModels.Image")));
             this.btnCompareTabularModels.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnCompareTabularModels.Name = "btnCompareTabularModels";
-            this.btnCompareTabularModels.Size = new System.Drawing.Size(85, 22);
+            this.btnCompareTabularModels.Size = new System.Drawing.Size(184, 41);
             this.btnCompareTabularModels.Text = "Compare...";
             this.btnCompareTabularModels.ToolTipText = "Compare (Shift+Alt+C)";
             this.btnCompareTabularModels.Click += new System.EventHandler(this.btnCompareTabularModels_Click);
@@ -204,74 +213,74 @@
             this.ddSelectActions.Image = ((System.Drawing.Image)(resources.GetObject("ddSelectActions.Image")));
             this.ddSelectActions.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ddSelectActions.Name = "ddSelectActions";
-            this.ddSelectActions.Size = new System.Drawing.Size(110, 22);
+            this.ddSelectActions.Size = new System.Drawing.Size(240, 41);
             this.ddSelectActions.Text = "Select Actions";
             // 
             // mnuHideSkipObjects
             // 
             this.mnuHideSkipObjects.Name = "mnuHideSkipObjects";
-            this.mnuHideSkipObjects.Size = new System.Drawing.Size(303, 22);
+            this.mnuHideSkipObjects.Size = new System.Drawing.Size(642, 42);
             this.mnuHideSkipObjects.Text = "Hide Skip Objects";
             this.mnuHideSkipObjects.Click += new System.EventHandler(this.mnuHideSkipObjects_Click);
             // 
             // hideSkipObjectsWithSameDefinitionToolStripMenuItem
             // 
             this.hideSkipObjectsWithSameDefinitionToolStripMenuItem.Name = "hideSkipObjectsWithSameDefinitionToolStripMenuItem";
-            this.hideSkipObjectsWithSameDefinitionToolStripMenuItem.Size = new System.Drawing.Size(303, 22);
+            this.hideSkipObjectsWithSameDefinitionToolStripMenuItem.Size = new System.Drawing.Size(642, 42);
             this.hideSkipObjectsWithSameDefinitionToolStripMenuItem.Text = "Hide Skip Objects with Same Definition";
             this.hideSkipObjectsWithSameDefinitionToolStripMenuItem.Click += new System.EventHandler(this.mnuHideSkipObjectsWithSameDefinition_Click);
             // 
             // mnuShowSkipObjects
             // 
             this.mnuShowSkipObjects.Name = "mnuShowSkipObjects";
-            this.mnuShowSkipObjects.Size = new System.Drawing.Size(303, 22);
+            this.mnuShowSkipObjects.Size = new System.Drawing.Size(642, 42);
             this.mnuShowSkipObjects.Text = "Show Skip Objects";
             this.mnuShowSkipObjects.Click += new System.EventHandler(this.mnuShowSkipObjects_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(300, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(639, 6);
             // 
             // mnuSkipAllObjectsMissingInSource
             // 
             this.mnuSkipAllObjectsMissingInSource.Name = "mnuSkipAllObjectsMissingInSource";
-            this.mnuSkipAllObjectsMissingInSource.Size = new System.Drawing.Size(303, 22);
+            this.mnuSkipAllObjectsMissingInSource.Size = new System.Drawing.Size(642, 42);
             this.mnuSkipAllObjectsMissingInSource.Text = "Skip all objects Missing in Source";
             this.mnuSkipAllObjectsMissingInSource.Click += new System.EventHandler(this.mnuSkipAllObjectsMissingInSource_Click);
             // 
             // mnuDeleteAllObjectsMissingInSource
             // 
             this.mnuDeleteAllObjectsMissingInSource.Name = "mnuDeleteAllObjectsMissingInSource";
-            this.mnuDeleteAllObjectsMissingInSource.Size = new System.Drawing.Size(303, 22);
+            this.mnuDeleteAllObjectsMissingInSource.Size = new System.Drawing.Size(642, 42);
             this.mnuDeleteAllObjectsMissingInSource.Text = "Delete all objects Missing in Source";
             this.mnuDeleteAllObjectsMissingInSource.Click += new System.EventHandler(this.mnuDeleteAllObjectsMissingInSource_Click);
             // 
             // mnuSkipAllObjectsMissingInTarget
             // 
             this.mnuSkipAllObjectsMissingInTarget.Name = "mnuSkipAllObjectsMissingInTarget";
-            this.mnuSkipAllObjectsMissingInTarget.Size = new System.Drawing.Size(303, 22);
+            this.mnuSkipAllObjectsMissingInTarget.Size = new System.Drawing.Size(642, 42);
             this.mnuSkipAllObjectsMissingInTarget.Text = "Skip all objects Missing in Target";
             this.mnuSkipAllObjectsMissingInTarget.Click += new System.EventHandler(this.mnuSkipAllObjectsMissingInTarget_Click);
             // 
             // mnuCreateAllObjectsMissingInTarget
             // 
             this.mnuCreateAllObjectsMissingInTarget.Name = "mnuCreateAllObjectsMissingInTarget";
-            this.mnuCreateAllObjectsMissingInTarget.Size = new System.Drawing.Size(303, 22);
+            this.mnuCreateAllObjectsMissingInTarget.Size = new System.Drawing.Size(642, 42);
             this.mnuCreateAllObjectsMissingInTarget.Text = "Create all objects Missing in Target";
             this.mnuCreateAllObjectsMissingInTarget.Click += new System.EventHandler(this.mnuCreateAllObjectsMissingInTarget_Click);
             // 
             // mnuSkipAllObjectsWithDifferentDefinitions
             // 
             this.mnuSkipAllObjectsWithDifferentDefinitions.Name = "mnuSkipAllObjectsWithDifferentDefinitions";
-            this.mnuSkipAllObjectsWithDifferentDefinitions.Size = new System.Drawing.Size(303, 22);
+            this.mnuSkipAllObjectsWithDifferentDefinitions.Size = new System.Drawing.Size(642, 42);
             this.mnuSkipAllObjectsWithDifferentDefinitions.Text = "Skip all objects with Different Definitions";
             this.mnuSkipAllObjectsWithDifferentDefinitions.Click += new System.EventHandler(this.mnuSkipAllObjectsWithDifferentDefinitions_Click);
             // 
             // mnuUpdateAllObjectsWithDifferentDefinitions
             // 
             this.mnuUpdateAllObjectsWithDifferentDefinitions.Name = "mnuUpdateAllObjectsWithDifferentDefinitions";
-            this.mnuUpdateAllObjectsWithDifferentDefinitions.Size = new System.Drawing.Size(303, 22);
+            this.mnuUpdateAllObjectsWithDifferentDefinitions.Size = new System.Drawing.Size(642, 42);
             this.mnuUpdateAllObjectsWithDifferentDefinitions.Text = "Update all objects with Different Definitions";
             this.mnuUpdateAllObjectsWithDifferentDefinitions.Click += new System.EventHandler(this.mnuUpdateAllObjectsWithDifferentDefinitions_Click);
             // 
@@ -281,7 +290,7 @@
             this.btnValidateSelection.Image = ((System.Drawing.Image)(resources.GetObject("btnValidateSelection.Image")));
             this.btnValidateSelection.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnValidateSelection.Name = "btnValidateSelection";
-            this.btnValidateSelection.Size = new System.Drawing.Size(119, 22);
+            this.btnValidateSelection.Size = new System.Drawing.Size(268, 41);
             this.btnValidateSelection.Text = "Validate Selection";
             this.btnValidateSelection.Click += new System.EventHandler(this.btnValidateSelection_Click);
             // 
@@ -291,7 +300,7 @@
             this.btnUpdate.Image = ((System.Drawing.Image)(resources.GetObject("btnUpdate.Image")));
             this.btnUpdate.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnUpdate.Name = "btnUpdate";
-            this.btnUpdate.Size = new System.Drawing.Size(65, 22);
+            this.btnUpdate.Size = new System.Drawing.Size(145, 41);
             this.btnUpdate.Text = "Update";
             this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
@@ -301,21 +310,21 @@
             this.btnGenerateScript.Image = ((System.Drawing.Image)(resources.GetObject("btnGenerateScript.Image")));
             this.btnGenerateScript.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnGenerateScript.Name = "btnGenerateScript";
-            this.btnGenerateScript.Size = new System.Drawing.Size(107, 22);
+            this.btnGenerateScript.Size = new System.Drawing.Size(239, 41);
             this.btnGenerateScript.Text = "Generate Script";
             this.btnGenerateScript.Click += new System.EventHandler(this.btnGenerateScript_Click);
             // 
             // toolStripButton1
             // 
             this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(6, 25);
+            this.toolStripButton1.Size = new System.Drawing.Size(6, 44);
             // 
             // btnOptions
             // 
             this.btnOptions.Image = ((System.Drawing.Image)(resources.GetObject("btnOptions.Image")));
             this.btnOptions.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnOptions.Name = "btnOptions";
-            this.btnOptions.Size = new System.Drawing.Size(69, 22);
+            this.btnOptions.Size = new System.Drawing.Size(151, 41);
             this.btnOptions.Text = "Options";
             this.btnOptions.Click += new System.EventHandler(this.btnOptions_Click);
             // 
@@ -325,14 +334,15 @@
             this.btnReportDifferences.Image = ((System.Drawing.Image)(resources.GetObject("btnReportDifferences.Image")));
             this.btnReportDifferences.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnReportDifferences.Name = "btnReportDifferences";
-            this.btnReportDifferences.Size = new System.Drawing.Size(124, 20);
+            this.btnReportDifferences.Size = new System.Drawing.Size(274, 41);
             this.btnReportDifferences.Text = "Report Differences";
             this.btnReportDifferences.Click += new System.EventHandler(this.btnReportDifferences_Click);
             // 
             // scDifferenceResults
             // 
             this.scDifferenceResults.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.scDifferenceResults.Location = new System.Drawing.Point(0, 55);
+            this.scDifferenceResults.Location = new System.Drawing.Point(0, 123);
+            this.scDifferenceResults.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
             this.scDifferenceResults.Name = "scDifferenceResults";
             this.scDifferenceResults.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -344,8 +354,9 @@
             // scDifferenceResults.Panel2
             // 
             this.scDifferenceResults.Panel2.Controls.Add(this.scObjectDefinitions);
-            this.scDifferenceResults.Size = new System.Drawing.Size(653, 510);
-            this.scDifferenceResults.SplitterDistance = 371;
+            this.scDifferenceResults.Size = new System.Drawing.Size(1524, 1137);
+            this.scDifferenceResults.SplitterDistance = 827;
+            this.scDifferenceResults.SplitterWidth = 9;
             this.scDifferenceResults.TabIndex = 2;
             // 
             // pnlProgressBar
@@ -353,26 +364,29 @@
             this.pnlProgressBar.BackColor = System.Drawing.SystemColors.Control;
             this.pnlProgressBar.Controls.Add(this.progressBar);
             this.pnlProgressBar.Controls.Add(this.lblProgressBar);
-            this.pnlProgressBar.Location = new System.Drawing.Point(60, 21);
+            this.pnlProgressBar.Location = new System.Drawing.Point(140, 47);
+            this.pnlProgressBar.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
             this.pnlProgressBar.Name = "pnlProgressBar";
-            this.pnlProgressBar.Size = new System.Drawing.Size(280, 54);
+            this.pnlProgressBar.Size = new System.Drawing.Size(653, 120);
             this.pnlProgressBar.TabIndex = 1;
             this.pnlProgressBar.Visible = false;
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(120, 16);
+            this.progressBar.Location = new System.Drawing.Point(280, 36);
+            this.progressBar.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(137, 18);
+            this.progressBar.Size = new System.Drawing.Size(320, 40);
             this.progressBar.Step = 1;
             this.progressBar.TabIndex = 1;
             // 
             // lblProgressBar
             // 
             this.lblProgressBar.AutoSize = true;
-            this.lblProgressBar.Location = new System.Drawing.Point(12, 16);
+            this.lblProgressBar.Location = new System.Drawing.Point(28, 36);
+            this.lblProgressBar.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.lblProgressBar.Name = "lblProgressBar";
-            this.lblProgressBar.Size = new System.Drawing.Size(101, 13);
+            this.lblProgressBar.Size = new System.Drawing.Size(226, 29);
             this.lblProgressBar.TabIndex = 0;
             this.lblProgressBar.Text = "Generating report ...";
             // 
@@ -404,10 +418,11 @@
             this.treeGridComparisonResults.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             this.treeGridComparisonResults.ImageList = this.TreeGridImageList;
             this.treeGridComparisonResults.Location = new System.Drawing.Point(0, 0);
+            this.treeGridComparisonResults.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
             this.treeGridComparisonResults.Name = "treeGridComparisonResults";
             this.treeGridComparisonResults.RowHeadersVisible = false;
             this.treeGridComparisonResults.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.treeGridComparisonResults.Size = new System.Drawing.Size(653, 371);
+            this.treeGridComparisonResults.Size = new System.Drawing.Size(1524, 827);
             this.treeGridComparisonResults.TabIndex = 0;
             this.treeGridComparisonResults.Unloading = false;
             this.treeGridComparisonResults.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.treeGridComparisonResults_DataError);
@@ -445,6 +460,7 @@
             // 
             this.scObjectDefinitions.Dock = System.Windows.Forms.DockStyle.Fill;
             this.scObjectDefinitions.Location = new System.Drawing.Point(0, 0);
+            this.scObjectDefinitions.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
             this.scObjectDefinitions.Name = "scObjectDefinitions";
             // 
             // scObjectDefinitions.Panel1
@@ -458,8 +474,9 @@
             this.scObjectDefinitions.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.scObjectDefinitions.Panel2.Controls.Add(this.txtTargetObjectDefinition);
             this.scObjectDefinitions.Panel2.Controls.Add(this.label5);
-            this.scObjectDefinitions.Size = new System.Drawing.Size(653, 135);
-            this.scObjectDefinitions.SplitterDistance = 331;
+            this.scObjectDefinitions.Size = new System.Drawing.Size(1524, 301);
+            this.scObjectDefinitions.SplitterDistance = 772;
+            this.scObjectDefinitions.SplitterWidth = 9;
             this.scObjectDefinitions.TabIndex = 0;
             // 
             // txtSourceObjectDefinition
@@ -469,10 +486,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSourceObjectDefinition.BackColor = System.Drawing.Color.White;
             this.txtSourceObjectDefinition.Font = new System.Drawing.Font("Consolas", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtSourceObjectDefinition.Location = new System.Drawing.Point(0, 16);
+            this.txtSourceObjectDefinition.Location = new System.Drawing.Point(0, 36);
+            this.txtSourceObjectDefinition.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
             this.txtSourceObjectDefinition.Name = "txtSourceObjectDefinition";
             this.txtSourceObjectDefinition.ReadOnly = true;
-            this.txtSourceObjectDefinition.Size = new System.Drawing.Size(331, 119);
+            this.txtSourceObjectDefinition.Size = new System.Drawing.Size(767, 261);
             this.txtSourceObjectDefinition.TabIndex = 1;
             this.txtSourceObjectDefinition.Text = "";
             this.txtSourceObjectDefinition.WordWrap = false;
@@ -482,9 +500,10 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(4, 1);
+            this.label4.Location = new System.Drawing.Point(9, 2);
+            this.label4.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(122, 13);
+            this.label4.Size = new System.Drawing.Size(274, 29);
             this.label4.TabIndex = 0;
             this.label4.Text = "Source Object Definition";
             // 
@@ -495,10 +514,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtTargetObjectDefinition.BackColor = System.Drawing.Color.White;
             this.txtTargetObjectDefinition.Font = new System.Drawing.Font("Consolas", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtTargetObjectDefinition.Location = new System.Drawing.Point(0, 16);
+            this.txtTargetObjectDefinition.Location = new System.Drawing.Point(0, 36);
+            this.txtTargetObjectDefinition.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
             this.txtTargetObjectDefinition.Name = "txtTargetObjectDefinition";
             this.txtTargetObjectDefinition.ReadOnly = true;
-            this.txtTargetObjectDefinition.Size = new System.Drawing.Size(313, 119);
+            this.txtTargetObjectDefinition.Size = new System.Drawing.Size(726, 261);
             this.txtTargetObjectDefinition.TabIndex = 2;
             this.txtTargetObjectDefinition.Text = "";
             this.txtTargetObjectDefinition.WordWrap = false;
@@ -508,20 +528,22 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 1);
+            this.label5.Location = new System.Drawing.Point(7, 2);
+            this.label5.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(119, 13);
+            this.label5.Size = new System.Drawing.Size(268, 29);
             this.label5.TabIndex = 1;
             this.label5.Text = "Target Object Definition";
             // 
             // ComparisonControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.scDifferenceResults);
             this.Controls.Add(this.pnlHeader);
+            this.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
             this.Name = "ComparisonControl";
-            this.Size = new System.Drawing.Size(653, 565);
+            this.Size = new System.Drawing.Size(1524, 1260);
             this.Load += new System.EventHandler(this.BismNormalizer_Load);
             this.pnlHeader.ResumeLayout(false);
             this.pnlHeader.PerformLayout();

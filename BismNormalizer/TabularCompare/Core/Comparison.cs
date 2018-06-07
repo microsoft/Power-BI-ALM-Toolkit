@@ -250,7 +250,7 @@ namespace BismNormalizer.TabularCompare.Core
                 //Wb.Sheets[1].Delete();
                 Excel.Worksheet Ws = default(Excel.Worksheet);
                 Ws = Wb.ActiveSheet;
-                Ws.Name = "Bism Normalizer Report";
+                Ws.Name = "ALM Toolkit Report";
                 int row = 1, lastDataSourceRow = -1, lastTableRow = -1;
 
                 // set up headers

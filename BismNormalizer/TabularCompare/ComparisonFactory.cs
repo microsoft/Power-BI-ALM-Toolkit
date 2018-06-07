@@ -74,7 +74,7 @@ namespace BismNormalizer.TabularCompare
             //We know both models have same compatibility level, but is it supported?
             if (!_supportedCompatibilityLevels.Contains(comparisonInfo.SourceCompatibilityLevel))
             {
-                throw new ConnectionException($"Models have compatibility level of {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)}, which is not supported by this version of BISM Normalizer.\nPlease check http://bism-normalizer.com/purchase for other versions.");
+                throw new ConnectionException($"Models have compatibility level of {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)}, which is not supported by this version.");
             }
 
             if (comparisonInfo.SourceCompatibilityLevel >= 1200)

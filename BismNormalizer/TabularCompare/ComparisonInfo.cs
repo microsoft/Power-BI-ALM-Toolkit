@@ -214,7 +214,7 @@ namespace BismNormalizer.TabularCompare
                     filesToClose += $"\n- {projectItemToClose.ContainingProject.Name.Replace(".smproj", "")}\\{projectItemToClose.Name}";
                 }
 
-                if (MessageBox.Show($"BISM Normalizer needs to close the following file(s) that are\nopen in Visual Studio.  Do you want to continue?{filesToClose}", "BISM Normalizer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                if (MessageBox.Show($"ALM Toolkit needs to close the following file(s) that are\nopen in Visual Studio.  Do you want to continue?{filesToClose}", "BISM Normalizer", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 {
                     userCancelled = true;
                 }

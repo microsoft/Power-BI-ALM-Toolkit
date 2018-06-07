@@ -62,8 +62,8 @@ namespace BismNormalizer.TabularCompare.UI
             cboSourceDatabase.Text = Settings.Default.SourceCatalog;
             cboTargetDatabase.Text = Settings.Default.TargetCatalog;
 
-            cboSourceProject.Items.Clear();
-            cboTargetProject.Items.Clear();
+            //cboSourceProject.Items.Clear();
+            //cboTargetProject.Items.Clear();
 
             BindingSource projectsBindingSource = new BindingSource();
             BindingSource projectsBindingTarget = new BindingSource();
@@ -79,30 +79,30 @@ namespace BismNormalizer.TabularCompare.UI
 
             if (_projects.Count == 0)
             {
-                rdoSourceProject.Enabled = false;
-                rdoTargetProject.Enabled = false;
+                //rdoSourceProject.Enabled = false;
+                //rdoTargetProject.Enabled = false;
 
-                pnlSourceProject.Enabled = false;
-                pnlTargetProject.Enabled = false;
+                //pnlSourceProject.Enabled = false;
+                //pnlTargetProject.Enabled = false;
 
-                rdoSourceDb.Checked = true;
-                rdoTargetDb.Checked = true;
+                //rdoSourceDb.Checked = true;
+                //rdoTargetDb.Checked = true;
             }
             else
             {
-                rdoSourceProject.Enabled = true;
-                rdoTargetProject.Enabled = true;
+                //rdoSourceProject.Enabled = true;
+                //rdoTargetProject.Enabled = true;
 
                 projectsBindingSource.DataSource = _projects;
                 projectsBindingTarget.DataSource = _projects;
 
-                cboSourceProject.DataSource = projectsBindingSource;
-                cboSourceProject.ValueMember = "Value";
-                cboSourceProject.DisplayMember = "Key";
+                //cboSourceProject.DataSource = projectsBindingSource;
+                //cboSourceProject.ValueMember = "Value";
+                //cboSourceProject.DisplayMember = "Key";
 
-                cboTargetProject.DataSource = projectsBindingTarget;
-                cboTargetProject.ValueMember = "Value";
-                cboTargetProject.DisplayMember = "Key";
+                //cboTargetProject.DataSource = projectsBindingTarget;
+                //cboTargetProject.ValueMember = "Value";
+                //cboTargetProject.DisplayMember = "Key";
 
                 bool boundTargetDatabase = false;
                 if (!(BindSourceConnectionInfo() && BindTargetConnectionInfo(out boundTargetDatabase)))
@@ -111,23 +111,23 @@ namespace BismNormalizer.TabularCompare.UI
 
                     if (_projects.Count == 1)
                     {
-                        //if only one project, default to only the source project dropdown active
-                        rdoSourceProject.Checked = true;
-                        pnlSourceProject.Enabled = true;
+                        ////if only one project, default to only the source project dropdown active
+                        //rdoSourceProject.Checked = true;
+                        //pnlSourceProject.Enabled = true;
 
-                        rdoTargetDb.Checked = true;
-                        pnlTargetProject.Enabled = false;
+                        //rdoTargetDb.Checked = true;
+                        //pnlTargetProject.Enabled = false;
                     }
                     else
                     {
-                        //if more than one project, default to both project dropdowns active
-                        rdoSourceProject.Checked = true;
-                        pnlSourceProject.Enabled = true;
+                        ////if more than one project, default to both project dropdowns active
+                        //rdoSourceProject.Checked = true;
+                        //pnlSourceProject.Enabled = true;
 
-                        rdoTargetProject.Checked = true;
-                        pnlTargetProject.Enabled = true;
+                        //rdoTargetProject.Checked = true;
+                        //pnlTargetProject.Enabled = true;
 
-                        cboTargetProject.SelectedIndex = 1;
+                        //cboTargetProject.SelectedIndex = 1;
                     }
                 }
 
@@ -146,9 +146,9 @@ namespace BismNormalizer.TabularCompare.UI
             ConnectionInfo connectionInfoTemp = new ConnectionInfo();
             
             connectionInfoTemp.UseProject = true;
-            connectionInfoTemp.Project = (EnvDTE.Project)cboSourceProject.SelectedValue;
-            connectionInfoTemp.ProjectName = cboSourceProject.Text;
-            connectionInfoTemp.ProjectFile = ((EnvDTE.Project)cboSourceProject.SelectedValue).FullName;
+            //connectionInfoTemp.Project = (EnvDTE.Project)cboSourceProject.SelectedValue;
+            //connectionInfoTemp.ProjectName = cboSourceProject.Text;
+            //connectionInfoTemp.ProjectFile = ((EnvDTE.Project)cboSourceProject.SelectedValue).FullName;
             connectionInfoTemp.ReadProjectFile();
             
             if (!String.IsNullOrEmpty(connectionInfoTemp.DeploymentServerName))
@@ -171,25 +171,25 @@ namespace BismNormalizer.TabularCompare.UI
                 {
                     if (_projects.ContainsKey(_comparisonInfo.ConnectionInfoSource.ProjectName))
                     {
-                        rdoSourceProject.Checked = true;
-                        pnlSourceProject.Enabled = true;
+                        //rdoSourceProject.Checked = true;
+                        //pnlSourceProject.Enabled = true;
 
-                        for (int i = 0; i < ((BindingSource)cboSourceProject.DataSource).Count; i++)
-                        {
-                            if (Convert.ToString(((DictionaryEntry)((BindingSource)cboSourceProject.DataSource)[i]).Key) == _comparisonInfo.ConnectionInfoSource.ProjectName)
-                            {
-                                cboSourceProject.SelectedIndex = i;
-                                break;
-                            }
-                        }
+                        //for (int i = 0; i < ((BindingSource)cboSourceProject.DataSource).Count; i++)
+                        //{
+                        //    if (Convert.ToString(((DictionaryEntry)((BindingSource)cboSourceProject.DataSource)[i]).Key) == _comparisonInfo.ConnectionInfoSource.ProjectName)
+                        //    {
+                        //        cboSourceProject.SelectedIndex = i;
+                        //        break;
+                        //    }
+                        //}
 
                         returnVal = true;
                     }
                 }
                 else if (!String.IsNullOrEmpty(_comparisonInfo.ConnectionInfoSource.ServerName) && !String.IsNullOrEmpty(_comparisonInfo.ConnectionInfoSource.DatabaseName))
                 {
-                    rdoSourceDb.Checked = true;
-                    pnlSourceProject.Enabled = false;
+                    //rdoSourceDb.Checked = true;
+                    //pnlSourceProject.Enabled = false;
 
                     cboSourceServer.Text = _comparisonInfo.ConnectionInfoSource.ServerName;
                     cboSourceDatabase.Text = _comparisonInfo.ConnectionInfoSource.DatabaseName;
@@ -212,25 +212,25 @@ namespace BismNormalizer.TabularCompare.UI
                 {
                     if (_projects.ContainsKey(_comparisonInfo.ConnectionInfoTarget.ProjectName))
                     {
-                        rdoTargetProject.Checked = true;
-                        pnlTargetProject.Enabled = true;
+                        //rdoTargetProject.Checked = true;
+                        //pnlTargetProject.Enabled = true;
 
-                        for (int i = 0; i < ((BindingSource)cboTargetProject.DataSource).Count; i++)
-                        {
-                            if (Convert.ToString(((DictionaryEntry)((BindingSource)cboTargetProject.DataSource)[i]).Key) == _comparisonInfo.ConnectionInfoTarget.ProjectName)
-                            {
-                                cboTargetProject.SelectedIndex = i;
-                                break;
-                            }
-                        }
+                        //for (int i = 0; i < ((BindingSource)cboTargetProject.DataSource).Count; i++)
+                        //{
+                        //    if (Convert.ToString(((DictionaryEntry)((BindingSource)cboTargetProject.DataSource)[i]).Key) == _comparisonInfo.ConnectionInfoTarget.ProjectName)
+                        //    {
+                        //        cboTargetProject.SelectedIndex = i;
+                        //        break;
+                        //    }
+                        //}
 
                         returnVal = true;
                     }
                 }
                 else if (!String.IsNullOrEmpty(_comparisonInfo.ConnectionInfoTarget.ServerName) && !String.IsNullOrEmpty(_comparisonInfo.ConnectionInfoTarget.DatabaseName))
                 {
-                    rdoTargetDb.Checked = true;
-                    pnlTargetProject.Enabled = false;
+                    //rdoTargetDb.Checked = true;
+                    //pnlTargetProject.Enabled = false;
 
                     cboTargetServer.Text = _comparisonInfo.ConnectionInfoTarget.ServerName;
                     cboTargetDatabase.Text = _comparisonInfo.ConnectionInfoTarget.DatabaseName;
@@ -295,64 +295,64 @@ namespace BismNormalizer.TabularCompare.UI
             set { _dpiScaleFactor = value; }
         }
 
-        private void rdoSourceProject_CheckedChanged(object sender, EventArgs e)
-        {
-            pnlSourceProject.Enabled = true;
-            pnlSourceDb.Enabled = false;
-            cboSourceProject.Focus();
-        }
-        private void rdoSourceDb_CheckedChanged(object sender, EventArgs e)
-        {
-            pnlSourceProject.Enabled = false;
-            pnlSourceDb.Enabled = true;
-            cboSourceServer.Focus();
-        }
-        private void rdoTargetProject_CheckedChanged(object sender, EventArgs e)
-        {
-            pnlTargetProject.Enabled = true;
-            pnlTargetDb.Enabled = false;
-            cboTargetProject.Focus();
-        }
-        private void rdoTargetDb_CheckedChanged(object sender, EventArgs e)
-        {
-            pnlTargetProject.Enabled = false;
-            pnlTargetDb.Enabled = true;
-            cboTargetServer.Focus();
-        }
+        //private void rdoSourceProject_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    pnlSourceProject.Enabled = true;
+        //    pnlSourceDb.Enabled = false;
+        //    cboSourceProject.Focus();
+        //}
+        //private void rdoSourceDb_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    pnlSourceProject.Enabled = false;
+        //    pnlSourceDb.Enabled = true;
+        //    cboSourceServer.Focus();
+        //}
+        //private void rdoTargetProject_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    pnlTargetProject.Enabled = true;
+        //    pnlTargetDb.Enabled = false;
+        //    cboTargetProject.Focus();
+        //}
+        //private void rdoTargetDb_CheckedChanged(object sender, EventArgs e)
+        //{
+        //    pnlTargetProject.Enabled = false;
+        //    pnlTargetDb.Enabled = true;
+        //    cboTargetServer.Focus();
+        //}
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            if (rdoSourceProject.Checked)
-            {
-                _comparisonInfo.ConnectionInfoSource.UseProject = true;
-                _comparisonInfo.ConnectionInfoSource.Project = (EnvDTE.Project)cboSourceProject.SelectedValue;
-                _comparisonInfo.ConnectionInfoSource.ProjectName = cboSourceProject.Text;
-                _comparisonInfo.ConnectionInfoSource.ProjectFile = ((EnvDTE.Project)cboSourceProject.SelectedValue).FullName;
-            }
-            else
-            {
+            //if (rdoSourceProject.Checked)
+            //{
+            //    _comparisonInfo.ConnectionInfoSource.UseProject = true;
+            //    _comparisonInfo.ConnectionInfoSource.Project = (EnvDTE.Project)cboSourceProject.SelectedValue;
+            //    _comparisonInfo.ConnectionInfoSource.ProjectName = cboSourceProject.Text;
+            //    _comparisonInfo.ConnectionInfoSource.ProjectFile = ((EnvDTE.Project)cboSourceProject.SelectedValue).FullName;
+            //}
+            //else
+            //{
                 _comparisonInfo.ConnectionInfoSource.UseProject = false;
                 _comparisonInfo.ConnectionInfoSource.ServerName = cboSourceServer.Text;
                 _comparisonInfo.ConnectionInfoSource.DatabaseName = cboSourceDatabase.Text;
                 _comparisonInfo.ConnectionInfoSource.ProjectName = null;
                 _comparisonInfo.ConnectionInfoSource.ProjectFile = null;
-            }
+            //}
 
-            if (rdoTargetProject.Checked)
-            {
-                _comparisonInfo.ConnectionInfoTarget.UseProject = true;
-                _comparisonInfo.ConnectionInfoTarget.Project = (EnvDTE.Project)cboTargetProject.SelectedValue;
-                _comparisonInfo.ConnectionInfoTarget.ProjectName = cboTargetProject.Text;
-                _comparisonInfo.ConnectionInfoTarget.ProjectFile = ((EnvDTE.Project)cboTargetProject.SelectedValue).FullName;
-            }
-            else
-            {
+            //if (rdoTargetProject.Checked)
+            //{
+            //    _comparisonInfo.ConnectionInfoTarget.UseProject = true;
+            //    _comparisonInfo.ConnectionInfoTarget.Project = (EnvDTE.Project)cboTargetProject.SelectedValue;
+            //    _comparisonInfo.ConnectionInfoTarget.ProjectName = cboTargetProject.Text;
+            //    _comparisonInfo.ConnectionInfoTarget.ProjectFile = ((EnvDTE.Project)cboTargetProject.SelectedValue).FullName;
+            //}
+            //else
+            //{
                 _comparisonInfo.ConnectionInfoTarget.UseProject = false;
                 _comparisonInfo.ConnectionInfoTarget.ServerName = cboTargetServer.Text;
                 _comparisonInfo.ConnectionInfoTarget.DatabaseName = cboTargetDatabase.Text;
                 _comparisonInfo.ConnectionInfoTarget.ProjectName = null;
                 _comparisonInfo.ConnectionInfoTarget.ProjectFile = null;
-            }
+            //}
         }
 
         private void btnSwitch_Click(object sender, EventArgs e)
@@ -360,23 +360,23 @@ namespace BismNormalizer.TabularCompare.UI
             _SetTargetDatabaseFromSourceProjectConfigurationAllowed = false;
 
             ConnectionInfo infoSourceTemp = new ConnectionInfo();
-            infoSourceTemp.UseProject = rdoSourceProject.Checked;
-            infoSourceTemp.ProjectName = cboSourceProject.Text;
-            infoSourceTemp.Project = (EnvDTE.Project)cboSourceProject.SelectedValue;
+            //infoSourceTemp.UseProject = rdoSourceProject.Checked;
+            //infoSourceTemp.ProjectName = cboSourceProject.Text;
+            //infoSourceTemp.Project = (EnvDTE.Project)cboSourceProject.SelectedValue;
             infoSourceTemp.ServerName = cboSourceServer.Text;
             infoSourceTemp.DatabaseName = cboSourceDatabase.Text;
 
-            rdoSourceProject.Checked = rdoTargetProject.Checked;
-            rdoSourceDb.Checked = rdoTargetDb.Checked;
-            cboSourceProject.Text = cboTargetProject.Text;
-            cboSourceProject.SelectedValue = cboTargetProject.SelectedValue;
+            //rdoSourceProject.Checked = rdoTargetProject.Checked;
+            //rdoSourceDb.Checked = rdoTargetDb.Checked;
+            //cboSourceProject.Text = cboTargetProject.Text;
+            //cboSourceProject.SelectedValue = cboTargetProject.SelectedValue;
             cboSourceServer.Text = cboTargetServer.Text;
             cboSourceDatabase.Text = cboTargetDatabase.Text;
 
-            rdoTargetProject.Checked = infoSourceTemp.UseProject;
-            rdoTargetDb.Checked = !infoSourceTemp.UseProject;
-            cboTargetProject.Text = infoSourceTemp.ProjectName;
-            cboTargetProject.SelectedValue = infoSourceTemp.Project;
+            //rdoTargetProject.Checked = infoSourceTemp.UseProject;
+            //rdoTargetDb.Checked = !infoSourceTemp.UseProject;
+            //cboTargetProject.Text = infoSourceTemp.ProjectName;
+            //cboTargetProject.SelectedValue = infoSourceTemp.Project;
             cboTargetServer.Text = infoSourceTemp.ServerName;
             cboTargetDatabase.Text = infoSourceTemp.DatabaseName;
 
