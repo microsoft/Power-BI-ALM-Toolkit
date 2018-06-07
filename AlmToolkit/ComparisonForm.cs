@@ -29,6 +29,7 @@ namespace AlmToolkit
         private const string _appCaption = "ALM Toolkit for Power BI";
         private CompareState _compareState = CompareState.NotCompared;
         private string _fileName = "";
+        private bool _unsaved = false;
 
         #endregion
 
@@ -657,8 +658,19 @@ namespace AlmToolkit
             }
         }
 
+        private void maqSoftwareLogo_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start("https://maqsoftware.com/");
+            }
+            catch { }
+        }
+
         private void SetFileNameTitle(bool unsaved)
         {
+            _unsaved = unsaved;
+
             if (String.IsNullOrEmpty(_fileName))
             {
                 this.Text = _appCaption;
@@ -671,15 +683,6 @@ namespace AlmToolkit
                     this.Text += " *";
                 }
             }
-        }
-
-        private void maqSoftwareLogo_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                System.Diagnostics.Process.Start("https://maqsoftware.com/");
-            }
-            catch { }
         }
 
         public void LoadFile(string fileName)
@@ -723,6 +726,11 @@ namespace AlmToolkit
         {
             try
             {
+                if (_unsaved && SaveChanges() == DialogResult.Cancel)
+                {
+                    return;
+                }
+
                 OpenFileDialog ofd = new OpenFileDialog();
                 ofd.Filter = "ALM Toolkit Files (.almt)|*.almt";
                 ofd.Title = "Open";
@@ -804,7 +812,24 @@ namespace AlmToolkit
 
         private void mnuExit_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            if (_unsaved && SaveChanges() != DialogResult.Cancel)
+            {
+                Application.Exit();
+            }
+        }
+
+        private DialogResult SaveChanges()
+        {
+            DialogResult result = MessageBox.Show("Do you want to save changes?", _appCaption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+            switch (result)
+            {
+                case DialogResult.Yes:
+                    Save();
+                    break;
+                default:
+                    break;
+            }
+            return result;
         }
 
         protected override void OnHandleDestroyed(EventArgs e)
