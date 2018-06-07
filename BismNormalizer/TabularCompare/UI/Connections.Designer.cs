@@ -243,6 +243,7 @@
             this.cboTargetServer.Name = "cboTargetServer";
             this.cboTargetServer.Size = new System.Drawing.Size(862, 37);
             this.cboTargetServer.TabIndex = 9;
+            this.cboTargetServer.TextChanged += new System.EventHandler(this.cboTargetServer_TextChanged);
             // 
             // cboTargetDatabase
             // 
@@ -256,6 +257,7 @@
             this.cboTargetDatabase.Name = "cboTargetDatabase";
             this.cboTargetDatabase.Size = new System.Drawing.Size(862, 37);
             this.cboTargetDatabase.TabIndex = 12;
+            this.cboTargetDatabase.Enter += new System.EventHandler(this.cboTargetDatabase_Enter);
             // 
             // Connections
             // 
