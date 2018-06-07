@@ -59,7 +59,7 @@
             this.cboSourceDatabase.Margin = new System.Windows.Forms.Padding(7);
             this.cboSourceDatabase.MaxDropDownItems = 11;
             this.cboSourceDatabase.Name = "cboSourceDatabase";
-            this.cboSourceDatabase.Size = new System.Drawing.Size(653, 37);
+            this.cboSourceDatabase.Size = new System.Drawing.Size(625, 37);
             this.cboSourceDatabase.TabIndex = 12;
             this.cboSourceDatabase.Enter += new System.EventHandler(this.cboSourceDatabase_Enter);
             // 
@@ -73,7 +73,7 @@
             this.cboSourceServer.Margin = new System.Windows.Forms.Padding(7);
             this.cboSourceServer.MaxDropDownItems = 11;
             this.cboSourceServer.Name = "cboSourceServer";
-            this.cboSourceServer.Size = new System.Drawing.Size(653, 37);
+            this.cboSourceServer.Size = new System.Drawing.Size(625, 37);
             this.cboSourceServer.TabIndex = 9;
             this.cboSourceServer.TextChanged += new System.EventHandler(this.cboSourceServer_TextChanged);
             // 
@@ -107,7 +107,7 @@
             this.pnlSourceDb.Location = new System.Drawing.Point(147, 60);
             this.pnlSourceDb.Margin = new System.Windows.Forms.Padding(7);
             this.pnlSourceDb.Name = "pnlSourceDb";
-            this.pnlSourceDb.Size = new System.Drawing.Size(705, 147);
+            this.pnlSourceDb.Size = new System.Drawing.Size(677, 147);
             this.pnlSourceDb.TabIndex = 1;
             // 
             // grpSource
@@ -121,7 +121,7 @@
             this.grpSource.Margin = new System.Windows.Forms.Padding(7);
             this.grpSource.Name = "grpSource";
             this.grpSource.Padding = new System.Windows.Forms.Padding(7);
-            this.grpSource.Size = new System.Drawing.Size(864, 306);
+            this.grpSource.Size = new System.Drawing.Size(836, 306);
             this.grpSource.TabIndex = 16;
             this.grpSource.TabStop = false;
             this.grpSource.Text = "Source";
@@ -129,15 +129,15 @@
             // grpTarget
             // 
             this.grpTarget.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.grpTarget.Controls.Add(this.label3);
             this.grpTarget.Controls.Add(this.label4);
             this.grpTarget.Controls.Add(this.pnlTargetDb);
-            this.grpTarget.Location = new System.Drawing.Point(992, 27);
+            this.grpTarget.Location = new System.Drawing.Point(964, 27);
             this.grpTarget.Margin = new System.Windows.Forms.Padding(7);
             this.grpTarget.Name = "grpTarget";
             this.grpTarget.Padding = new System.Windows.Forms.Padding(7);
-            this.grpTarget.Size = new System.Drawing.Size(864, 306);
+            this.grpTarget.Size = new System.Drawing.Size(836, 306);
             this.grpTarget.TabIndex = 17;
             this.grpTarget.TabStop = false;
             this.grpTarget.Text = "Target";
@@ -164,15 +164,14 @@
             // 
             // pnlTargetDb
             // 
-            this.pnlTargetDb.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.pnlTargetDb.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlTargetDb.Controls.Add(this.cboTargetServer);
             this.pnlTargetDb.Controls.Add(this.cboTargetDatabase);
             this.pnlTargetDb.Location = new System.Drawing.Point(144, 60);
             this.pnlTargetDb.Margin = new System.Windows.Forms.Padding(7);
             this.pnlTargetDb.Name = "pnlTargetDb";
-            this.pnlTargetDb.Size = new System.Drawing.Size(706, 147);
+            this.pnlTargetDb.Size = new System.Drawing.Size(678, 147);
             this.pnlTargetDb.TabIndex = 15;
             // 
             // cboTargetServer
@@ -185,7 +184,7 @@
             this.cboTargetServer.Margin = new System.Windows.Forms.Padding(7);
             this.cboTargetServer.MaxDropDownItems = 11;
             this.cboTargetServer.Name = "cboTargetServer";
-            this.cboTargetServer.Size = new System.Drawing.Size(657, 37);
+            this.cboTargetServer.Size = new System.Drawing.Size(629, 37);
             this.cboTargetServer.TabIndex = 9;
             this.cboTargetServer.TextChanged += new System.EventHandler(this.cboTargetServer_TextChanged);
             // 
@@ -199,15 +198,15 @@
             this.cboTargetDatabase.Margin = new System.Windows.Forms.Padding(7);
             this.cboTargetDatabase.MaxDropDownItems = 11;
             this.cboTargetDatabase.Name = "cboTargetDatabase";
-            this.cboTargetDatabase.Size = new System.Drawing.Size(657, 37);
+            this.cboTargetDatabase.Size = new System.Drawing.Size(629, 37);
             this.cboTargetDatabase.TabIndex = 12;
             this.cboTargetDatabase.Enter += new System.EventHandler(this.cboTargetDatabase_Enter);
             // 
             // btnOK
             // 
-            this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(1485, 355);
+            this.btnOK.Location = new System.Drawing.Point(1397, 355);
             this.btnOK.Margin = new System.Windows.Forms.Padding(7);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(161, 51);
@@ -218,9 +217,9 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(1660, 355);
+            this.btnCancel.Location = new System.Drawing.Point(1572, 355);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(7);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(166, 51);
@@ -230,10 +229,9 @@
             // 
             // btnSwitch
             // 
-            this.btnSwitch.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btnSwitch.BackgroundImage = global::BismNormalizer.Resources.ButtonSwitch;
             this.btnSwitch.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.btnSwitch.Location = new System.Drawing.Point(894, 112);
+            this.btnSwitch.Location = new System.Drawing.Point(866, 110);
             this.btnSwitch.Margin = new System.Windows.Forms.Padding(7);
             this.btnSwitch.Name = "btnSwitch";
             this.btnSwitch.Size = new System.Drawing.Size(84, 71);
@@ -247,7 +245,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(1872, 433);
+            this.ClientSize = new System.Drawing.Size(1822, 433);
             this.Controls.Add(this.btnSwitch);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);

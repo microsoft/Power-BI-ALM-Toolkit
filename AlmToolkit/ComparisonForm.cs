@@ -204,6 +204,7 @@ namespace AlmToolkit
                     // New connections
                     //ComparisonCtrl.TriggerComparisonChanged();
                     _comparisonInfo.SkipSelections.Clear();
+                    SetFileNameTitle(true);
                 }
 
                 this.CompareTabularModels();
@@ -352,7 +353,6 @@ namespace AlmToolkit
         {
             txtSource.Text = (_comparisonInfo.ConnectionInfoSource.UseProject ? "Project: " + _comparisonInfo.ConnectionInfoSource.ProjectName : "Database: " + _comparisonInfo.ConnectionInfoSource.ServerName + ";" + _comparisonInfo.ConnectionInfoSource.DatabaseName);
             txtTarget.Text = (_comparisonInfo.ConnectionInfoTarget.UseProject ? "Project: " + _comparisonInfo.ConnectionInfoTarget.ProjectName : "Database: " + _comparisonInfo.ConnectionInfoTarget.ServerName + ";" + _comparisonInfo.ConnectionInfoTarget.DatabaseName);
-
         }
 
         private void btnGenerateScript_Click(object sender, EventArgs e)
@@ -647,6 +647,30 @@ namespace AlmToolkit
                     }));
                 }
             }
+
+            if (InvokeRequired)
+            {
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    SetFileNameTitle(true);
+                }));
+            }
+        }
+
+        private void SetFileNameTitle(bool unsaved)
+        {
+            if (String.IsNullOrEmpty(_fileName))
+            {
+                this.Text = _appCaption;
+            }
+            else
+            {
+                this.Text = _appCaption + " - " + Path.GetFileName(_fileName);
+                if (unsaved)
+                {
+                    this.Text += " *";
+                }
+            }
         }
 
         private void maqSoftwareLogo_Click(object sender, EventArgs e)
@@ -669,10 +693,8 @@ namespace AlmToolkit
                 }
                 _comparisonInfo = ComparisonInfo.DeserializeBsmnFile(fileName);
                 _fileName = fileName;
-                this.Text = _appCaption + " - " + Path.GetFileName(_fileName);
-                SetNotComparedState();
+                SetFileNameTitle(false);
                 PopulateSourceTargetTextBoxes();
-                InitializeAndCompareTabularModels();
             }
             catch (Exception exc)
             {
@@ -684,11 +706,10 @@ namespace AlmToolkit
         {
             try
             {
-                //ComparisonCtrl.RefreshSkipSelections();
                 _fileName = fileName;
-
                 XmlSerializer writer = new XmlSerializer(typeof(ComparisonInfo));
                 StreamWriter file = new System.IO.StreamWriter(fileName);
+                _comparison.RefreshSkipSelectionsFromComparisonObjects();
                 writer.Serialize(file, _comparisonInfo);
                 file.Close();
             }
@@ -707,7 +728,9 @@ namespace AlmToolkit
                 ofd.Title = "Open";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
+                    SetNotComparedState();
                     this.LoadFile(ofd.FileName);
+                    InitializeAndCompareTabularModels();
                 }
             }
             catch (Exception exc)
@@ -734,6 +757,7 @@ namespace AlmToolkit
                 {
                     this.SaveFile(_fileName);
                 }
+                SetFileNameTitle(false);
             }
             catch (Exception exc)
             {
@@ -773,7 +797,7 @@ namespace AlmToolkit
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 _fileName = sfd.FileName;
-                this.Text = _appCaption + " - " + Path.GetFileName(_fileName); 
+                SetFileNameTitle(false);
                 this.SaveFile(_fileName);
             }
         }
