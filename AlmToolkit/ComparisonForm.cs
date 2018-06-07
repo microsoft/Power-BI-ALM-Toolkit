@@ -352,8 +352,8 @@ namespace AlmToolkit
 
         private void PopulateSourceTargetTextBoxes()
         {
-            txtSource.Text = (_comparisonInfo.ConnectionInfoSource.UseProject ? "Project: " + _comparisonInfo.ConnectionInfoSource.ProjectName : "Database: " + _comparisonInfo.ConnectionInfoSource.ServerName + ";" + _comparisonInfo.ConnectionInfoSource.DatabaseName);
-            txtTarget.Text = (_comparisonInfo.ConnectionInfoTarget.UseProject ? "Project: " + _comparisonInfo.ConnectionInfoTarget.ProjectName : "Database: " + _comparisonInfo.ConnectionInfoTarget.ServerName + ";" + _comparisonInfo.ConnectionInfoTarget.DatabaseName);
+            txtSource.Text = _comparisonInfo.ConnectionInfoSource.ServerName + ";" + _comparisonInfo.ConnectionInfoSource.DatabaseName;
+            txtTarget.Text = _comparisonInfo.ConnectionInfoTarget.ServerName + ";" + _comparisonInfo.ConnectionInfoTarget.DatabaseName;
         }
 
         private void btnGenerateScript_Click(object sender, EventArgs e)
@@ -434,7 +434,7 @@ namespace AlmToolkit
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            //Todo: not firing, see https://github.com/cefsharp/CefSharp/blob/master/CefSharp.WinForms.Example/Handlers/KeyboardHandler.cs
+            //Todo: not firing
 
             if (keyData == (Keys.Control | Keys.S))
             {

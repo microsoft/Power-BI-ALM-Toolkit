@@ -86,10 +86,10 @@
             this.StatusBarComparsion.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
             this.toolStripProgressBar1});
-            this.StatusBarComparsion.Location = new System.Drawing.Point(0, 1052);
+            this.StatusBarComparsion.Location = new System.Drawing.Point(0, 1569);
             this.StatusBarComparsion.Name = "StatusBarComparsion";
             this.StatusBarComparsion.Padding = new System.Windows.Forms.Padding(2, 0, 33, 0);
-            this.StatusBarComparsion.Size = new System.Drawing.Size(1745, 22);
+            this.StatusBarComparsion.Size = new System.Drawing.Size(2508, 22);
             this.StatusBarComparsion.TabIndex = 48;
             this.StatusBarComparsion.Text = "Comparison Status";
             // 
@@ -327,7 +327,7 @@
             this.pnlRibbon.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlRibbon.Location = new System.Drawing.Point(0, 0);
             this.pnlRibbon.Name = "pnlRibbon";
-            this.pnlRibbon.Size = new System.Drawing.Size(1745, 301);
+            this.pnlRibbon.Size = new System.Drawing.Size(2508, 301);
             this.pnlRibbon.TabIndex = 49;
             // 
             // maqSoftwareLogo
@@ -336,7 +336,7 @@
             this.maqSoftwareLogo.BackColor = System.Drawing.Color.White;
             this.maqSoftwareLogo.Cursor = System.Windows.Forms.Cursors.Hand;
             this.maqSoftwareLogo.Image = ((System.Drawing.Image)(resources.GetObject("maqSoftwareLogo.Image")));
-            this.maqSoftwareLogo.Location = new System.Drawing.Point(1014, 71);
+            this.maqSoftwareLogo.Location = new System.Drawing.Point(1777, 71);
             this.maqSoftwareLogo.Name = "maqSoftwareLogo";
             this.maqSoftwareLogo.Size = new System.Drawing.Size(379, 112);
             this.maqSoftwareLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -348,7 +348,7 @@
             // 
             this.powerBiLogo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.powerBiLogo.Image = ((System.Drawing.Image)(resources.GetObject("powerBiLogo.Image")));
-            this.powerBiLogo.Location = new System.Drawing.Point(1386, 62);
+            this.powerBiLogo.Location = new System.Drawing.Point(2149, 62);
             this.powerBiLogo.Name = "powerBiLogo";
             this.powerBiLogo.Size = new System.Drawing.Size(347, 138);
             this.powerBiLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -377,7 +377,7 @@
             this.ribbonMain.OrbStyle = System.Windows.Forms.RibbonOrbStyle.Office_2013;
             this.ribbonMain.OrbText = "File";
             this.ribbonMain.RibbonTabFont = new System.Drawing.Font("Trebuchet MS", 9F);
-            this.ribbonMain.Size = new System.Drawing.Size(1745, 200);
+            this.ribbonMain.Size = new System.Drawing.Size(2508, 200);
             this.ribbonMain.TabIndex = 1;
             this.ribbonMain.Tabs.Add(this.tabHome);
             this.ribbonMain.Tabs.Add(this.tabHelp);
@@ -432,7 +432,7 @@
             this.pnlHeader.Location = new System.Drawing.Point(0, 301);
             this.pnlHeader.Margin = new System.Windows.Forms.Padding(7);
             this.pnlHeader.Name = "pnlHeader";
-            this.pnlHeader.Size = new System.Drawing.Size(1745, 74);
+            this.pnlHeader.Size = new System.Drawing.Size(2508, 74);
             this.pnlHeader.TabIndex = 50;
             // 
             // spltSourceTarget
@@ -454,8 +454,8 @@
             this.spltSourceTarget.Panel2.Controls.Add(this.txtTarget);
             this.spltSourceTarget.Panel2.Controls.Add(this.label2);
             this.spltSourceTarget.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.spltSourceTarget.Size = new System.Drawing.Size(1745, 74);
-            this.spltSourceTarget.SplitterDistance = 886;
+            this.spltSourceTarget.Size = new System.Drawing.Size(2508, 74);
+            this.spltSourceTarget.SplitterDistance = 1273;
             this.spltSourceTarget.SplitterWidth = 9;
             this.spltSourceTarget.TabIndex = 45;
             // 
@@ -478,7 +478,7 @@
             this.txtSource.Location = new System.Drawing.Point(114, 15);
             this.txtSource.Margin = new System.Windows.Forms.Padding(7);
             this.txtSource.Name = "txtSource";
-            this.txtSource.Size = new System.Drawing.Size(747, 35);
+            this.txtSource.Size = new System.Drawing.Size(1065, 35);
             this.txtSource.TabIndex = 41;
             // 
             // txtTarget
@@ -490,7 +490,7 @@
             this.txtTarget.Location = new System.Drawing.Point(105, 15);
             this.txtTarget.Margin = new System.Windows.Forms.Padding(7);
             this.txtTarget.Name = "txtTarget";
-            this.txtTarget.Size = new System.Drawing.Size(699, 35);
+            this.txtTarget.Size = new System.Drawing.Size(1065, 35);
             this.txtTarget.TabIndex = 42;
             // 
             // label2
@@ -509,7 +509,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 29F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1745, 1074);
+            this.ClientSize = new System.Drawing.Size(2508, 1591);
             this.Controls.Add(this.pnlHeader);
             this.Controls.Add(this.StatusBarComparsion);
             this.Controls.Add(this.pnlRibbon);
