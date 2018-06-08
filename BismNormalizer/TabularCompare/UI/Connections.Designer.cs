@@ -64,7 +64,7 @@
             this.cboSourceDatabase.MaxDropDownItems = 11;
             this.cboSourceDatabase.Name = "cboSourceDatabase";
             this.cboSourceDatabase.Size = new System.Drawing.Size(858, 37);
-            this.cboSourceDatabase.TabIndex = 12;
+            this.cboSourceDatabase.TabIndex = 2;
             this.cboSourceDatabase.Enter += new System.EventHandler(this.cboSourceDatabase_Enter);
             // 
             // cboSourceServer
@@ -78,7 +78,7 @@
             this.cboSourceServer.MaxDropDownItems = 11;
             this.cboSourceServer.Name = "cboSourceServer";
             this.cboSourceServer.Size = new System.Drawing.Size(858, 37);
-            this.cboSourceServer.TabIndex = 9;
+            this.cboSourceServer.TabIndex = 1;
             this.cboSourceServer.TextChanged += new System.EventHandler(this.cboSourceServer_TextChanged);
             // 
             // label2
@@ -88,7 +88,7 @@
             this.label2.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(94, 29);
-            this.label2.TabIndex = 11;
+            this.label2.TabIndex = 2;
             this.label2.Text = "Dataset";
             // 
             // label1
@@ -98,7 +98,7 @@
             this.label1.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(134, 29);
-            this.label1.TabIndex = 10;
+            this.label1.TabIndex = 1;
             this.label1.Text = "Workspace";
             // 
             // pnlSourceDb
@@ -136,7 +136,7 @@
             this.btnOK.Margin = new System.Windows.Forms.Padding(7);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(161, 51);
-            this.btnOK.TabIndex = 18;
+            this.btnOK.TabIndex = 6;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
@@ -149,7 +149,7 @@
             this.btnCancel.Margin = new System.Windows.Forms.Padding(7);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(166, 51);
-            this.btnCancel.TabIndex = 19;
+            this.btnCancel.TabIndex = 7;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             // 
@@ -161,7 +161,7 @@
             this.btnSwitch.Margin = new System.Windows.Forms.Padding(7);
             this.btnSwitch.Name = "btnSwitch";
             this.btnSwitch.Size = new System.Drawing.Size(130, 71);
-            this.btnSwitch.TabIndex = 20;
+            this.btnSwitch.TabIndex = 3;
             this.btnSwitch.UseVisualStyleBackColor = true;
             this.btnSwitch.Click += new System.EventHandler(this.btnSwitch_Click);
             // 
@@ -206,7 +206,7 @@
             this.label3.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(134, 29);
-            this.label3.TabIndex = 10;
+            this.label3.TabIndex = 4;
             this.label3.Text = "Workspace";
             // 
             // label4
@@ -216,7 +216,7 @@
             this.label4.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(94, 29);
-            this.label4.TabIndex = 11;
+            this.label4.TabIndex = 5;
             this.label4.Text = "Dataset";
             // 
             // pnlTargetDb
@@ -242,7 +242,7 @@
             this.cboTargetServer.MaxDropDownItems = 11;
             this.cboTargetServer.Name = "cboTargetServer";
             this.cboTargetServer.Size = new System.Drawing.Size(862, 37);
-            this.cboTargetServer.TabIndex = 9;
+            this.cboTargetServer.TabIndex = 4;
             this.cboTargetServer.TextChanged += new System.EventHandler(this.cboTargetServer_TextChanged);
             // 
             // cboTargetDatabase
@@ -256,7 +256,7 @@
             this.cboTargetDatabase.MaxDropDownItems = 11;
             this.cboTargetDatabase.Name = "cboTargetDatabase";
             this.cboTargetDatabase.Size = new System.Drawing.Size(862, 37);
-            this.cboTargetDatabase.TabIndex = 12;
+            this.cboTargetDatabase.TabIndex = 5;
             this.cboTargetDatabase.Enter += new System.EventHandler(this.cboTargetDatabase_Enter);
             // 
             // Connections

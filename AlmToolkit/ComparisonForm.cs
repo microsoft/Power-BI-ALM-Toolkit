@@ -856,10 +856,11 @@ namespace AlmToolkit
 
         private void mnuExit_Click(object sender, EventArgs e)
         {
-            if (_unsaved && SaveChanges() != DialogResult.Cancel)
+            if (_unsaved && SaveChanges() == DialogResult.Cancel)
             {
-                Application.Exit();
+                return;
             }
+            Application.Exit();
         }
 
         private DialogResult SaveChanges()
