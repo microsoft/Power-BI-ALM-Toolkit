@@ -61,7 +61,7 @@
             switch (action.ToLower())
             {
                 case "save":
-                    _instanceMainForm.Save();
+                    _instanceMainForm.SaveNg();
                     break;
                 case "compare":
                     _instanceMainForm.InitializeAndCompareTabularModelsNg();

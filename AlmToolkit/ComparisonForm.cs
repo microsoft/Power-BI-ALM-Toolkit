@@ -785,32 +785,37 @@ namespace AlmToolkit
         {
             Save();
         }
-
-        public void Save()
+        public void SaveNg()
         {
             if (InvokeRequired)
             {
                 this.Invoke(new MethodInvoker(delegate
                 {
-                    try
-                    {
-                        if (string.IsNullOrEmpty(_fileName))
-                        {
-                            SaveFileAs();
-                        }
-                        else
-                        {
-                            this.SaveFile(_fileName);
-                        }
-                        SetFileNameTitle(false);
-                    }
-                    catch (Exception exc)
-                    {
-                        MessageBox.Show(exc.Message, _appCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        SetNotComparedState();
-                    }
+                    Save();
                 }));
             }
+        }
+        public void Save()
+        {
+
+            try
+            {
+                if (string.IsNullOrEmpty(_fileName))
+                {
+                    SaveFileAs();
+                }
+                else
+                {
+                    this.SaveFile(_fileName);
+                }
+                SetFileNameTitle(false);
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(exc.Message, _appCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SetNotComparedState();
+            }
+
         }
 
         private void mnuSaveAs_Click(object sender, EventArgs e)
