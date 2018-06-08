@@ -187,7 +187,7 @@ namespace AlmToolkit
             else return false;
         }
 
-        private void InitializeAndCompareTabularModels()
+        public void InitializeAndCompareTabularModels()
         {
             try
             {
@@ -197,6 +197,7 @@ namespace AlmToolkit
                 if (!ShowConnectionsForm()) return;
 
                 Cursor = Cursors.WaitCursor;
+                changeCursor(true);
                 toolStripStatusLabel1.Text = "ALM Toolkit - comparing datasets ...";
 
                 PopulateSourceTargetTextBoxes();
@@ -219,6 +220,7 @@ namespace AlmToolkit
             finally
             {
                 Cursor = Cursors.Default;
+                changeCursor(false);
             }
         }
 
@@ -263,6 +265,16 @@ namespace AlmToolkit
         {
             // Invoke method in Angular
             string script = "window.angularComponentRef.zone.run(() => { window.angularComponentRef.showTree(" + (mergeActions ? "true" : "false") + "); })";
+            chromeBrowser.ExecuteScriptAsync(script);
+        }
+
+        /// <summary>
+        /// Change the cursor as per status
+        /// </summary>
+        /// <param name="showWaitCursor">Show wait cursor or not</param>
+        public void changeCursor(bool showWaitCursor)
+        {
+            string script = "window.angularComponentRef.zone.run(() => { window.angularComponentRef.changeCursor(" + (showWaitCursor ? "true" : "false") + "); })";
             chromeBrowser.ExecuteScriptAsync(script);
         }
 
@@ -361,6 +373,7 @@ namespace AlmToolkit
             try
             {
                 Cursor.Current = Cursors.WaitCursor;
+                changeCursor(true);
                 toolStripStatusLabel1.Text = "Creating script ...";
 
                 //If we get here, there was a problem generating the xmla file (maybe file item templates not installed), so offer saving to a file instead
@@ -383,6 +396,7 @@ namespace AlmToolkit
             finally
             {
                 Cursor.Current = Cursors.Default;
+                changeCursor(false);
                 toolStripStatusLabel1.Text = "";
             }
         }
@@ -416,6 +430,7 @@ namespace AlmToolkit
             try
             {
                 Cursor.Current = Cursors.WaitCursor;
+                changeCursor(true);
                 toolStripStatusLabel1.Text = "ALM Toolkit - generating report ...";
                 toolStripProgressBar1.Visible = true;
                 _comparison.ReportDifferences(toolStripProgressBar1);
@@ -429,6 +444,7 @@ namespace AlmToolkit
             {
                 toolStripProgressBar1.Visible = false;
                 Cursor.Current = Cursors.Default;
+                changeCursor(false);
             }
         }
 
@@ -545,6 +561,7 @@ namespace AlmToolkit
             try
             {
                 Cursor.Current = Cursors.WaitCursor;
+                changeCursor(true);
                 toolStripStatusLabel1.Text = "ALM Toolkit - validating ...";
 
                 // Not required since _comparison object is always updated with latest updates
@@ -567,6 +584,7 @@ namespace AlmToolkit
             finally
             {
                 Cursor.Current = Cursors.Default;
+                changeCursor(false);
             }
         }
 
@@ -580,6 +598,7 @@ namespace AlmToolkit
             try
             {
                 Cursor.Current = Cursors.WaitCursor;
+                changeCursor(true);
                 toolStripStatusLabel1.Text = "ALM Toolkit - committing changes ...";
                 // Not required since _comparison object is always updated with latest updates
                 //ComparisonCtrl.RefreshSkipSelections();
@@ -610,6 +629,7 @@ namespace AlmToolkit
             finally
             {
                 Cursor.Current = Cursors.Default;
+                changeCursor(false);
             }
         }
 
@@ -753,7 +773,7 @@ namespace AlmToolkit
             Save();
         }
 
-        private void Save()
+        public void Save()
         {
             try
             {

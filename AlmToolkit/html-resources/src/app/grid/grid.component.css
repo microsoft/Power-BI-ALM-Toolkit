@@ -28,12 +28,14 @@
     margin: 10px;
     border-collapse: collapse;
     background-color: #FFF;
+    min-width:99%;
+    max-width: 99%;
 }
 
 .grid-column, .grid-header-column {
     padding: 1px;
     border: 1px solid rgba(112, 112, 112, 0.64);
-    max-width: 500px;
+    max-width: 20%;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -58,6 +60,10 @@
 
 .greyed-out-cell {
     background-color: #D3D3D3;
+}
+
+.action-options {
+    width: 75px;
 }
 
 .action-dropdown {
