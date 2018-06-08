@@ -62,7 +62,7 @@ export class GridComponent implements OnInit {
     const maxColumnWidth = windowWidth * 0.2;
     const gridColumns = document.querySelectorAll('.grid-column');
     const gridHeaderColumns = document.querySelectorAll('.grid-header-column');
-    let columnElement:HTMLElement;
+    let columnElement: HTMLElement;
     for (let iColumnCounter = 0; iColumnCounter < gridColumns.length; iColumnCounter += 1) {
       columnElement = <HTMLElement>gridColumns[iColumnCounter];
       columnElement.style.maxWidth = maxColumnWidth.toString() + 'px';
@@ -204,7 +204,6 @@ export class GridComponent implements OnInit {
     this.treeControlContextMenuY = this.treeControlContextMenuY + scrolledHeight;
 
     this.showContextMenu = true;
-    document.getElementById('comparison-table-container').style.overflowY = 'hidden';
     this.selectedCell = event.target.id;
   }
 
