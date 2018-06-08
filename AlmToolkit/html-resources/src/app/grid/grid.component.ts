@@ -124,7 +124,6 @@ export class GridComponent implements OnInit {
   startDragging(event: any) {
     this.showContextMenu = false;
     this.mouseDragged = true;
-    document.getElementById('comparison-table-container').style.overflowY = 'hidden';
     document.addEventListener('mousemove', this.changeCodeEditorHeight, false);
   }
 
@@ -204,7 +203,6 @@ export class GridComponent implements OnInit {
     this.treeControlContextMenuY = this.treeControlContextMenuY + scrolledHeight;
 
     this.showContextMenu = true;
-    document.getElementById('comparison-table-container').style.overflowY = 'hidden';
     this.selectedCell = event.target.id;
   }
 
