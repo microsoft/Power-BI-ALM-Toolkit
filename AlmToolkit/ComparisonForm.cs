@@ -187,8 +187,20 @@ namespace AlmToolkit
             else return false;
         }
 
+        public void InitializeAndCompareTabularModelsNg()
+        {
+            if (InvokeRequired)
+            {
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    InitializeAndCompareTabularModels();
+                }));
+            }
+        }
+
         public void InitializeAndCompareTabularModels()
         {
+
             try
             {
                 string sourceTemp = txtSource.Text;
@@ -222,6 +234,7 @@ namespace AlmToolkit
                 Cursor = Cursors.Default;
                 changeCursor(false);
             }
+
         }
 
         public void CompareTabularModels()
@@ -775,22 +788,28 @@ namespace AlmToolkit
 
         public void Save()
         {
-            try
+            if (InvokeRequired)
             {
-                if (string.IsNullOrEmpty(_fileName))
+                this.Invoke(new MethodInvoker(delegate
                 {
-                    SaveFileAs();
-                }
-                else
-                {
-                    this.SaveFile(_fileName);
-                }
-                SetFileNameTitle(false);
-            }
-            catch (Exception exc)
-            {
-                MessageBox.Show(exc.Message, _appCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                SetNotComparedState();
+                    try
+                    {
+                        if (string.IsNullOrEmpty(_fileName))
+                        {
+                            SaveFileAs();
+                        }
+                        else
+                        {
+                            this.SaveFile(_fileName);
+                        }
+                        SetFileNameTitle(false);
+                    }
+                    catch (Exception exc)
+                    {
+                        MessageBox.Show(exc.Message, _appCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        SetNotComparedState();
+                    }
+                }));
             }
         }
 
@@ -812,7 +831,7 @@ namespace AlmToolkit
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "ALM Toolkit Files (.almt)|*.almt";
             sfd.Title = "Save As";
-            
+
             if (String.IsNullOrEmpty(_fileName))
             {
                 sfd.FileName = "Comparison1";

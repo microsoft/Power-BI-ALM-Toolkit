@@ -31,7 +31,7 @@ export class GridComponent implements OnInit {
       showTree: (mergeActions: boolean) => this.getDataToDisplay(mergeActions),
       getTree: () => this.getGridData(),
       clearTree: (dataCompared: boolean) => this.clearGrid(dataCompared),
-      changeCursor:(showWaitCursor:boolean) => this.changeCursor(showWaitCursor)
+      changeCursor: (showWaitCursor: boolean) => this.changeCursor(showWaitCursor)
     };
   }
 
@@ -44,8 +44,34 @@ export class GridComponent implements OnInit {
     this.stopDragging(event);
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.resizeComparisonTable(event);
+  }
+
 
   ngOnInit() {
+  }
+
+  /**
+   * Resize comparison table on window resize
+   * @param event - To get window width
+   */
+  resizeComparisonTable(event: any) {
+    const windowWidth = event.target.innerWidth;
+    const maxColumnWidth = windowWidth * 0.2;
+    const gridColumns = document.querySelectorAll('.grid-column');
+    const gridHeaderColumns = document.querySelectorAll('.grid-header-column');
+    let columnElement:HTMLElement;
+    for (let iColumnCounter = 0; iColumnCounter < gridColumns.length; iColumnCounter += 1) {
+      columnElement = <HTMLElement>gridColumns[iColumnCounter];
+      columnElement.style.maxWidth = maxColumnWidth.toString() + 'px';
+    }
+
+    for (let iColumnCounter = 0; iColumnCounter < gridHeaderColumns.length; iColumnCounter += 1) {
+      columnElement = <HTMLElement>gridHeaderColumns[iColumnCounter];
+      columnElement.style.maxWidth = maxColumnWidth.toString() + 'px';
+    }
   }
 
   /**
@@ -53,9 +79,9 @@ export class GridComponent implements OnInit {
    * @param showWaitCursor - Show wait cursor or default cursor
    */
   changeCursor(showWaitCursor: boolean) {
-    if(showWaitCursor){
+    if (showWaitCursor) {
       document.getElementById('main-container').style.cursor = 'wait';
-    } else{
+    } else {
       document.getElementById('main-container').style.cursor = 'default';
     }
   }

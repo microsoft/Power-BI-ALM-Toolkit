@@ -5,7 +5,7 @@
 }
 
 #main-container {
-    height: 900px;
+    height: 750px;
 }
 
 #comparison-table-container {
@@ -35,7 +35,7 @@
 .grid-column, .grid-header-column {
     padding: 1px;
     border: 1px solid rgba(112, 112, 112, 0.64);
-    max-width: 20%;
+    max-width: 200px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;

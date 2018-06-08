@@ -64,7 +64,7 @@
                     _instanceMainForm.Save();
                     break;
                 case "compare":
-                    _instanceMainForm.InitializeAndCompareTabularModels();
+                    _instanceMainForm.InitializeAndCompareTabularModelsNg();
                     break;
             }
         }
