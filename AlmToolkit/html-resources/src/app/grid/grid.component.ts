@@ -30,7 +30,8 @@ export class GridComponent implements OnInit {
       zone: this.zone,
       showTree: (mergeActions: boolean) => this.getDataToDisplay(mergeActions),
       getTree: () => this.getGridData(),
-      clearTree: (dataCompared: boolean) => this.clearGrid(dataCompared)
+      clearTree: (dataCompared: boolean) => this.clearGrid(dataCompared),
+      changeCursor: (showWaitCursor: boolean) => this.changeCursor(showWaitCursor)
     };
   }
 
@@ -43,8 +44,46 @@ export class GridComponent implements OnInit {
     this.stopDragging(event);
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.resizeComparisonTable(event);
+  }
+
 
   ngOnInit() {
+  }
+
+  /**
+   * Resize comparison table on window resize
+   * @param event - To get window width
+   */
+  resizeComparisonTable(event: any) {
+    const windowWidth = event.target.innerWidth;
+    const maxColumnWidth = windowWidth * 0.2;
+    const gridColumns = document.querySelectorAll('.grid-column');
+    const gridHeaderColumns = document.querySelectorAll('.grid-header-column');
+    let columnElement: HTMLElement;
+    for (let iColumnCounter = 0; iColumnCounter < gridColumns.length; iColumnCounter += 1) {
+      columnElement = <HTMLElement>gridColumns[iColumnCounter];
+      columnElement.style.maxWidth = maxColumnWidth.toString() + 'px';
+    }
+
+    for (let iColumnCounter = 0; iColumnCounter < gridHeaderColumns.length; iColumnCounter += 1) {
+      columnElement = <HTMLElement>gridHeaderColumns[iColumnCounter];
+      columnElement.style.maxWidth = maxColumnWidth.toString() + 'px';
+    }
+  }
+
+  /**
+   * Change the cursor as per status from C#
+   * @param showWaitCursor - Show wait cursor or default cursor
+   */
+  changeCursor(showWaitCursor: boolean) {
+    if (showWaitCursor) {
+      document.getElementById('main-container').style.cursor = 'wait';
+    } else {
+      document.getElementById('main-container').style.cursor = 'default';
+    }
   }
 
   /**
@@ -165,7 +204,6 @@ export class GridComponent implements OnInit {
     this.treeControlContextMenuY = this.treeControlContextMenuY + scrolledHeight;
 
     this.showContextMenu = true;
-    document.getElementById('comparison-table-container').style.overflowY = 'hidden';
     this.selectedCell = event.target.id;
   }
 
@@ -332,8 +370,7 @@ export class GridComponent implements OnInit {
     * @param event - Check if the key pressed requires selection of rows
     */
   onKeydown(event: any) {
-    event.preventDefault();
-    event.stopPropagation();
+
     this.showContextMenu = false;
     document.getElementById('comparison-table-container').style.overflowY = 'auto';
     let siblingRow;
@@ -343,6 +380,16 @@ export class GridComponent implements OnInit {
     eventRow = event.target.parentElement;
     columnType = document.getElementById(event.target.id).getAttribute('data-column-type');
 
+    if (event.ctrlKey && event.which === 83) {
+      this.gridService.saveOrCompare('save');
+      return;
+    }
+
+    if (event.ctrlKey && event.altKey && event.which === 67) {
+      this.gridService.saveOrCompare('compare');
+      return;
+    }
+
     // Remove the transparent background color from existing cells
     const transparentCells = document.querySelectorAll('.transparent-cell');
     for (let iTransparentCellCounter = 0; iTransparentCellCounter < transparentCells.length; iTransparentCellCounter += 1) {
@@ -351,6 +398,8 @@ export class GridComponent implements OnInit {
 
     // Handle up arrow, down arrow, Shift+Up, Shift+Down
     if (event.which === 38 || event.which === 40) {
+      event.preventDefault();
+      event.stopPropagation();
       if (!event.ctrlKey) {
         // If shift key is not pressed its a single select
         if (!event.shiftKey) {
@@ -518,8 +567,11 @@ export class GridComponent implements OnInit {
           }
         }
       }
-    } else if ((event.which === 37 || event.which === 39 || event.which === 9) && !event.ctrlKey && !event.shiftKey) {
-      // To handle left and right keys
+    } else if ((event.which === 37 || event.which === 39 || event.which === 9 || (event.shiftKey && event.which === 9)) && !event.ctrlKey) {
+
+      event.preventDefault();
+      event.stopPropagation();
+      // To handle left and right keys, tab and Shift+Tab
       let prev = true;
       let rowChild;
       let comparisonTable;
@@ -527,7 +579,8 @@ export class GridComponent implements OnInit {
       let lastRow;
       comparisonTable = document.getElementById('comparison-grid');
       firstRow = this.getSiblingElement(false, comparisonTable.firstElementChild.firstElementChild.id);
-      lastRow = comparisonTable.firstElementChild.lastElementChild; if (event.which === 39 || event.which === 9) {
+      lastRow = comparisonTable.firstElementChild.lastElementChild;
+      if (event.which === 39 || (event.which === 9 && !event.shiftKey)) {
         prev = false;
       }
       siblingRow = this.getSiblingElement(prev, event.target.id);

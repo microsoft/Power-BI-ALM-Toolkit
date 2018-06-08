@@ -53,6 +53,23 @@
         }
 
         /// <summary>
+        /// Save or Compare as per the action on UI
+        /// </summary>
+        /// <param name="action">Action to be performed</param>
+        public void SaveOrCompare(string action)
+        {
+            switch (action.ToLower())
+            {
+                case "save":
+                    _instanceMainForm.SaveNg();
+                    break;
+                case "compare":
+                    _instanceMainForm.InitializeAndCompareTabularModelsNg();
+                    break;
+            }
+        }
+
+        /// <summary>
         /// Update the object as and when selected action is changed on UI
         /// </summary>
         /// <param name="id">Id of the node updated</param>

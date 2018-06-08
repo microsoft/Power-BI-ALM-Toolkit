@@ -41,6 +41,12 @@ export class GridDataService {
     this._window['comparisonJSInteraction'].changeOccurred(id, newAction, oldAction);
   }
 
+  saveOrCompare(action:string){
+    this.logService.add('Grid data service: Calling C# service to take action', 'info');
+    this._window['comparisonJSInteraction'].saveOrCompare(action);
+  }
+  
+
   /**
    * Send the selected action and status to C# application
    * @param action - Action to be performed
