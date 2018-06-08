@@ -28,6 +28,8 @@ namespace AlmToolkit
         private ChromiumWebBrowser chromeBrowser;
         private const string _appCaption = "ALM Toolkit for Power BI";
         private CompareState _compareState = CompareState.NotCompared;
+        private string _fileName = "";
+        private bool _unsaved = false;
 
         #endregion
 
@@ -77,10 +79,12 @@ namespace AlmToolkit
         private void ComparisonForm_Load(object sender, EventArgs e)
         {
             _comparisonInfo = new ComparisonInfo();
-            ComparisonCtrl.ComparisonInfo = _comparisonInfo;
+            //ComparisonCtrl.ComparisonInfo = _comparisonInfo;
 
             GetFromAutoCompleteSource();
             GetFromAutoCompleteTarget();
+
+            SetNotComparedState();
 
             //hdpi
             Rescale();
@@ -114,7 +118,7 @@ namespace AlmToolkit
             btnReportDifferences.Enabled = false;
             toolStripStatusLabel1.Text = "";
 
-            ComparisonCtrl.SetNotComparedState();
+            //ComparisonCtrl.SetNotComparedState();
 
             _compareState = CompareState.NotCompared;
             SetGridState(false);
@@ -137,7 +141,7 @@ namespace AlmToolkit
             btnGenerateScript.Enabled = false;
             btnReportDifferences.Enabled = true;
 
-            ComparisonCtrl.SetComparedState();
+            //ComparisonCtrl.SetComparedState();
 
             // NG: Disable skip and other actions for the control here
             _compareState = CompareState.Compared;
@@ -152,48 +156,7 @@ namespace AlmToolkit
 
             _compareState = CompareState.Validated;
             // This method needs to be moved out of comparison control during clean up
-            ComparisonCtrl.SetValidatedState();
-        }
-
-        private void LoadFile(string fileName)
-        {
-            try
-            {
-                if (File.ReadAllText(fileName) == "")
-                {
-                    //Blank file not saved to yet
-                    return;
-                }
-                _comparisonInfo = ComparisonInfo.DeserializeBsmnFile(fileName);
-                ComparisonCtrl.ComparisonInfo = _comparisonInfo;
-
-                PopulateSourceTargetTextBoxes();
-            }
-            catch (Exception exc)
-            {
-                MessageBox.Show($"Error loading file {fileName}\n{exc.Message}\n\nPlease save over this file with a new version.", _appCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                SetNotComparedState();
-            }
-        }
-
-        public void SaveFile(string fileName)
-        {
-            try
-            {
-                ComparisonCtrl.RefreshSkipSelections();
-
-                XmlSerializer writer = new XmlSerializer(typeof(ComparisonInfo));
-                StreamWriter file = new System.IO.StreamWriter(fileName);
-                writer.Serialize(file, _comparisonInfo);
-                file.Close();
-            }
-            catch (Exception exc)
-            {
-                MessageBox.Show($"Error saving file {fileName}\n{exc.Message}", _appCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            //ComparisonCtrl.SetValidatedState();
         }
 
         private bool ShowConnectionsForm()
@@ -233,19 +196,20 @@ namespace AlmToolkit
 
                 if (!ShowConnectionsForm()) return;
 
-                Cursor.Current = Cursors.WaitCursor;
-                toolStripStatusLabel1.Text = "ALM Toolkit - comparing models ...";
+                Cursor = Cursors.WaitCursor;
+                toolStripStatusLabel1.Text = "ALM Toolkit - comparing datasets ...";
 
                 PopulateSourceTargetTextBoxes();
                 if (sourceTemp != txtSource.Text || targetTemp != txtTarget.Text)
                 {
                     // New connections
-                    ComparisonCtrl.TriggerComparisonChanged();
+                    //ComparisonCtrl.TriggerComparisonChanged();
                     _comparisonInfo.SkipSelections.Clear();
+                    SetFileNameTitle(true);
                 }
 
                 this.CompareTabularModels();
-                toolStripStatusLabel1.Text = "ALM Toolkit - finished comparing models";
+                toolStripStatusLabel1.Text = "ALM Toolkit - finished comparing datasets";
             }
             catch (Exception exc)
             {
@@ -254,7 +218,7 @@ namespace AlmToolkit
             }
             finally
             {
-                Cursor.Current = Cursors.Default;
+                Cursor = Cursors.Default;
             }
         }
 
@@ -274,8 +238,8 @@ namespace AlmToolkit
 
                 // Avoid conflict for validate with existing control
                 //ComparisonCtrl.ComparisonChanged += HandleComparisonChanged;
-                ComparisonCtrl.Comparison = _comparison;
-                ComparisonCtrl.DataBindComparison();
+                //ComparisonCtrl.Comparison = _comparison;
+                //ComparisonCtrl.DataBindComparison();
 
                 _comparisonInter.Comparison = _comparison;
                 transformAndRefreshGridControl();
@@ -309,7 +273,10 @@ namespace AlmToolkit
 
             // Call Angular method to show/hide grid here
             string script = "window.angularComponentRef.zone.run(() => { window.angularComponentRef.clearTree(" + (showGrid ? "true" : "false") + "); })";
-            chromeBrowser.ExecuteScriptAsync(script);
+            if (chromeBrowser.IsBrowserInitialized)
+            {
+                chromeBrowser.ExecuteScriptAsync(script);
+            }
         }
         #endregion
 
@@ -385,9 +352,8 @@ namespace AlmToolkit
 
         private void PopulateSourceTargetTextBoxes()
         {
-            txtSource.Text = (_comparisonInfo.ConnectionInfoSource.UseProject ? "Project: " + _comparisonInfo.ConnectionInfoSource.ProjectName : "Database: " + _comparisonInfo.ConnectionInfoSource.ServerName + ";" + _comparisonInfo.ConnectionInfoSource.DatabaseName);
-            txtTarget.Text = (_comparisonInfo.ConnectionInfoTarget.UseProject ? "Project: " + _comparisonInfo.ConnectionInfoTarget.ProjectName : "Database: " + _comparisonInfo.ConnectionInfoTarget.ServerName + ";" + _comparisonInfo.ConnectionInfoTarget.DatabaseName);
-
+            txtSource.Text = _comparisonInfo.ConnectionInfoSource.ServerName + ";" + _comparisonInfo.ConnectionInfoSource.DatabaseName;
+            txtTarget.Text = _comparisonInfo.ConnectionInfoTarget.ServerName + ";" + _comparisonInfo.ConnectionInfoTarget.DatabaseName;
         }
 
         private void btnGenerateScript_Click(object sender, EventArgs e)
@@ -430,7 +396,7 @@ namespace AlmToolkit
             optionsForm.ShowDialog();
             if (optionsForm.DialogResult == DialogResult.OK)
             {
-                ComparisonCtrl.TriggerComparisonChanged();
+                //ComparisonCtrl.TriggerComparisonChanged();
                 //if (ComparisonCtrl.CompareState != CompareState.NotCompared)
                 //{
                 //    SetNotComparedState();
@@ -468,6 +434,14 @@ namespace AlmToolkit
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            //Todo: not firing
+
+            if (keyData == (Keys.Control | Keys.S))
+            {
+                Save();
+                return true;
+            }
+
             if (keyData == (Keys.Shift | Keys.Alt | Keys.C))
             {
                 this.InitializeAndCompareTabularModels();
@@ -484,7 +458,7 @@ namespace AlmToolkit
 
         private void mnuHideSkipObjects_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.ShowHideNodes(true);
+            //ComparisonCtrl.ShowHideNodes(true);
 
             _comparisonInter.ShowHideSkipNodes(true);
             refreshGridControl(true);
@@ -492,7 +466,7 @@ namespace AlmToolkit
 
         private void mnuHideSkipObjectsWithSameDefinition_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.ShowHideNodes(true, sameDefinitionFilter: true);
+            //ComparisonCtrl.ShowHideNodes(true, sameDefinitionFilter: true);
 
             _comparisonInter.ShowHideSkipNodes(true, sameDefinitionFilter: true);
             refreshGridControl(true);
@@ -500,7 +474,7 @@ namespace AlmToolkit
 
         private void mnuShowSkipObjects_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.ShowHideNodes(false);
+            //ComparisonCtrl.ShowHideNodes(false);
 
             _comparisonInter.ShowHideSkipNodes(false);
             refreshGridControl(true);
@@ -508,7 +482,7 @@ namespace AlmToolkit
 
         private void mnuSkipAllObjectsMissingInSource_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.MissingInSource);
+            //ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.MissingInSource);
             SetComparedState();
 
             _comparisonInter.SkipItems(false, ComparisonObjectStatus.MissingInSource);
@@ -517,8 +491,8 @@ namespace AlmToolkit
 
         private void mnuDeleteAllObjectsMissingInSource_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.ShowHideNodes(false);
-            ComparisonCtrl.DeleteItems(false);
+            //ComparisonCtrl.ShowHideNodes(false);
+            //ComparisonCtrl.DeleteItems(false);
             SetComparedState();
 
             _comparisonInter.ShowHideSkipNodes(false);
@@ -528,7 +502,7 @@ namespace AlmToolkit
 
         private void mnuSkipAllObjectsMissingInTarget_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.MissingInTarget);
+            //ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.MissingInTarget);
             SetComparedState();
 
             _comparisonInter.SkipItems(false, ComparisonObjectStatus.MissingInTarget);
@@ -537,8 +511,8 @@ namespace AlmToolkit
 
         private void mnuCreateAllObjectsMissingInTarget_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.ShowHideNodes(false);
-            ComparisonCtrl.CreateItems(false);
+            //ComparisonCtrl.ShowHideNodes(false);
+            //ComparisonCtrl.CreateItems(false);
             SetComparedState();
 
             _comparisonInter.ShowHideSkipNodes(false);
@@ -548,7 +522,7 @@ namespace AlmToolkit
 
         private void mnuSkipAllObjectsWithDifferentDefinitions_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.DifferentDefinitions);
+            //ComparisonCtrl.SkipItems(false, ComparisonObjectStatus.DifferentDefinitions);
             SetComparedState();
 
             _comparisonInter.SkipItems(false, ComparisonObjectStatus.DifferentDefinitions);
@@ -557,8 +531,8 @@ namespace AlmToolkit
 
         private void mnuUpdateAllObjectsWithDifferentDefinitions_Click(object sender, EventArgs e)
         {
-            ComparisonCtrl.ShowHideNodes(false);
-            ComparisonCtrl.UpdateItems(false);
+            //ComparisonCtrl.ShowHideNodes(false);
+            //ComparisonCtrl.UpdateItems(false);
             SetComparedState();
 
             _comparisonInter.ShowHideSkipNodes(false);
@@ -578,7 +552,7 @@ namespace AlmToolkit
 
                 WarningListForm warningList = new WarningListForm();
                 warningList.Comparison = _comparison;
-                warningList.TreeGridImageList = ComparisonCtrl.TreeGridImageList;
+                //warningList.TreeGridImageList = ComparisonCtrl.TreeGridImageList;
                 warningList.StartPosition = FormStartPosition.CenterParent;
                 warningList.ShowDialog();
 
@@ -628,7 +602,6 @@ namespace AlmToolkit
                     toolStripStatusLabel1.Text = "ALM Toolkit - require validation for changes";
                 }
             }
-
             catch (Exception exc)
             {
                 MessageBox.Show(exc.Message, _appCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -654,11 +627,11 @@ namespace AlmToolkit
         private void HandleComparisonChanged(object sender, EventArgs e)
         {
             //If user changes a skip selection after validation, need to disable Update button
-            if (ComparisonCtrl.CompareState == CompareState.Validated)
-            {
-                SetComparedState();
-                toolStripStatusLabel1.Text = "ALM Toolkit - models compared";
-            }
+            //if (ComparisonCtrl.CompareState == CompareState.Validated)
+            //{
+            //    SetComparedState();
+            //    toolStripStatusLabel1.Text = "ALM Toolkit - datasets compared";
+            //}
         }
 
         public void HandleComparisonChanged()
@@ -671,12 +644,199 @@ namespace AlmToolkit
                     this.Invoke(new MethodInvoker(delegate
                     {
                         SetComparedState();
-                        toolStripStatusLabel1.Text = "ALM Toolkit - models compared";
+                        toolStripStatusLabel1.Text = "ALM Toolkit - datasets compared";
                     }));
+                }
+            }
+
+            if (InvokeRequired)
+            {
+                this.Invoke(new MethodInvoker(delegate
+                {
+                    SetFileNameTitle(true);
+                }));
+            }
+        }
+
+        private void maqSoftwareLogo_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                System.Diagnostics.Process.Start("https://maqsoftware.com/");
+            }
+            catch { }
+        }
+
+        private void SetFileNameTitle(bool unsaved)
+        {
+            _unsaved = unsaved;
+
+            if (String.IsNullOrEmpty(_fileName))
+            {
+                this.Text = _appCaption;
+            }
+            else
+            {
+                this.Text = _appCaption + " - " + Path.GetFileName(_fileName);
+                if (unsaved)
+                {
+                    this.Text += " *";
                 }
             }
         }
 
+        public void LoadFile(string fileName)
+        {
+            try
+            {
+                if (File.ReadAllText(fileName) == "")
+                {
+                    //Blank file not saved to yet
+                    return;
+                }
+                _comparisonInfo = ComparisonInfo.DeserializeBsmnFile(fileName);
+                _fileName = fileName;
+                SetFileNameTitle(false);
+                PopulateSourceTargetTextBoxes();
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show($"Error loading file {fileName}\n{exc.Message}\n\nPlease save over this file with a new version.", _appCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public void SaveFile(string fileName)
+        {
+            try
+            {
+                _fileName = fileName;
+                XmlSerializer writer = new XmlSerializer(typeof(ComparisonInfo));
+                StreamWriter file = new System.IO.StreamWriter(fileName);
+                _comparison.RefreshSkipSelectionsFromComparisonObjects();
+                writer.Serialize(file, _comparisonInfo);
+                file.Close();
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show($"Error saving file {fileName}\n{exc.Message}", _appCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void mnuOpen_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_unsaved && SaveChanges() == DialogResult.Cancel)
+                {
+                    return;
+                }
+
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Filter = "ALM Toolkit Files (.almt)|*.almt";
+                ofd.Title = "Open";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    SetNotComparedState();
+                    this.LoadFile(ofd.FileName);
+                    InitializeAndCompareTabularModels();
+                }
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(exc.Message, _appCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SetNotComparedState();
+            }
+        }
+
+        private void mnuSave_Click(object sender, EventArgs e)
+        {
+            Save();
+        }
+
+        private void Save()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(_fileName))
+                {
+                    SaveFileAs();
+                }
+                else
+                {
+                    this.SaveFile(_fileName);
+                }
+                SetFileNameTitle(false);
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(exc.Message, _appCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SetNotComparedState();
+            }
+        }
+
+        private void mnuSaveAs_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SaveFileAs();
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show(exc.Message, _appCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                SetNotComparedState();
+            }
+        }
+
+        private void SaveFileAs()
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "ALM Toolkit Files (.almt)|*.almt";
+            sfd.Title = "Save As";
+            
+            if (String.IsNullOrEmpty(_fileName))
+            {
+                sfd.FileName = "Comparison1";
+            }
+            else
+            {
+                sfd.FileName = Path.GetFileName(_fileName);
+            }
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                _fileName = sfd.FileName;
+                SetFileNameTitle(false);
+                this.SaveFile(_fileName);
+            }
+        }
+
+        private void mnuExit_Click(object sender, EventArgs e)
+        {
+            if (_unsaved && SaveChanges() != DialogResult.Cancel)
+            {
+                Application.Exit();
+            }
+        }
+
+        private DialogResult SaveChanges()
+        {
+            DialogResult result = MessageBox.Show("Do you want to save changes?", _appCaption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+            switch (result)
+            {
+                case DialogResult.Yes:
+                    Save();
+                    break;
+                default:
+                    break;
+            }
+            return result;
+        }
+
+        protected override void OnHandleDestroyed(EventArgs e)
+        {
+            this.SetNotComparedState();
+            base.OnHandleDestroyed(e);
+        }
 
         #endregion
 
@@ -685,9 +845,16 @@ namespace AlmToolkit
         private float _dpiScaleFactor = 1;
         private void Rescale()
         {
+            float fudgedDpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
+
+            //pnlRibbon.Height = Convert.ToInt32(Convert.ToDouble(ribbonMain.Height) * HighDPIUtils.SecondaryFudgeFactor * 0.93);
+            ribbonMain.Height = pnlRibbon.Height;
+            spltSourceTarget.SplitterDistance = Convert.ToInt32(Convert.ToDouble(spltSourceTarget.Width) * 0.5);
+            txtSource.Width = Convert.ToInt32(Convert.ToDouble(Convert.ToDouble(spltSourceTarget.Width) * 0.5) * 0.9);
+            txtTarget.Width = Convert.ToInt32(Convert.ToDouble(Convert.ToDouble(spltSourceTarget.Width) * 0.5) * 0.9);
+
             this._dpiScaleFactor = HighDPIUtils.GetDpiFactor();
             if (this._dpiScaleFactor == 1) return;
-            float fudgedDpiScaleFactor = _dpiScaleFactor * HighDPIUtils.PrimaryFudgeFactor;
 
             this.Scale(new SizeF(fudgedDpiScaleFactor, fudgedDpiScaleFactor));
 
@@ -698,11 +865,7 @@ namespace AlmToolkit
                                 pnlHeader.Font.Size * fudgedDpiScaleFactor,
                                 pnlHeader.Font.Style);
 
-            spltSourceTarget.SplitterDistance = Convert.ToInt32(Convert.ToDouble(spltSourceTarget.Width) * 0.5);
-            pnlHeader.Height = Convert.ToInt32(toolStrip1.Height * 2.3); // Convert.ToInt32(pnlHeader.Height * fudgedDpiScaleFactor * 0.68);
-            txtSource.Width = Convert.ToInt32(Convert.ToDouble(Convert.ToDouble(spltSourceTarget.Width) * 0.5) * 0.8);
             txtSource.Left = Convert.ToInt32(txtSource.Left * fudgedDpiScaleFactor * 0.9);
-            txtTarget.Width = Convert.ToInt32(Convert.ToDouble(Convert.ToDouble(spltSourceTarget.Width) * 0.5) * 0.8);
             txtTarget.Left = Convert.ToInt32(txtTarget.Left * fudgedDpiScaleFactor * 0.9);
         }
 
