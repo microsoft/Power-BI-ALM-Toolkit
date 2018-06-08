@@ -332,8 +332,7 @@ export class GridComponent implements OnInit {
     * @param event - Check if the key pressed requires selection of rows
     */
   onKeydown(event: any) {
-    event.preventDefault();
-    event.stopPropagation();
+    
     this.showContextMenu = false;
     document.getElementById('comparison-table-container').style.overflowY = 'auto';
     let siblingRow;
@@ -351,6 +350,8 @@ export class GridComponent implements OnInit {
 
     // Handle up arrow, down arrow, Shift+Up, Shift+Down
     if (event.which === 38 || event.which === 40) {
+      event.preventDefault();
+      event.stopPropagation();
       if (!event.ctrlKey) {
         // If shift key is not pressed its a single select
         if (!event.shiftKey) {
@@ -519,6 +520,9 @@ export class GridComponent implements OnInit {
         }
       }
     } else if ((event.which === 37 || event.which === 39 || event.which === 9) && !event.ctrlKey && !event.shiftKey) {
+
+      event.preventDefault();
+      event.stopPropagation();
       // To handle left and right keys
       let prev = true;
       let rowChild;
