@@ -55,6 +55,7 @@ namespace AlmToolkit
 
             CefSettings settings = new CefSettings();
             // Initialize cef with the provided settings
+            settings.CefCommandLineArgs.Add("disable-gpu", "1");
             settings.BrowserSubprocessPath = @"x86\CefSharp.BrowserSubprocess.exe";
 
             Cef.Initialize(settings, performDependencyCheck: false, browserProcessHandler: null);
