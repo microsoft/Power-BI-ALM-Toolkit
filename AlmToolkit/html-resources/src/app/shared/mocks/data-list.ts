@@ -76,7 +76,7 @@ export const DatabaseSourceData: ComparisonNode[] = [
     'ChildNodes': [12],
     'AvailableActions': ['Skip'],
     'ShowNode': true,
-    'DropdownDisabled': false,
+    'DropdownDisabled': true,
     'DisableMessage': ''
   },
   {
