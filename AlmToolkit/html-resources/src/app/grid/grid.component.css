@@ -33,7 +33,7 @@
 }
 
 .grid-column, .grid-header-column {
-  padding: 1px;
+  padding: 1px 1px 1px 4px;
   border: 1px solid rgba(112, 112, 112, 0.64);
   max-width: 200px;
   text-overflow: ellipsis;
@@ -50,6 +50,10 @@
     text-align: center;
     padding-right: 4px;
     vertical-align: middle;
+  }
+
+  .grid-column.status-column {
+    width: 130px;
   }
 
 .grid-data-row, .grid-row {
@@ -77,7 +81,7 @@
 }
 
 .action-dropdown {
-  width: 75px;
+  width: 85px;
   font-size: 12px;
   font-weight: 400;
   font-family: 'Segoe UI';
