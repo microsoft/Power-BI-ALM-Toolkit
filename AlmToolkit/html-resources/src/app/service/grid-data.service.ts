@@ -28,6 +28,8 @@ export class GridDataService {
     return fromPromise(this._window['comparisonJSInteraction']
        .getComparisonList())
        .pipe(map((data: string) => JSON.parse(data)));
+    //var test: Observable<ComparisonNode[]> = of(DatabaseSourceData);
+    //return test;
   }
 
   /**
@@ -41,11 +43,11 @@ export class GridDataService {
     this._window['comparisonJSInteraction'].changeOccurred(id, newAction, oldAction);
   }
 
-  saveOrCompare(action:string){
+  saveOrCompare(action: string) {
     this.logService.add('Grid data service: Calling C# service to take action', 'info');
     this._window['comparisonJSInteraction'].saveOrCompare(action);
   }
-  
+
 
   /**
    * Send the selected action and status to C# application
@@ -53,7 +55,7 @@ export class GridDataService {
    * @param status - Status of nodes for which the action is to be performed
    * @param selectedNodes - List of node Ids which are selected
    */
-  sendSelectedNodesAndAction ( action: string, selectedNodes: number[] ) {
+  sendSelectedNodesAndAction(action: string, selectedNodes: number[]) {
     this.logService.add('Grid data service: Sending the selected nodes and the action to be performed to C#', 'info');
     this._window['comparisonJSInteraction'].performActionsOnSelectedActions(action, selectedNodes);
   }

@@ -51,6 +51,7 @@ export class GridComponent implements OnInit {
 
 
   ngOnInit() {
+    //this.getDataToDisplay(false);
   }
 
   /**
