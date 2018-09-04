@@ -350,7 +350,7 @@
             this.powerBiLogo.Image = ((System.Drawing.Image)(resources.GetObject("powerBiLogo.Image")));
             this.powerBiLogo.Location = new System.Drawing.Point(2149, 62);
             this.powerBiLogo.Name = "powerBiLogo";
-            this.powerBiLogo.Size = new System.Drawing.Size(347, 138);
+            this.powerBiLogo.Size = new System.Drawing.Size(347, 130);
             this.powerBiLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.powerBiLogo.TabIndex = 2;
             this.powerBiLogo.TabStop = false;
@@ -490,7 +490,7 @@
             this.txtTarget.Location = new System.Drawing.Point(105, 15);
             this.txtTarget.Margin = new System.Windows.Forms.Padding(7);
             this.txtTarget.Name = "txtTarget";
-            this.txtTarget.Size = new System.Drawing.Size(1065, 35);
+            this.txtTarget.Size = new System.Drawing.Size(1060, 35);
             this.txtTarget.TabIndex = 42;
             // 
             // label2
