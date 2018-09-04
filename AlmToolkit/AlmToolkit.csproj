@@ -48,8 +48,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Forms.Ribbon">
-      <HintPath>C:\Users\MAQUser\Desktop\System.Windows.Forms.Ribbon.dll</HintPath>
+    <Reference Include="System.Windows.Forms.Ribbon, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\System.Windows.Forms.Ribbon.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -388,6 +389,7 @@
     <Content Include="Images\SelectActions.png" />
     <Content Include="Images\Update.png" />
     <Content Include="Images\Validate.png" />
+    <Content Include="System.Windows.Forms.Ribbon.dll" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="html-resources\e2e\app.e2e-spec.ts" />
