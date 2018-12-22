@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BismNormalizer", "BismNorma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlmToolkit", "AlmToolkit\AlmToolkit.csproj", "{765C0612-BB8F-4261-87AE-B5B842BE3C26}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "AlmToolkitSetup", "AlmToolkitSetup\AlmToolkitSetup.vdproj", "{2AA34E0D-401F-44F0-8D8E-22EC820F4DF4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,9 @@ Global
 		{765C0612-BB8F-4261-87AE-B5B842BE3C26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{765C0612-BB8F-4261-87AE-B5B842BE3C26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{765C0612-BB8F-4261-87AE-B5B842BE3C26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AA34E0D-401F-44F0-8D8E-22EC820F4DF4}.Debug|Any CPU.ActiveCfg = Debug
+		{2AA34E0D-401F-44F0-8D8E-22EC820F4DF4}.Release|Any CPU.ActiveCfg = Release
+		{2AA34E0D-401F-44F0-8D8E-22EC820F4DF4}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
