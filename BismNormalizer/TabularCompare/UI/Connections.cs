@@ -218,7 +218,7 @@ namespace BismNormalizer.TabularCompare.UI
         {
             try
             {
-                // bind to databases from source server
+                // bind to databases from server
                 string currentDb = cboCatalog.Text;
 
                 Server server = new Server();

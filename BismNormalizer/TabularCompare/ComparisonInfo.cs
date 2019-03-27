@@ -18,6 +18,8 @@ namespace BismNormalizer.TabularCompare
         private SkipSelectionCollection _skipSelectionCollection;
         private int _sourceCompatibilityLevel;
         private int _targetCompatibilityLevel;
+        private string _sourceDataSourceVersion;
+        private string _targetDataSourceVersion;
         private bool _sourceDirectQuery;
         private bool _targetDirectQuery;
         private bool _promptForDatabaseProcessing;
@@ -73,16 +75,28 @@ namespace BismNormalizer.TabularCompare
         }
 
         /// <summary>
-        /// SSAS compatibility level for the source tabular model.
+        /// Compatibility level for the source tabular model.
         /// </summary>
         [XmlIgnore()]
         public int SourceCompatibilityLevel => _sourceCompatibilityLevel;
 
         /// <summary>
-        /// SSAS compatibility level for the target tabular model.
+        /// Compatibility level for the target tabular model.
         /// </summary>
         [XmlIgnore()]
         public int TargetCompatibilityLevel => _targetCompatibilityLevel;
+
+        /// <summary>
+        /// Default data source version for the source tabular model.
+        /// </summary>
+        [XmlIgnore()]
+        public string SourceDataSourceVersion => _sourceDataSourceVersion;
+
+        /// <summary>
+        /// Default data source version for the target tabular model.
+        /// </summary>
+        [XmlIgnore()]
+        public string TargetDataSourceVersion => _targetDataSourceVersion;
 
         /// <summary>
         /// Flag depending on whehter source tabular model is in DirectQuery mode.
@@ -165,6 +179,9 @@ namespace BismNormalizer.TabularCompare
         {
             _sourceCompatibilityLevel = ConnectionInfoSource.CompatibilityLevel;
             _targetCompatibilityLevel = ConnectionInfoTarget.CompatibilityLevel;
+
+            _sourceDataSourceVersion = ConnectionInfoSource.DataSourceVersion;
+            _targetDataSourceVersion = ConnectionInfoTarget.DataSourceVersion;
 
             _sourceDirectQuery = ConnectionInfoSource.DirectQuery;
             _targetDirectQuery = ConnectionInfoTarget.DirectQuery;

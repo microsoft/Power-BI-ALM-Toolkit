@@ -57,7 +57,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             this.Disconnect();
 
             _server = new Server();
-            _server.Connect($"Provider=MSOLAP;Data Source={_connectionInfo.ServerName}");
+            _server.Connect($"Provider=MSOLAP;Data Source={_connectionInfo.ServerName};Initial Catalog={_connectionInfo.DatabaseName}");
 
             _database = _server.Databases.FindByName(_connectionInfo.DatabaseName);
             if (_database == null)
@@ -1648,7 +1648,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             _server.Disconnect();
             _server = new Server();
-            _server.Connect("Provider=MSOLAP;Data Source=" + _connectionInfo.ServerName);
+            _server.Connect($"Provider=MSOLAP;Data Source={_connectionInfo.ServerName};Initial Catalog={_connectionInfo.DatabaseName}");
             Amo.XmlaResultCollection results = _server.Execute(tmslCommand);
             if (results.ContainsErrors)
                 throw new Amo.OperationException(results);
@@ -1683,7 +1683,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 traceEvent.Columns.Add(Amo.TraceColumn.IntegerData);
                 traceEvent.Columns.Add(Amo.TraceColumn.SessionID);
                 traceEvent.Columns.Add(Amo.TraceColumn.Spid);
-                trace.Update();
+                trace.Update(Amo.UpdateOptions.Default, Amo.UpdateMode.CreateOrReplace);
                 trace.OnEvent += new TraceEventHandler(Trace_OnEvent);
                 trace.Start();
 

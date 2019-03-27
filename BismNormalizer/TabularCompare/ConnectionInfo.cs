@@ -24,6 +24,7 @@ namespace BismNormalizer.TabularCompare
         private string _projectName;
         private string _projectFile;
         private int _compatibilityLevel;
+        private string _dataSourceVersion;
         private bool _directQuery;
         private string _bimFileFullName;
         private EnvDTE.Project _project;
@@ -87,10 +88,16 @@ namespace BismNormalizer.TabularCompare
         }
 
         /// <summary>
-        /// The SSAS compatibility level for the connection.
+        /// Compatibility level for the connection.
         /// </summary>
         [XmlIgnore()]
         public int CompatibilityLevel => _compatibilityLevel;
+
+        /// <summary>
+        /// Default data source version for the connection.
+        /// </summary>
+        [XmlIgnore()]
+        public string DataSourceVersion => _dataSourceVersion;
 
         /// <summary>
         /// A Boolean specifying whether the tabular model for the connection is running in DirectQuery mode.
@@ -326,7 +333,7 @@ namespace BismNormalizer.TabularCompare
             Server amoServer = new Server();
             try
             {
-                amoServer.Connect("Provider=MSOLAP;Data Source=" + this.ServerName);
+                amoServer.Connect($"Provider=MSOLAP;Data Source={this.ServerName};Initial Catalog={this.DatabaseName}");
             }
             catch (ConnectionException) when (UseProject)
             {
@@ -349,7 +356,7 @@ namespace BismNormalizer.TabularCompare
                             {
                                 string port = File.ReadAllText(portFilePath[0]).Replace("\0", "");
                                 this.ServerName = $"localhost:{Convert.ToString(port)}";
-                                amoServer.Connect("Provider=MSOLAP;Data Source=" + this.ServerName);
+                                amoServer.Connect($"Provider=MSOLAP;Data Source={this.ServerName};Initial Catalog={this.DatabaseName}");
                                 foundServer = true;
                                 break;
                             }
@@ -496,7 +503,7 @@ $@"{{
                 //need next lines in case just created the db using the Execute method
                 //amoServer.Refresh(); //todo workaround for bug 9719887 on 3/10/17 need to disconnect and reconnect
                 amoServer.Disconnect();
-                amoServer.Connect("Provider=MSOLAP;Data Source=" + this.ServerName);
+                amoServer.Connect($"Provider=MSOLAP;Data Source={this.ServerName};Initial Catalog={this.DatabaseName}");
 
                 tabularDatabase = amoServer.Databases.FindByName(this.DatabaseName);
             }
@@ -506,6 +513,7 @@ $@"{{
                 throw new ConnectionException($"Can not load/find database {this.DatabaseName}.");
             }
             _compatibilityLevel = tabularDatabase.CompatibilityLevel;
+            _dataSourceVersion = tabularDatabase.Model.DefaultPowerBIDataSourceVersion.ToString();
             _directQuery = ((tabularDatabase.Model != null && tabularDatabase.Model.DefaultMode == Microsoft.AnalysisServices.Tabular.ModeType.DirectQuery) || 
                              tabularDatabase.DirectQueryMode == DirectQueryMode.DirectQuery || tabularDatabase.DirectQueryMode == DirectQueryMode.InMemoryWithDirectQuery || tabularDatabase.DirectQueryMode == DirectQueryMode.DirectQueryWithInMemory);
         }
