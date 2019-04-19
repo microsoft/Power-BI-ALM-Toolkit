@@ -409,6 +409,11 @@ namespace AlmToolkit
                 SetObjDefFontBold("Status Graphic:", txtSourceObjectDefinition);
                 SetObjDefFontBold("Trend Graphic:", txtSourceObjectDefinition);
             }
+            else if (objType == ComparisonObjectType.CalculationItem)
+            {
+                SetObjDefFontBold("Expression:", txtSourceObjectDefinition);
+                SetObjDefFontBold("Format & Visibility:", txtSourceObjectDefinition);
+            }
             else if (objType == ComparisonObjectType.Role)
             {
                 SetObjDefFontBold("Permissions:", txtSourceObjectDefinition);
@@ -453,6 +458,11 @@ namespace AlmToolkit
                 SetObjDefFontBold("Trend:", txtTargetObjectDefinition);
                 SetObjDefFontBold("Status Graphic:", txtTargetObjectDefinition);
                 SetObjDefFontBold("Trend Graphic:", txtTargetObjectDefinition);
+            }
+            else if (objType == ComparisonObjectType.CalculationItem)
+            {
+                SetObjDefFontBold("Expression:", txtTargetObjectDefinition);
+                SetObjDefFontBold("Format & Visibility:", txtTargetObjectDefinition);
             }
             else if (objType == ComparisonObjectType.Role)
             {

@@ -189,11 +189,40 @@
         {
             if (comparisonObject != null)
             {
+                string nodeType = "";
+                switch (comparisonObject.ComparisonObjectType)
+                {
+                    case ComparisonObjectType.DataSource:
+                        nodeType = "Data Source";
+                        break;
+
+                    case ComparisonObjectType.CalculationItem:
+                        nodeType = "Calculation Item";
+                        break;
+
+                    case ComparisonObjectType.Table:
+
+                        //Check if has any calc item children. If yes, it's a calc group.
+                        bool isCalcGroup = false;
+                        foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
+                        {
+                            if (childComparisonObject.ComparisonObjectType == ComparisonObjectType.CalculationItem)
+                            {
+                                isCalcGroup = true;
+                                break;
+                            }
+                        }
+                        nodeType = isCalcGroup ? "Calculation Group" : "Table";
+                        break;
+
+                    default:
+                        nodeType = comparisonObject.ComparisonObjectType.ToString();
+                        break;
+                }
 
                 ComparisonNode currentNode = new ComparisonNode
                 {
-                    NodeType = Equals(ComparisonObjectType.DataSource, comparisonObject.ComparisonObjectType) ? "Data Source" : comparisonObject.ComparisonObjectType.ToString(),
-
+                    NodeType = nodeType,
                     SourceName = comparisonObject.SourceObjectName,
                     TargetName = comparisonObject.TargetObjectName,
                     SourceInternalName = comparisonObject.SourceObjectInternalName,

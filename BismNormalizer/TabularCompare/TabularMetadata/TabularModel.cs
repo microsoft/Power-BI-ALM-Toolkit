@@ -22,6 +22,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         private ComparisonInfo _comparisonInfo;
         private Server _server;
         private Database _database;
+        private Model _model;
         private DataSourceCollection _dataSources = new DataSourceCollection();
         private TableCollection _tables = new TableCollection();
         private ExpressionCollection _expressions = new ExpressionCollection();
@@ -68,6 +69,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             InitializeCalcDependencies();
 
             //Shell model
+            _model = new Model(this, _database.Model);
             foreach (Tom.DataSource dataSource in _database.Model.DataSources)
             {
                 if (dataSource.Type == DataSourceType.Provider || dataSource.Type == DataSourceType.Structured)
@@ -213,6 +215,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         }
 
         /// <summary>
+        /// Model object.
+        /// </summary>
+        public Model Model
+        {
+            get { return _model; }
+            set { _model = value; }
+        }
+
+        /// <summary>
         /// Collection of DataSources for the TabularModel object.
         /// </summary>
         public DataSourceCollection DataSources => _dataSources;
@@ -291,6 +302,21 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         #endregion
 
+        #region Model
+
+        /// <summary>
+        /// Update Model associated with the TabularModel object.
+        /// </summary>
+        /// <param name="dataSourceSource">Model object from the source tabular model to be updated in the target.</param>
+        /// <param name="dataSourceTarget">Model object in the target tabular model to be updated.</param>
+        public void UpdateModel(Model modelSource, Model modelTarget)
+        {
+            modelTarget.TomModel.Description = modelSource.TomModel.Description;
+            modelTarget.TomModel.DiscourageImplicitMeasures = modelSource.TomModel.DiscourageImplicitMeasures;
+        }
+
+        #endregion
+
         #region DataSources
 
         /// <summary>
@@ -323,7 +349,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 dataSourceSource.TomDataSource.CopyTo(providerTarget);
 
                 _database.Model.DataSources.Add(providerTarget);
-                
+
                 // shell model
                 _dataSources.Add(new DataSource(this, providerTarget));
             }
@@ -416,6 +442,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
 
             tomTableTarget.Measures.Clear();  //Measures will be added separately later
+            tomTableTarget.CalculationGroup.CalculationItems.Clear();  //Calculation items will be added separately later
 
             _database.Model.Tables.Add(tomTableTarget);
             _tables.Add(new Table(this, tomTableTarget));
@@ -461,6 +488,12 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             foreach (Tom.Measure tomMeasureToAddBack in tomTableTargetOrig.Measures)
             {
                 tableTarget.CreateMeasure(tomMeasureToAddBack);
+            }
+
+            //add back calculationItems
+            foreach (Tom.CalculationItem tomCalculationItemToAddBack in tomTableTargetOrig.CalculationGroup.CalculationItems)
+            {
+                tableTarget.CreateCalculationItem(tomCalculationItemToAddBack);
             }
         }
 

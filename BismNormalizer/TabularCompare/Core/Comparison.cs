@@ -380,6 +380,9 @@ namespace BismNormalizer.TabularCompare.Core
             //Type column
             switch (comparisonObject.ComparisonObjectType)
             {
+                case ComparisonObjectType.Model:
+                    Ws.Cells[row, 1].Value = "Model";
+                    break;
                 case ComparisonObjectType.DataSource:
                     Ws.Cells[row, 1].Value = "Data Source";
                     break;
@@ -400,6 +403,12 @@ namespace BismNormalizer.TabularCompare.Core
                     break;
                 case ComparisonObjectType.Kpi:
                     Ws.Cells[row, 1].Value = "KPI";
+                    Ws.Cells[row, 1].InsertIndent(3);
+                    Ws.Cells[row, 2].InsertIndent(3);
+                    Ws.Cells[row, 5].InsertIndent(3);
+                    break;
+                case ComparisonObjectType.CalculationItem:
+                    Ws.Cells[row, 1].Value = "Calculation Item";
                     Ws.Cells[row, 1].InsertIndent(3);
                     Ws.Cells[row, 2].InsertIndent(3);
                     Ws.Cells[row, 5].InsertIndent(3);

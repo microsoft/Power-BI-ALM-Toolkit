@@ -615,6 +615,11 @@ namespace BismNormalizer.TabularCompare.UI
                 SetObjDefFontBold("Status Graphic:", txtSourceObjectDefinition);
                 SetObjDefFontBold("Trend Graphic:", txtSourceObjectDefinition);
             }
+            else if (objType == ComparisonObjectType.CalculationItem)
+            {
+                SetObjDefFontBold("Expression:", txtSourceObjectDefinition);
+                SetObjDefFontBold("Format & Visibility:", txtSourceObjectDefinition);
+            }
             else if (objType == ComparisonObjectType.Role)
             {
                 SetObjDefFontBold("Permissions:", txtSourceObjectDefinition);

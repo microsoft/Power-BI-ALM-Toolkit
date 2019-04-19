@@ -241,6 +241,10 @@ namespace BismNormalizer.TabularCompare.UI
                     node.ImageIndex = 4;
                     node.Cells[0].Value = treeIndentLevel2 + "KPI";
                     break;
+                case ComparisonObjectType.CalculationItem:
+                    node.ImageIndex = 3;
+                    node.Cells[0].Value = treeIndentLevel2 + "Calculation Item";
+                    break;
                 case ComparisonObjectType.Expression:
                     node.ImageIndex = 22;
                     node.Cells[0].Value = treeIndentLevel1 + "Expression";

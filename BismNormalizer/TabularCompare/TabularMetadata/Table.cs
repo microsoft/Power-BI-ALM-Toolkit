@@ -20,6 +20,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         private string _dataSourceName;
         private RelationshipCollection _relationships = new RelationshipCollection();
         private MeasureCollection _measures = new MeasureCollection();
+        private bool _isCalculationGroup;
+        private CalculationItemCollection _calculationItems = new CalculationItemCollection();
 
         /// <summary>
         /// Initializes a new instance of the Table class using multiple parameters.
@@ -60,6 +62,16 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         public MeasureCollection Measures => _measures;
 
         /// <summary>
+        /// True if the table is a calculation group.
+        /// </summary>
+        public bool IsCalculationGroup => _isCalculationGroup;
+
+        /// <summary>
+        /// Collection of calculation items for the Table object.
+        /// </summary>
+        public CalculationItemCollection CalculationItems => _calculationItems;
+
+        /// <summary>
         /// Tabular Object Model Table object abtstracted by the Table class.
         /// </summary>
         public Tom.Table TomTable => _tomTable;
@@ -68,6 +80,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             base.RemovePropertyFromObjectDefinition("measures");
 
+            _isCalculationGroup = (_tomTable.CalculationGroup != null);
             _partitionsDefinition = "";
             _dataSourceName = "";
             bool hasMOrQueryPartition = false;
@@ -135,6 +148,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             foreach (Tom.Measure measure in _tomTable.Measures)
             {
                 _measures.Add(new Measure(this, measure, measure.KPI != null));
+            }
+
+            //Find calc items
+            if (_isCalculationGroup)
+            {
+                foreach (Tom.CalculationItem calcItem in _tomTable.CalculationGroup.CalculationItems)
+                {
+                    _calculationItems.Add(new CalculationItem(this, calcItem));
+                }
             }
         }
 
@@ -401,6 +423,58 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 DeleteMeasure(tomMeasureSource.Name);
             }
             CreateMeasure(tomMeasureSource);
+        }
+
+        // CalculationItems
+
+        /// <summary>
+        /// Delete calculation item associated with the Table object.
+        /// </summary>
+        /// <param name="name">Name of the calculationItem to be deleted.</param>
+        public void DeleteCalculationItem(string name)
+        {
+            if (_tomTable.CalculationGroup.CalculationItems.ContainsName(name))
+            {
+                _tomTable.CalculationGroup.CalculationItems.Remove(name);
+            }
+
+            // shell model
+            if (_calculationItems.ContainsName(name))
+            {
+                _calculationItems.RemoveByName(name);
+            }
+        }
+
+        /// <summary>
+        /// Create calculationItem associated with the Table object.
+        /// </summary>
+        /// <param name="tomCalculationItemSource">Tabular Object Model CalculationItem object from the source tabular model to be abstracted in the target.</param>
+        public void CreateCalculationItem(Tom.CalculationItem tomCalculationItemSource)
+        {
+            if (_tomTable.CalculationGroup.CalculationItems.ContainsName(tomCalculationItemSource.Name))
+            {
+                _tomTable.CalculationGroup.CalculationItems.Remove(tomCalculationItemSource.Name);
+            }
+
+            Tom.CalculationItem tomCalculationItemTarget = new Tom.CalculationItem();
+            tomCalculationItemSource.CopyTo(tomCalculationItemTarget);
+            _tomTable.CalculationGroup.CalculationItems.Add(tomCalculationItemTarget);
+
+            // shell model
+            _calculationItems.Add(new CalculationItem(this, tomCalculationItemTarget));
+        }
+
+        /// <summary>
+        /// Update calculationItem associated with the Table object.
+        /// </summary>
+        /// <param name="tomCalculationItemSource">Tabular Object Model CalculationItem object from the source tabular model to be abstracted in the target.</param>
+        public void UpdateCalculationItem(Tom.CalculationItem tomCalculationItemSource)
+        {
+            if (_calculationItems.ContainsName(tomCalculationItemSource.Name))
+            {
+                DeleteCalculationItem(tomCalculationItemSource.Name);
+            }
+            CreateCalculationItem(tomCalculationItemSource);
         }
 
         #endregion
