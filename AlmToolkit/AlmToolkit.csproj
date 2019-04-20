@@ -332,6 +332,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="html-resources\dist\assets\node-type-Perspective.png" />
+    <Content Include="html-resources\dist\assets\node-type-Refresh-Policy.png" />
     <Content Include="html-resources\dist\assets\node-type-Relationship.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -401,6 +402,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="html-resources\src\assets\node-type-Perspective.png" />
+    <Content Include="html-resources\src\assets\node-type-Refresh-Policy.png" />
     <Content Include="html-resources\src\assets\node-type-Relationship.png" />
     <Content Include="html-resources\src\assets\node-type-Role.png" />
     <Content Include="html-resources\src\assets\node-type-Table.png" />

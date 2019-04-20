@@ -133,6 +133,10 @@
             this.TreeGridImageList.Images.SetKeyName(20, "CreateActionGrey.png");
             this.TreeGridImageList.Images.SetKeyName(21, "Culture.png");
             this.TreeGridImageList.Images.SetKeyName(22, "Expression.png");
+            this.TreeGridImageList.Images.SetKeyName(23, "CalculationGroup.png");
+            this.TreeGridImageList.Images.SetKeyName(24, "CalculationItem.png");
+            this.TreeGridImageList.Images.SetKeyName(25, "Model.png");
+            this.TreeGridImageList.Images.SetKeyName(26, "RefreshPolicy.png");
             // 
             // scObjectDefinitions
             // 

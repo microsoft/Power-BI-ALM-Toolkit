@@ -419,6 +419,8 @@
     <Resource Include="Resources\Error.png" />
     <Resource Include="Resources\Culture.png" />
     <Resource Include="Resources\Expression.png" />
+    <Resource Include="Resources\CalculationGroup.png" />
+    <Resource Include="Resources\CalculationItem.png" />
     <Content Include="Resources\LicenseTerms.txt">
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -447,6 +449,8 @@
     <Resource Include="Resources\ProgressError.png" />
     <Resource Include="Resources\ProgressWarning.png" />
     <Resource Include="Resources\Processing.png" />
+    <Resource Include="Resources\Model.png" />
+    <Resource Include="Resources\RefreshPolicy.png" />
     <Content Include="Templates\TabularCompare.bsmn">
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

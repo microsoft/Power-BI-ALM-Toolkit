@@ -202,11 +202,11 @@
 
                     case ComparisonObjectType.Table:
 
-                        //Check if has any calc item children. If yes, it's a calc group.
+                        //Check if source table has any calc item children. If yes, it's a calc group.
                         bool isCalcGroup = false;
                         foreach (ComparisonObject childComparisonObject in comparisonObject.ChildComparisonObjects)
                         {
-                            if (childComparisonObject.ComparisonObjectType == ComparisonObjectType.CalculationItem)
+                            if (childComparisonObject.ComparisonObjectType == ComparisonObjectType.CalculationItem && childComparisonObject.Status != ComparisonObjectStatus.MissingInSource)
                             {
                                 isCalcGroup = true;
                                 break;

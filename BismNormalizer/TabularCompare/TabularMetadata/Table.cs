@@ -124,7 +124,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
             }
 
-            if (hasMOrQueryPartition)
+            if (hasMOrQueryPartition || _isCalculationGroup)
             {
                 _partitionsDefinition = base.RetrievePropertyFromObjectDefinition("partitions");
 

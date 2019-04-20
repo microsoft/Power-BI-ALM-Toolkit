@@ -120,6 +120,10 @@ namespace BismNormalizer.TabularCompare.UI
             TreeGridNode particularTypeNode = null;
             switch (validationMessageType)
             {
+                case ValidationMessageType.Model:
+                    particularTypeNode = FindOrCreateTypeNode(topLevelNodeForHandle, "Model");
+                    particularTypeNode.ImageIndex = 25;
+                    break;
                 case ValidationMessageType.DataSource:
                     particularTypeNode = FindOrCreateTypeNode(topLevelNodeForHandle, "Data Sources");
                     particularTypeNode.ImageIndex = 0;
@@ -141,8 +145,12 @@ namespace BismNormalizer.TabularCompare.UI
                     particularTypeNode.ImageIndex = 4;
                     break;
                 case ValidationMessageType.CalculationItem:
-                    particularTypeNode = FindOrCreateTypeNode(topLevelNodeForHandle, "Calculation Item");
-                    particularTypeNode.ImageIndex = 3;
+                    particularTypeNode = FindOrCreateTypeNode(topLevelNodeForHandle, "Calculation Items");
+                    particularTypeNode.ImageIndex = 24;
+                    break;
+                case ValidationMessageType.CalculationGroup:
+                    particularTypeNode = FindOrCreateTypeNode(topLevelNodeForHandle, "Calculation Groups");
+                    particularTypeNode.ImageIndex = 23;
                     break;
                 case ValidationMessageType.Expression:
                     particularTypeNode = FindOrCreateTypeNode(topLevelNodeForHandle, "Expression");
@@ -164,6 +172,10 @@ namespace BismNormalizer.TabularCompare.UI
                     particularTypeNode = FindOrCreateTypeNode(topLevelNodeForHandle, "Actions");
                     particularTypeNode.ImageIndex = 16;
                     break;
+                //case ValidationMessageType.RefreshPolicy:
+                //    particularTypeNode = FindOrCreateTypeNode(topLevelNodeForHandle, "Refresh Policy");
+                //    particularTypeNode.ImageIndex = 26;
+                //    break;
                 case ValidationMessageType.MeasureCalculationDependency:
                     particularTypeNode = FindOrCreateTypeNode(topLevelNodeForHandle, "Measure Calculation Dependencies");
                     particularTypeNode.ImageIndex = 3;

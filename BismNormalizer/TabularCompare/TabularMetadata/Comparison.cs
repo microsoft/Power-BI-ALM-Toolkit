@@ -74,7 +74,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             #region Model
 
-            if (_comparisonInfo.SourceCompatibilityLevel >= 1470) //Target compat level is always >= source one.
+            if (_comparisonInfo.TargetCompatibilityLevel >= 1470) //Target compat level is always >= source one.
             {
                 // check if Model object definition is different
                 ComparisonObject comparisonObjectModel;
@@ -672,15 +672,6 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             #endregion
 
-            #region Model
-
-            foreach (ComparisonObject comparisonObject in _comparisonObjects)
-            {
-                UpdateModel(comparisonObject);
-            }
-
-            #endregion
-
             #region DataSources
 
             foreach (ComparisonObject comparisonObject in _comparisonObjects)
@@ -766,6 +757,16 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             #endregion
 
             _targetTabularModel.CleanUpVariations();
+
+            #region Model
+
+            //Doing model after tables in case there are calc group tables so cannot set DisableImplictMeasures=false
+            foreach (ComparisonObject comparisonObject in _comparisonObjects)
+            {
+                UpdateModel(comparisonObject);
+            }
+
+            #endregion
 
             #region Measures / KPIs
 
@@ -1166,8 +1167,25 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 Model sourceModel = _sourceTabularModel.Model;
                 Model targetModel = _targetTabularModel.Model;
 
-                _targetTabularModel.UpdateModel(sourceModel, targetModel);
-                OnValidationMessage(new ValidationMessageEventArgs($"Update model [{comparisonObject.TargetObjectName}].", ValidationMessageType.Model, ValidationMessageStatus.Informational));
+                bool hasCalcGroups = false;
+                foreach (Table table in _targetTabularModel.Tables)
+                {
+                    if (table.IsCalculationGroup)
+                    {
+                        hasCalcGroups = true;
+                        break;
+                    }
+                }
+
+                if (hasCalcGroups && sourceModel.TomModel.DiscourageImplicitMeasures == false)
+                {
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to update model because (considering changes) the target has calculation group(s) and the source has DiscourageImplicitMeasures set to false.", ValidationMessageType.Model, ValidationMessageStatus.Warning));
+                }
+                else
+                {
+                    _targetTabularModel.UpdateModel(sourceModel, targetModel);
+                    OnValidationMessage(new ValidationMessageEventArgs($"Update model.", ValidationMessageType.Model, ValidationMessageStatus.Informational));
+                }
             }
         }
 
@@ -1360,8 +1378,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Table && comparisonObject.MergeAction == MergeAction.Delete)
             {
+                Table targetTable = _targetTabularModel.Tables.FindByName(comparisonObject.TargetObjectName);
+                bool isCalculationGroup = false;
+                if (targetTable != null) isCalculationGroup = targetTable.IsCalculationGroup;
                 _targetTabularModel.DeleteTable(comparisonObject.TargetObjectName);
-                OnValidationMessage(new ValidationMessageEventArgs($"Delete table '{comparisonObject.TargetObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                OnValidationMessage(new ValidationMessageEventArgs($"Delete {(isCalculationGroup ? "calculation group" : "table")} '{comparisonObject.TargetObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
             }
         }
 
@@ -1374,25 +1395,43 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 bool fromDependencies = false;
                 bool nonStructuredDataSourceLocal = false;
 
-                foreach (Partition partition in sourceTable.TomTable.Partitions)
+                if (!sourceTable.IsCalculationGroup)
                 {
-                    //Check any objects in source that this partition depends on are also going to be created if not already in target
-                    if (HasBlockingFromDependenciesInSource(sourceTable.Name, partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
+                    foreach (Partition partition in sourceTable.TomTable.Partitions)
                     {
-                        fromDependencies = true;
-                        if (nonStructuredDataSource)
-                            nonStructuredDataSourceLocal = true;
-                    }
+                        //Check any objects in source that this partition depends on are also going to be created if not already in target
+                        if (HasBlockingFromDependenciesInSource(sourceTable.Name, partition.Name, CalcDependencyObjectType.Partition, ref warningObjectList, out bool nonStructuredDataSource))
+                        {
+                            fromDependencies = true;
+                            if (nonStructuredDataSource)
+                                nonStructuredDataSourceLocal = true;
+                        }
 
-                    //For old non-M partitions, check if data source references exist
-                    if (HasBlockingOldPartitionDependency(partition, ref warningObjectList))
-                        fromDependencies = true;  //Need if clause in case last of n partitions has no dependencies and sets back to true
+                        //For old non-M partitions, check if data source references exist
+                        if (HasBlockingOldPartitionDependency(partition, ref warningObjectList))
+                            fromDependencies = true;  //Need if clause in case last of n partitions has no dependencies and sets back to true
+                    }
                 }
 
                 if (!fromDependencies)
                 {
-                    _targetTabularModel.CreateTable(sourceTable);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Create table '{comparisonObject.SourceObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                    if (sourceTable.IsCalculationGroup)
+                    {
+                        if (_targetTabularModel.Model.TomModel.DiscourageImplicitMeasures != true)
+                        {
+                            OnValidationMessage(new ValidationMessageEventArgs($"Unable to create calculation group {comparisonObject.SourceObjectName} because the target model doesn't have DiscourageImplicitMeasures set to true.", ValidationMessageType.Table, ValidationMessageStatus.Warning));
+                        }
+                        else
+                        {
+                            _targetTabularModel.CreateTable(sourceTable);
+                            OnValidationMessage(new ValidationMessageEventArgs($"Create calculation group '{comparisonObject.SourceObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                        }
+                    }
+                    else
+                    {
+                        _targetTabularModel.CreateTable(sourceTable);
+                        OnValidationMessage(new ValidationMessageEventArgs($"Create table '{comparisonObject.SourceObjectName}'.", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                    }
                 }
                 else
                 {
@@ -1439,8 +1478,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
                 if (!fromDependencies)
                 {
-                    _targetTabularModel.UpdateTable(tableSource, tableTarget, out string retainPartitionsMessage);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Update table '{comparisonObject.TargetObjectName}'. {retainPartitionsMessage}", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                    if (tableSource.IsCalculationGroup != tableTarget.IsCalculationGroup)
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to update table {comparisonObject.TargetObjectName} because either source or target is a calculation group (but not both).", (tableSource.IsCalculationGroup ? ValidationMessageType.CalculationGroup : ValidationMessageType.Table), ValidationMessageStatus.Warning));
+                    }
+                    else
+                    {
+                        _targetTabularModel.UpdateTable(tableSource, tableTarget, out string retainPartitionsMessage);
+                        OnValidationMessage(new ValidationMessageEventArgs($"Update {(tableSource.IsCalculationGroup ? "calculation group" : "table")} '{comparisonObject.TargetObjectName}'. {retainPartitionsMessage}", ValidationMessageType.Table, ValidationMessageStatus.Informational));
+                    }
                 }
                 else
                 {
@@ -1639,7 +1685,12 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
                 if (tableTarget == null)
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to create calculation item {comparisonObject.SourceObjectInternalName} because (considering changes) target table does not exist.", ValidationMessageType.CalculationItem, ValidationMessageStatus.Warning));
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to create calculation item {comparisonObject.SourceObjectInternalName} because (considering changes) target table {tableName} does not exist.", ValidationMessageType.CalculationItem, ValidationMessageStatus.Warning));
+                    return;
+                }
+                else if (!tableTarget.IsCalculationGroup)
+                {
+                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to create calculation item {comparisonObject.SourceObjectInternalName} because the target table {tableName} is not a calculation group table.", ValidationMessageType.CalculationItem, ValidationMessageStatus.Warning));
                     return;
                 }
 
