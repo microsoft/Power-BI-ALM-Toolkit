@@ -97,13 +97,6 @@ namespace BismNormalizer.TabularCompare.UI
                     Settings.Default.OptionHighDpiLocal = !Settings.Default.OptionHighDpiLocal;
                 }
             }
-            else if (e.Control && e.Shift && e.KeyCode == Keys.C)
-            {
-                if (MessageBox.Show($"Are you sure you want to {(Settings.Default.OptionCompositeModelsOverride ? "*disallow*" : "*allow*")} composite model comparisons on Analysis Services?", "ALM Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    Settings.Default.OptionCompositeModelsOverride = !Settings.Default.OptionCompositeModelsOverride;
-                }
-            }
         }
 
         public ComparisonInfo ComparisonInfo

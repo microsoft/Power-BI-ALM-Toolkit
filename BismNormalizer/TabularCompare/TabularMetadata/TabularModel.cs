@@ -442,7 +442,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
 
             tomTableTarget.Measures.Clear();  //Measures will be added separately later
-            tomTableTarget.CalculationGroup.CalculationItems.Clear();  //Calculation items will be added separately later
+            tomTableTarget.CalculationGroup?.CalculationItems.Clear();  //Calculation items will be added separately later
 
             _database.Model.Tables.Add(tomTableTarget);
             _tables.Add(new Table(this, tomTableTarget));
@@ -727,7 +727,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         #endregion
 
-        #region Variation Cleanup
+        #region Variation / Aggregations Cleanup
 
         /// <summary>
         /// Remove variations referring to objects that don't exist.
@@ -802,12 +802,53 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 }
             }
 
-            //Check if any tables that have ShowAsVariationsOnly = true really have variatinos pointing at them
+            //Check if any tables that have ShowAsVariationsOnly = true really have variations pointing at them
             foreach (Table table in _tables)
             {
                 if (table.TomTable.ShowAsVariationsOnly == true && !targetVariationTablesRemaining.Contains(table.Name))
                 {
                     table.TomTable.ShowAsVariationsOnly = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Remove aggregations referring to objects that don't exist.
+        /// </summary>
+        public void CleanUpAggregations()
+        {
+            foreach (Table table in _tables)
+            {
+                foreach (Column column in table.TomTable.Columns)
+                {
+                    if (column.AlternateOf != null)
+                    {
+                        if (column.AlternateOf.BaseColumn != null)
+                        {
+                            if (_database.Model.Tables.ContainsName(column.AlternateOf.BaseColumn.Table?.Name))
+                            {
+                                //the referenced table is there, how about the referenced column?
+                                if (!_database.Model.Tables.Find(column.AlternateOf.BaseColumn.Table.Name).Columns.ContainsName(column.AlternateOf.BaseColumn.Name))
+                                {
+                                    //Base column doesn't exist
+                                    column.AlternateOf = null;
+                                }
+                            }
+                            else
+                            {
+                                //Base table doesn't exist
+                                column.AlternateOf = null;
+                            }
+                        }
+                        else if (column.AlternateOf.BaseTable != null)
+                        {
+                            if (!_database.Model.Tables.ContainsName(column.AlternateOf.BaseTable.Name))
+                            {
+                                //Base table doesn't exist
+                                column.AlternateOf = null;
+                            }
+                        }
+                    }
                 }
             }
         }

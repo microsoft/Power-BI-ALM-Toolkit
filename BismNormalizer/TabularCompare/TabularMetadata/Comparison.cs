@@ -757,6 +757,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             #endregion
 
             _targetTabularModel.CleanUpVariations();
+            _targetTabularModel.CleanUpAggregations();
 
             #region Model
 

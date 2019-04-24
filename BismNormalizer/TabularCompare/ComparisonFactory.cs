@@ -14,12 +14,12 @@ namespace BismNormalizer.TabularCompare
     {
         // Factory pattern: https://msdn.microsoft.com/en-us/library/orm-9780596527730-01-05.aspx 
 
-        //private static List<int> _supportedCompatibilityLevels = new List<int>() { 1100, 1103, 1200, 1400 };
+        private const string _appName = "ALM Toolkit";
         private static int _minCompatibilityLevel = 1200;
         private static int _maxCompatibilityLevel = 1499;
         private static List<string> _supportedDataSourceVersions = new List<string> { "PowerBI_V3" };
 
-        /// <summary>
+        ///// <summary>
         /// Uses factory design pattern to return an object of type Core.Comparison, which is instantiated using MultidimensionalMetadata.Comparison or TabularMeatadata.Comparison depending on SSAS compatibility level. Use this overload when running in Visual Studio.
         /// </summary>
         /// <param name="comparisonInfo">ComparisonInfo object for the comparison.</param>
@@ -64,43 +64,21 @@ namespace BismNormalizer.TabularCompare
 
         private static Comparison CreateComparisonInitialized(ComparisonInfo comparisonInfo)
         {
-            //todo: delete ------------------------------------------
-            //if (comparisonInfo.SourceCompatibilityLevel != comparisonInfo.TargetCompatibilityLevel && !(comparisonInfo.SourceCompatibilityLevel == 1200 && comparisonInfo.TargetCompatibilityLevel >= 1400))
-            //{
-            //    throw new ConnectionException($"This combination of mixed compatibility levels is not supported.\nSource is {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)} and target is {Convert.ToString(comparisonInfo.TargetCompatibilityLevel)}.");
-            //}
+            Telemetry.TrackEvent("CreateComparisonInitialized", new Dictionary<string, string> { { "App", _appName.Replace(" ", "") } });
 
-            //Todo: fix this for composite models:
-            if (comparisonInfo.SourceDirectQuery != comparisonInfo.TargetDirectQuery)
+            //Currently can't source from PBIP to AS because AS doesn't work with inline data sources:
+            if (comparisonInfo.ConnectionInfoSource.ServerName.StartsWith("powerbi://") && !comparisonInfo.ConnectionInfoTarget.ServerName.StartsWith("powerbi://"))
             {
-                throw new ConnectionException($"Mixed DirectQuery settings are not supported.\nSource is {(comparisonInfo.SourceDirectQuery ? "On" : "Off")} and target is {(comparisonInfo.TargetDirectQuery ? "On" : "Off")}.");
+                throw new ConnectionException($"Source model is a Power BI dataset and the target is Analysis Services, which is not supported in the current version.");
             }
 
-            ////We know both models have same compatibility level, but is it supported?
-            //if (!_supportedCompatibilityLevels.Contains(comparisonInfo.SourceCompatibilityLevel))
-            //{
-            //    throw new ConnectionException($"Models have compatibility level of {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)}, which is not supported by this version.");
-            //}
-            //-------------------------------------------------------
-
-            Telemetry.TrackEvent("CreateComparisonInitialized", new Dictionary<string, string> { { "App", "AlmToolkit" } });
+            //If composite models not allowed on AS, check DQ/Import at model level matches:
+            if (!comparisonInfo.ConnectionInfoSource.ServerName.StartsWith("powerbi://") && !Settings.Default.OptionCompositeModelsOverride && comparisonInfo.SourceDirectQuery != comparisonInfo.TargetDirectQuery)
+            {
+                throw new ConnectionException($"Mixed DirectQuery settings are not supported for AS skus.\nSource is {(comparisonInfo.SourceDirectQuery ? "On" : "Off")} and target is {(comparisonInfo.TargetDirectQuery ? "On" : "Off")}.");
+            }
 
             #region Data-source versions check
-
-            ////If Power BI, check the default datasource version
-            ////Source
-            //if (comparisonInfo.ConnectionInfoSource.ServerName.StartsWith("powerbi://") &&
-            //    !_supportedDataSourceVersions.Contains(comparisonInfo.SourceDataSourceVersion))
-            //{
-            //    throw new ConnectionException($"Source model is a Power BI dataset with default data-source version (basically the dataset metadata format) of {comparisonInfo.SourceDataSourceVersion}, which is not supported for comparison.");
-            //}
-            ////Target
-            //if (comparisonInfo.ConnectionInfoTarget.ServerName.StartsWith("powerbi://") &&
-            //    !_supportedDataSourceVersions.Contains(comparisonInfo.TargetDataSourceVersion))
-            //{
-            //    throw new ConnectionException($"Target model is a Power BI dataset with default data-source version (basically the dataset metadata format) of {comparisonInfo.TargetDataSourceVersion}, which is not supported for comparison.");
-            //}
-
 
             //If Power BI, check the default datasource version
             //Source
@@ -122,7 +100,7 @@ namespace BismNormalizer.TabularCompare
             {
                 string message = $"The source and target are Power BI datasets have default data-source versions of {comparisonInfo.SourceDataSourceVersion} and {comparisonInfo.TargetDataSourceVersion} respectively, which are not supported for comparison.";
                 if (System.Windows.Forms.MessageBox.Show(
-                    message += $"\nDo you want to upgrade them both to {_supportedDataSourceVersions[0]}?\n\nNOTE: this is a irreversible operation and you will not be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", "ALM Toolkit", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
+                    message += $"\nDo you want to upgrade them both to {_supportedDataSourceVersions[0]}?\n\nNOTE: this is a irreversible operation and you WILL NOT be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
                 {
                     throw new ConnectionException(message);
                 }
@@ -131,7 +109,7 @@ namespace BismNormalizer.TabularCompare
             {
                 string message = $"The source is a Power BI datasets with default data-source version of {comparisonInfo.SourceDataSourceVersion}, which is not supported for comparison.";
                 if (System.Windows.Forms.MessageBox.Show(
-                    message += $"\nDo you want to upgrade it to {_supportedDataSourceVersions[0]}?\n\nNOTE: this is a irreversible operation and you will not be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", "ALM Toolkit", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
+                    message += $"\nDo you want to upgrade it to {_supportedDataSourceVersions[0]}?\n\nNOTE: this is a irreversible operation and you WILL NOT be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
                 {
                     throw new ConnectionException(message);
                 }
@@ -140,7 +118,7 @@ namespace BismNormalizer.TabularCompare
             {
                 string message = $"The target is a Power BI datasets with default data-source version of {comparisonInfo.TargetDataSourceVersion}, which is not supported for comparison.";
                 if (System.Windows.Forms.MessageBox.Show(
-                    message += $"\nDo you want to upgrade it to {_supportedDataSourceVersions[0]}?\n\nNOTE: this is a irreversible operation and you will not be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", "ALM Toolkit", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
+                    message += $"\nDo you want to upgrade it to {_supportedDataSourceVersions[0]}?\n\nNOTE: this is a irreversible operation and you WILL NOT be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
                 {
                     throw new ConnectionException(message);
                 }
@@ -161,7 +139,7 @@ namespace BismNormalizer.TabularCompare
             //Return the comparison object & offer upgrade of target if appropriate
             Comparison returnComparison = null;
 
-            if (comparisonInfo.SourceCompatibilityLevel >= 1200)
+            if (comparisonInfo.SourceCompatibilityLevel >= 1200 && comparisonInfo.TargetCompatibilityLevel >= 1200)
             {
                 returnComparison = new TabularMetadata.Comparison(comparisonInfo);
                 TabularMetadata.Comparison returnTabularComparison = (TabularMetadata.Comparison)returnComparison;
@@ -174,7 +152,7 @@ namespace BismNormalizer.TabularCompare
                     returnTabularComparison.SourceTabularModel.TomDatabase.Update();
                     returnTabularComparison.Disconnect();
                 }
-                if (sourceDataSourceVersionRequiresUpgrade)
+                if (targetDataSourceVersionRequiresUpgrade)
                 {
                     returnTabularComparison.TargetTabularModel.Connect();
                     returnTabularComparison.TargetTabularModel.TomDatabase.Model.DefaultPowerBIDataSourceVersion = Microsoft.AnalysisServices.Tabular.PowerBIDataSourceVersion.PowerBI_V3;
@@ -182,10 +160,11 @@ namespace BismNormalizer.TabularCompare
                     returnTabularComparison.Disconnect();
                 }
 
-                //Check if source has a higher compat level than the target and offer upgrade if appropriate
+                //Check if source has a higher compat level than the target and offer upgrade if appropriate.
                 if (comparisonInfo.SourceCompatibilityLevel > comparisonInfo.TargetCompatibilityLevel)
                 {
-                    if (System.Windows.Forms.MessageBox.Show($"Source compatibility level is {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)} and target is {Convert.ToString(comparisonInfo.TargetCompatibilityLevel)}, which is not supported for comparison.\n\nDo you want to upgrade the target to {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)}?", "ALM Toolkit", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                    //If target is SSDT, don't even bother.
+                    if (!comparisonInfo.ConnectionInfoTarget.UseProject && System.Windows.Forms.MessageBox.Show($"Source compatibility level is {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)} and target is {Convert.ToString(comparisonInfo.TargetCompatibilityLevel)}, which is not supported for comparison.\n\nDo you want to upgrade the target to {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)}?", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
                     {
                         returnTabularComparison.TargetTabularModel.Connect();
                         returnTabularComparison.TargetTabularModel.TomDatabase.CompatibilityLevel = comparisonInfo.SourceCompatibilityLevel;
@@ -200,7 +179,14 @@ namespace BismNormalizer.TabularCompare
             }
             else
             {
-                returnComparison = new MultidimensionalMetadata.Comparison(comparisonInfo);
+                if (comparisonInfo.SourceCompatibilityLevel == comparisonInfo.TargetCompatibilityLevel)
+                {
+                    returnComparison = new MultidimensionalMetadata.Comparison(comparisonInfo);
+                }
+                else
+                {
+                    throw new ConnectionException($"This combination of mixed compatibility levels is not supported.\nSource is {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)} and target is {Convert.ToString(comparisonInfo.TargetCompatibilityLevel)}.");
+                }
             }
 
             return returnComparison;
