@@ -632,18 +632,24 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             #region Refresh/reconnect source and target dbs to check if server definition has changed
 
-            if (_uncommitedChanges)
+            bool reconnect = false;
+            try
+            {
+                _sourceTabularModel.TomDatabase.Refresh();
+                _targetTabularModel.TomDatabase.Refresh();
+            }
+            catch (Exception)
+            {
+                reconnect = true;
+            }
+
+            if (reconnect || _uncommitedChanges)
             {
                 // Reconnect to re-initialize
                 _sourceTabularModel = new TabularModel(this, _comparisonInfo.ConnectionInfoSource, _comparisonInfo);
                 _sourceTabularModel.Connect();
                 _targetTabularModel = new TabularModel(this, _comparisonInfo.ConnectionInfoTarget, _comparisonInfo);
                 _targetTabularModel.Connect();
-            }
-            else
-            {
-                _sourceTabularModel.TomDatabase.Refresh();
-                _targetTabularModel.TomDatabase.Refresh();
             }
 
             if (!_sourceTabularModel.ConnectionInfo.UseProject && _sourceTabularModel.TomDatabase.LastSchemaUpdate > _lastSourceSchemaUpdate)

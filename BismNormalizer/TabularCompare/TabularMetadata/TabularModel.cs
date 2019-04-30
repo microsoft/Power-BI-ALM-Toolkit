@@ -491,9 +491,12 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             }
 
             //add back calculationItems
-            foreach (Tom.CalculationItem tomCalculationItemToAddBack in tomTableTargetOrig.CalculationGroup.CalculationItems)
+            if (tomTableTargetOrig.CalculationGroup != null)
             {
-                tableTarget.CreateCalculationItem(tomCalculationItemToAddBack);
+                foreach (Tom.CalculationItem tomCalculationItemToAddBack in tomTableTargetOrig.CalculationGroup.CalculationItems)
+                {
+                    tableTarget.CreateCalculationItem(tomCalculationItemToAddBack);
+                }
             }
         }
 
