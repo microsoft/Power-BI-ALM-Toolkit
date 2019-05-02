@@ -424,7 +424,7 @@
     <Content Include="Images\SelectActions.png" />
     <Content Include="Images\Update.png" />
     <Content Include="Images\Validate.png" />
-    <None Include="System.Windows.Forms.Ribbon.dll.backup" />
+    <None Include="System.Windows.Forms.Ribbon.dll.copy-rename" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="html-resources\e2e\app.e2e-spec.ts" />
