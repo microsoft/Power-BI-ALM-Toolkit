@@ -100,7 +100,7 @@ namespace BismNormalizer.TabularCompare
             {
                 string message = $"The source and target are Power BI datasets have default data-source versions of {comparisonInfo.SourceDataSourceVersion} and {comparisonInfo.TargetDataSourceVersion} respectively, which are not supported for comparison.";
                 if (System.Windows.Forms.MessageBox.Show(
-                    message += $"\nDo you want to upgrade them both to {_supportedDataSourceVersions[0]}?\n\nNOTE: this is a irreversible operation and you WILL NOT be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
+                    message += $"\nDo you want to upgrade them both to {_supportedDataSourceVersions[0]} and allow the comparison?\n\nNOTE: this is a irreversible operation and you WILL NOT be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
                 {
                     throw new ConnectionException(message);
                 }
@@ -109,7 +109,7 @@ namespace BismNormalizer.TabularCompare
             {
                 string message = $"The source is a Power BI datasets with default data-source version of {comparisonInfo.SourceDataSourceVersion}, which is not supported for comparison.";
                 if (System.Windows.Forms.MessageBox.Show(
-                    message += $"\nDo you want to upgrade it to {_supportedDataSourceVersions[0]}?\n\nNOTE: this is a irreversible operation and you WILL NOT be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
+                    message += $"\nDo you want to upgrade it to {_supportedDataSourceVersions[0]} and allow the comparison?\n\nNOTE: this is a irreversible operation and you WILL NOT be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
                 {
                     throw new ConnectionException(message);
                 }
@@ -118,7 +118,7 @@ namespace BismNormalizer.TabularCompare
             {
                 string message = $"The target is a Power BI datasets with default data-source version of {comparisonInfo.TargetDataSourceVersion}, which is not supported for comparison.";
                 if (System.Windows.Forms.MessageBox.Show(
-                    message += $"\nDo you want to upgrade it to {_supportedDataSourceVersions[0]}?\n\nNOTE: this is a irreversible operation and you WILL NOT be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
+                    message += $"\nDo you want to upgrade it to {_supportedDataSourceVersions[0]} and allow the comparison?\n\nNOTE: this is a irreversible operation and you WILL NOT be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
                 {
                     throw new ConnectionException(message);
                 }
@@ -164,7 +164,7 @@ namespace BismNormalizer.TabularCompare
                 if (comparisonInfo.SourceCompatibilityLevel > comparisonInfo.TargetCompatibilityLevel)
                 {
                     //If target is SSDT, don't even bother.
-                    if (!comparisonInfo.ConnectionInfoTarget.UseProject && System.Windows.Forms.MessageBox.Show($"Source compatibility level is {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)} and target is {Convert.ToString(comparisonInfo.TargetCompatibilityLevel)}, which is not supported for comparison.\n\nDo you want to upgrade the target to {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)}?", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                    if (!comparisonInfo.ConnectionInfoTarget.UseProject && System.Windows.Forms.MessageBox.Show($"Source compatibility level is {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)} and target is {Convert.ToString(comparisonInfo.TargetCompatibilityLevel)}, which is not supported for comparison.\n\nDo you want to upgrade the target to {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)} and allow the comparison?", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
                     {
                         returnTabularComparison.TargetTabularModel.Connect();
                         returnTabularComparison.TargetTabularModel.TomDatabase.CompatibilityLevel = comparisonInfo.SourceCompatibilityLevel;

@@ -714,6 +714,17 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             #endregion
 
+            #region Model1
+
+            //Doing before tables in case need to set DiscourageImplicitMeasures=true to create calc groups downstream
+            bool updatedModel = false;
+            foreach (ComparisonObject comparisonObject in _comparisonObjects)
+            {
+                updatedModel = UpdateModel(comparisonObject, true);
+            }
+
+            #endregion
+
             #region Tables
 
             // do deletions first to minimize chance of conflict
@@ -765,12 +776,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             _targetTabularModel.CleanUpVariations();
             _targetTabularModel.CleanUpAggregations();
 
-            #region Model
+            #region Model2
 
-            //Doing model after tables in case there are calc group tables so cannot set DisableImplictMeasures=false
-            foreach (ComparisonObject comparisonObject in _comparisonObjects)
+            //Doing model after tables in case there are calc group tables created so cannot set DisableImplictMeasures=false
+            if (!updatedModel)
             {
-                UpdateModel(comparisonObject);
+                foreach (ComparisonObject comparisonObject in _comparisonObjects)
+                {
+                    UpdateModel(comparisonObject, false);
+                }
             }
 
             #endregion
@@ -1167,33 +1181,49 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         #region Model
 
-        private void UpdateModel(ComparisonObject comparisonObject)
+        private bool UpdateModel(ComparisonObject comparisonObject, bool beforeTables)
         {
             if (comparisonObject.ComparisonObjectType == ComparisonObjectType.Model && comparisonObject.MergeAction == MergeAction.Update)
             {
                 Model sourceModel = _sourceTabularModel.Model;
                 Model targetModel = _targetTabularModel.Model;
 
-                bool hasCalcGroups = false;
+                bool targetHasCalcGroups = false;
                 foreach (Table table in _targetTabularModel.Tables)
                 {
                     if (table.IsCalculationGroup)
                     {
-                        hasCalcGroups = true;
+                        targetHasCalcGroups = true;
                         break;
                     }
                 }
 
-                if (hasCalcGroups && sourceModel.TomModel.DiscourageImplicitMeasures == false)
+                if (beforeTables)
                 {
-                    OnValidationMessage(new ValidationMessageEventArgs($"Unable to update model because (considering changes) the target has calculation group(s) and the source has DiscourageImplicitMeasures set to false.", ValidationMessageType.Model, ValidationMessageStatus.Warning));
+                    //In this case, may need to create calc groups downstream, so may need to set DiscourageImplicitMeasures to true
+                    if (!targetHasCalcGroups && sourceModel.TomModel.DiscourageImplicitMeasures)
+                    {
+                        _targetTabularModel.UpdateModel(sourceModel, targetModel);
+                        OnValidationMessage(new ValidationMessageEventArgs($"Update model.", ValidationMessageType.Model, ValidationMessageStatus.Informational));
+                        return true;
+                    }
                 }
                 else
                 {
-                    _targetTabularModel.UpdateModel(sourceModel, targetModel);
-                    OnValidationMessage(new ValidationMessageEventArgs($"Update model.", ValidationMessageType.Model, ValidationMessageStatus.Informational));
+                    //In this case, have already had chance to create/delete calc groups, so OK to disable implicit measures if able
+                    if (targetHasCalcGroups && sourceModel.TomModel.DiscourageImplicitMeasures == false)
+                    {
+                        OnValidationMessage(new ValidationMessageEventArgs($"Unable to update model because (considering changes) the target has calculation group(s) and the source has DiscourageImplicitMeasures set to false.", ValidationMessageType.Model, ValidationMessageStatus.Warning));
+                    }
+                    else
+                    {
+                        _targetTabularModel.UpdateModel(sourceModel, targetModel);
+                        OnValidationMessage(new ValidationMessageEventArgs($"Update model.", ValidationMessageType.Model, ValidationMessageStatus.Informational));
+                        return true;
+                    }
                 }
             }
+            return false;
         }
 
         #endregion
