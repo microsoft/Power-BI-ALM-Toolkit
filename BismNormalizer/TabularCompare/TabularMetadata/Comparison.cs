@@ -1338,7 +1338,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 else
                 {
                     string message = $"Unable to delete expression {comparisonObject.TargetObjectName} because the following objects depend on it: {String.Join(", ", warningObjectList)}.";
-                    if (_comparisonInfo.OptionsInfo.OptionRetainPartitions)
+                    if (_comparisonInfo.OptionsInfo.OptionRetainPartitions && !_comparisonInfo.OptionsInfo.OptionRetainPolicyPartitions)
                     {
                         message += " Note: the option to retain partitions is on, which may be affecting this.";
                     }

@@ -502,46 +502,49 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         public bool CanRetainPartitions(Table tableSource, Table tableTarget, out string retainPartitionsMessage)
         {
+            //Initialize variables
             retainPartitionsMessage = "";
-
-            //only applies to db deployment, and need option checked
-            if (!_comparisonInfo.OptionsInfo.OptionRetainPartitions)
-                return false;
-
-            //both tables need to have M or query partitions. Also type needs to match (won't copy query partition to M table). If a table has no partitions, do nothing.
-            PartitionSourceType sourceTypeTarget = PartitionSourceType.None;
+            PartitionSourceType sourceTypeSource = PartitionSourceType.None;
             foreach (Partition partition in tableSource.TomTable.Partitions)
             {
-                sourceTypeTarget = partition.SourceType;
+                sourceTypeSource = partition.SourceType;
                 break;
             }
-            if (!(sourceTypeTarget == PartitionSourceType.M || sourceTypeTarget == PartitionSourceType.Query))
+            PartitionSourceType sourceTypeTarget = PartitionSourceType.None;
+            foreach (Partition partitionTarget in tableTarget.TomTable.Partitions)
+            {
+                sourceTypeTarget = partitionTarget.SourceType;
+                break;
+            }
+
+            //Verify necessary options are checked
+            if (!_comparisonInfo.OptionsInfo.OptionRetainPartitions)
+                return false;
+            if (_comparisonInfo.OptionsInfo.OptionRetainPolicyPartitions && sourceTypeTarget != PartitionSourceType.PolicyRange)
+                return false;
+
+            //both tables need to have M or query partitions, or target can be policy partitions. Also type needs to match (won't copy query partition to M table). If a table has no partitions, do nothing.
+            if (!(sourceTypeSource == PartitionSourceType.M || sourceTypeSource == PartitionSourceType.Query || sourceTypeSource == PartitionSourceType.PolicyRange))
             {
                 retainPartitionsMessage = $"Retain partitions not applicable to partition types.";
                 return false;
             }
 
-            PartitionSourceType sourceTypeOrig = PartitionSourceType.None;
-            foreach (Partition partitionOrig in tableTarget.TomTable.Partitions)
-            {
-                sourceTypeOrig = partitionOrig.SourceType;
-                break;
-            }
-            if (!(sourceTypeOrig == PartitionSourceType.M || sourceTypeOrig == PartitionSourceType.Query))
+            if (!(sourceTypeTarget == PartitionSourceType.M || sourceTypeTarget == PartitionSourceType.Query || sourceTypeTarget == PartitionSourceType.PolicyRange))
             {
                 retainPartitionsMessage = $"Retain partitions not applicable to partition types.";
                 return false;
             }
 
-            if (sourceTypeOrig != sourceTypeTarget)
+            if ((sourceTypeTarget != sourceTypeSource) && sourceTypeTarget != PartitionSourceType.PolicyRange)
             {
-                retainPartitionsMessage = $"Retain partitions not applied because source partition type is {sourceTypeTarget.ToString()} and target partition type is {sourceTypeOrig.ToString()}.";
+                retainPartitionsMessage = $"Retain partitions not applied because source partition type is {sourceTypeSource.ToString()} and target partition type is {sourceTypeTarget.ToString()}.";
                 return false;
             }
 
             if (tableSource.PartitionsDefinition == tableTarget.PartitionsDefinition)
             {
-                retainPartitionsMessage = "Source & target partition definitions match, so retain partitions not necessary.";
+                retainPartitionsMessage = "Source & target partition definitions already match, so retain partitions not necessary.";
                 return false;
             }
 

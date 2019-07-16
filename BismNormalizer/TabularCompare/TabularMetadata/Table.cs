@@ -83,14 +83,14 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             _isCalculationGroup = (_tomTable.CalculationGroup != null);
             _partitionsDefinition = "";
             _dataSourceName = "";
-            bool hasMOrQueryPartition = false;
+            bool hasMQueryOrPolicyPartition = false;
 
             //Associate table with a DataSource if possible. It's not possible if calc table or if M expression refers to a shared expression, or multiple data sources
             foreach (Partition partition in _tomTable.Partitions)
             {
                 if (partition.SourceType == PartitionSourceType.M)
                 {
-                    hasMOrQueryPartition = true;
+                    hasMQueryOrPolicyPartition = true;
 
                     //Check M dependency tree to see if all partitions refer only to a single DataSource
                     CalcDependencyCollection calcDependencies = _parentTabularModel.MDependencies.DependenciesReferenceFrom(CalcDependencyObjectType.Partition, _tomTable.Name, partition.Name);
@@ -118,17 +118,24 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 //If old partition, find the primary partition (first one) to determine DataSource. Technically it is possible for different partitions in the same table to point to different DataSources, but the Tabular Designer in VS doesn't support it. If set manually in .bim file, the UI still associates with the first partition (e.g. when processing table by itself, or deletinig the DataSource gives a warning message listing associated tables).
                 if (partition.SourceType == PartitionSourceType.Query)
                 {
-                    hasMOrQueryPartition = true;
+                    hasMQueryOrPolicyPartition = true;
                     _dataSourceName = ((QueryPartitionSource)partition.Source).DataSource.Name;
+                    break;
+                }
+
+                //Might be a policy partition.
+                if (partition.SourceType == PartitionSourceType.PolicyRange)
+                {
+                    hasMQueryOrPolicyPartition = true;
                     break;
                 }
             }
 
-            if (hasMOrQueryPartition || _isCalculationGroup)
+            if (hasMQueryOrPolicyPartition || _isCalculationGroup)
             {
                 _partitionsDefinition = base.RetrievePropertyFromObjectDefinition("partitions");
 
-                //Option to hide partitions only applies to M and query partitions (calculated tables hold dax defintitions in their partitions)
+                //Option to hide partitions only applies to M, query and policy partitions (calculated tables hold dax defintitions in their partitions)
                 if (!_parentTabularModel.ComparisonInfo.OptionsInfo.OptionPartitions)
                 {
                     base.RemovePropertyFromObjectDefinition("partitions");

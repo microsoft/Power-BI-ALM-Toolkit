@@ -51,6 +51,7 @@ namespace BismNormalizer.TabularCompare.UI
             //chkActions.Checked = _comparisonInfo.OptionsInfo.OptionActions;
             chkPartitions.Checked = _comparisonInfo.OptionsInfo.OptionPartitions;
             chkRetainPartitions.Checked = _comparisonInfo.OptionsInfo.OptionRetainPartitions;
+            chkRetainPolicyPartitions.Checked = _comparisonInfo.OptionsInfo.OptionRetainPolicyPartitions;
             chkMeasureDependencies.Checked = _comparisonInfo.OptionsInfo.OptionMeasureDependencies;
             string processingOption = _comparisonInfo.OptionsInfo.OptionProcessingOption.ToString();
             cboProcessingOption.Text = processingOption == "DoNotProcess" ? "Do Not Process" : processingOption;
@@ -69,6 +70,7 @@ namespace BismNormalizer.TabularCompare.UI
             _comparisonInfo.OptionsInfo.OptionActions = false;
             _comparisonInfo.OptionsInfo.OptionPartitions = chkPartitions.Checked;
             _comparisonInfo.OptionsInfo.OptionRetainPartitions = chkRetainPartitions.Checked;
+            _comparisonInfo.OptionsInfo.OptionRetainPolicyPartitions = chkRetainPolicyPartitions.Checked;
             _comparisonInfo.OptionsInfo.OptionMeasureDependencies = chkMeasureDependencies.Checked;
             _comparisonInfo.OptionsInfo.OptionProcessingOption = (ProcessingOption)Enum.Parse(typeof(ProcessingOption), cboProcessingOption.Text.Replace(" ", ""));
             //_comparisonInfo.OptionsInfo.OptionTransaction = chkTransaction.Checked;
@@ -86,6 +88,11 @@ namespace BismNormalizer.TabularCompare.UI
         private void chkCultures_CheckedChanged(object sender, EventArgs e)
         {
             chkMergeCultures.Enabled = chkCultures.Checked;
+        }
+
+        private void ChkRetainPartitions_CheckedChanged(object sender, EventArgs e)
+        {
+            chkRetainPolicyPartitions.Enabled = chkRetainPartitions.Checked;
         }
 
         private void Options_KeyDown(object sender, KeyEventArgs e)

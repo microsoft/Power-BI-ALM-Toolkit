@@ -20,6 +20,7 @@ namespace BismNormalizer.TabularCompare
         private bool _optionActions;
         private bool _optionPartitions;
         private bool _optionRetainPartitions;
+        private bool _optionRetainPolicyPartitions;
         private bool _optionMeasureDependencies;
         private ProcessingOption _optionProcessingOption;
         private bool _optionTransaction;
@@ -38,6 +39,7 @@ namespace BismNormalizer.TabularCompare
             _optionActions = Settings.Default.OptionActions;
             _optionPartitions = Settings.Default.OptionPartitions;
             _optionRetainPartitions = Settings.Default.OptionRetainPartitions;
+            _optionRetainPolicyPartitions = Settings.Default.OptionRetainPolicyPartitions;
             _optionMeasureDependencies = Settings.Default.OptionMeasureDependencies;
             _optionProcessingOption = (ProcessingOption)Enum.Parse(typeof(ProcessingOption), Settings.Default.OptionProcessingOption);
             _optionTransaction = Settings.Default.OptionTransaction;
@@ -118,6 +120,15 @@ namespace BismNormalizer.TabularCompare
         }
 
         /// <summary>
+        /// A Boolean specifying whether to retain refresh-policy partitions for table updates.
+        /// </summary>
+        public bool OptionRetainPolicyPartitions
+        {
+            get { return _optionRetainPolicyPartitions; }
+            set { _optionRetainPolicyPartitions = value; }
+        }
+
+        /// <summary>
         /// A Boolean specifying whether to display warnings for missing measure dependencies.
         /// </summary>
         public bool OptionMeasureDependencies
@@ -168,6 +179,7 @@ namespace BismNormalizer.TabularCompare
             Settings.Default.OptionActions = _optionActions;
             Settings.Default.OptionPartitions = _optionPartitions;
             Settings.Default.OptionRetainPartitions = _optionRetainPartitions;
+            Settings.Default.OptionRetainPolicyPartitions = _optionRetainPolicyPartitions;
             Settings.Default.OptionMeasureDependencies = _optionMeasureDependencies;
             Settings.Default.OptionProcessingOption = _optionProcessingOption.ToString();
             Settings.Default.OptionTransaction = _optionTransaction;
