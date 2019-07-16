@@ -41,6 +41,13 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 _objectDefinition = token.ToString(Formatting.Indented);
             }
 
+            //todo: remove with Giri's fix
+            //Remove return characters
+            if (namedMetaDataObject is Tom.NamedExpression || namedMetaDataObject is Tom.Table)
+            {
+                _objectDefinition = _objectDefinition.Replace("\\r", "");
+            }
+
             //Order table columns
             if (namedMetaDataObject is Tom.Table)
             { 
@@ -59,13 +66,6 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             if (namedMetaDataObject is Tom.ModelRole)
             {
                 _objectDefinition = SortArray(_objectDefinition, "members");
-            }
-
-            //todo: remove with Giri's fix
-            //Remove return characters
-            if (namedMetaDataObject is Tom.NamedExpression)
-            {
-                _objectDefinition = _objectDefinition.Replace("\\r", "");
             }
 
             //Hide privacy setting on structured data sources

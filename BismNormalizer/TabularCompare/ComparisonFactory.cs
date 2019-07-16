@@ -107,7 +107,7 @@ namespace BismNormalizer.TabularCompare
             }
             else if (sourceDataSourceVersionRequiresUpgrade)
             {
-                string message = $"The source is a Power BI datasets with default data-source version of {comparisonInfo.SourceDataSourceVersion}, which is not supported for comparison.";
+                string message = $"The source is a Power BI dataset with default data-source version of {comparisonInfo.SourceDataSourceVersion}, which is not supported for comparison.";
                 if (System.Windows.Forms.MessageBox.Show(
                     message += $"\nDo you want to upgrade it to {_supportedDataSourceVersions[0]} and allow the comparison?\n\nNOTE: this is a irreversible operation and you WILL NOT be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
                 {
