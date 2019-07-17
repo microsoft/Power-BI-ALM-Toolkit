@@ -340,6 +340,12 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 return false;
             }
 
+            if (this.IsCalculationGroup || _parentTabularModel.Tables.FindByName(tabularRelationshipSource.ToTable.Name).IsCalculationGroup)
+            {
+                warningMessage = $"Unable to create Relationship {relationshipName} because one or more tables is a calculation group.";
+                return false;
+            }
+
             // Delete the target relationship with same tables/columns if still there. Not using RemoveByInternalName in case internal name is actually different.
             if (this.Relationships.ContainsName(relationshipSource.Name))
             {
