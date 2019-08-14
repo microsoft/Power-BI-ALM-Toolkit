@@ -7,6 +7,8 @@ using Tom = Microsoft.AnalysisServices.Tabular;
 using Amo = Microsoft.AnalysisServices;
 using Newtonsoft.Json.Linq;
 using BismNormalizer.TabularCompare.Core;
+using System.Runtime.CompilerServices;
+using System.Windows.Documents;
 
 namespace BismNormalizer.TabularCompare.TabularMetadata
 {
@@ -821,15 +823,26 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// <summary>
         /// Remove aggregations referring to objects that don't exist.
         /// </summary>
-        public void CleanUpAggregations()
+        public string CleanUpAggregations()
         {
+            string aggregationsRemovedMessage = "";
+
             foreach (Table table in _tables)
             {
                 foreach (Column column in table.TomTable.Columns)
                 {
                     if (column.AlternateOf != null)
                     {
-                        if (column.AlternateOf.BaseColumn != null)
+                        if (column.AlternateOf.BaseTable != null)
+                        {
+                            if (!_database.Model.Tables.ContainsName(column.AlternateOf.BaseTable.Name))
+                            {
+                                //Base table doesn't exist
+                                aggregationsRemovedMessage += $"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because refers to detail table that doesn't exist [table:{column.AlternateOf.BaseTable.Name}].\n";
+                                column.AlternateOf = null;
+                            }
+                        }
+                        else if (column.AlternateOf.BaseColumn != null)
                         {
                             if (_database.Model.Tables.ContainsName(column.AlternateOf.BaseColumn.Table?.Name))
                             {
@@ -837,23 +850,107 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 if (!_database.Model.Tables.Find(column.AlternateOf.BaseColumn.Table.Name).Columns.ContainsName(column.AlternateOf.BaseColumn.Name))
                                 {
                                     //Base column doesn't exist
+                                    aggregationsRemovedMessage += $"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because refers to detail column that doesn't exist [table:{column.AlternateOf.BaseColumn.Table.Name}/column:{column.AlternateOf.BaseColumn.Name}].\n";
                                     column.AlternateOf = null;
                                 }
                             }
                             else
                             {
                                 //Base table doesn't exist
+                                aggregationsRemovedMessage += $"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because refers to detail table that doesn't exist [table:{column.AlternateOf.BaseColumn.Table.Name}].\n";
                                 column.AlternateOf = null;
                             }
                         }
-                        else if (column.AlternateOf.BaseTable != null)
+
+                        if (column.AlternateOf != null)
                         {
-                            if (!_database.Model.Tables.ContainsName(column.AlternateOf.BaseTable.Name))
+                            //Referenced detail column/table are there (it hasn't been set to null) so let's do RLS check ...
+
+                            List<string> modelTablesWithRls = new List<string>();
+                            foreach (Role role in _roles)
                             {
-                                //Base table doesn't exist
-                                column.AlternateOf = null;
+                                foreach (TablePermission tablePermission in role.TomRole.TablePermissions)
+                                {
+                                    if (!String.IsNullOrEmpty(tablePermission.FilterExpression))
+                                    {
+                                        modelTablesWithRls.Add(tablePermission.Name);
+                                    }
+                                }
+                            }
+
+                            if (modelTablesWithRls.Count > 0)
+                            {
+                                //Get list of filtering RLS tables on the agg table
+                                List<string> rlsTablesFilteringAgg = new List<string>(); //RLS tables that filter the agg table
+
+                                //beginTable might be the From or the To table in TOM Relationship object; it depends on CrossFilterDirection.
+                                RelationshipChainsFromRoot referencedTableCollection = new RelationshipChainsFromRoot();
+                                foreach (Relationship filteringRelationship in table.FindFilteringRelationships(checkSecurityBehavior:true))
+                                {
+                                    // EndTable can be either the From or the To table of a Relationship object depending on CrossFilteringBehavior/SecurityBehavior
+                                    string endTableName = GetEndTableName(table, filteringRelationship, out bool biDi);
+                                    RelationshipLink rootLink = new RelationshipLink(table, _tables.FindByName(endTableName), true, "", false, filteringRelationship, biDi);
+                                    ValidateLinkForAggsRls(rootLink, referencedTableCollection, modelTablesWithRls, rlsTablesFilteringAgg);
+                                }
+
+
+                                //Now get list of filtering RLS tables on the detail table
+                                string detailTable = (column.AlternateOf.BaseTable != null ? column.AlternateOf.BaseTable.Name : column.AlternateOf.BaseColumn.Table.Name);
+
+                                List<string> rlsTablesFilteringDetail = new List<string>(); //RLS tables that filter the detail table
+
+                                //beginTable might be the From or the To table in TOM Relationship object; it depends on CrossFilterDirection.
+                                referencedTableCollection = new RelationshipChainsFromRoot();
+                                foreach (Relationship filteringRelationship in table.FindFilteringRelationships(checkSecurityBehavior: true))
+                                {
+                                    // EndTable can be either the From or the To table of a Relationship object depending on CrossFilteringBehavior/SecurityBehavior
+                                    string endTableName = GetEndTableName(table, filteringRelationship, out bool biDi);
+                                    RelationshipLink rootLink = new RelationshipLink(table, _tables.FindByName(endTableName), true, "", false, filteringRelationship, biDi);
+                                    ValidateLinkForAggsRls(rootLink, referencedTableCollection, modelTablesWithRls, rlsTablesFilteringDetail);
+                                }
+
+
+                                //For each agg table, check any RLS filter tables also covers the detail table
+                                foreach (string rlsTableFilteringAgg in rlsTablesFilteringAgg)
+                                {
+                                    if (!rlsTablesFilteringDetail.Contains(rlsTableFilteringAgg))
+                                    {
+                                        aggregationsRemovedMessage += $"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because filtered by RLS on table {rlsTableFilteringAgg} that doesn't filter detail table {detailTable}.\n";
+                                        column.AlternateOf = null;
+                                    }
+                                }
                             }
                         }
+                    }
+                }
+            }
+
+            return aggregationsRemovedMessage;
+        }
+
+        private void ValidateLinkForAggsRls(RelationshipLink link, RelationshipChainsFromRoot chainsFromRoot, List<string> modelTablesWithRls, List<string> rlsTablesFiltering)
+        {
+            if (link.FilteringRelationship.TomRelationship.IsActive)
+            {
+                if (modelTablesWithRls.Contains(link.EndTable.Name) && !rlsTablesFiltering.Contains(link.EndTable.Name))
+                {
+                    rlsTablesFiltering.Add(link.EndTable.Name);
+                }
+
+                //Add the link to the chain and re-iterate ...
+                chainsFromRoot.Add(link);
+
+                Table beginTable = link.EndTable; //EndTable is now the begin table as iterating next level ...
+                foreach (Relationship filteringRelationship in beginTable.FindFilteringRelationships(checkSecurityBehavior: true))
+                {
+                    // EndTable can be either the From or the To table of a Relationship object depending on direction of CrossFilteringBehavior
+                    string endTableName = GetEndTableName(beginTable, filteringRelationship, out bool biDi);
+
+                    //Need to check if endTableName has already been covered by TablePath to avoid CrossFilteringBehavior leading both ways and never ending loop
+                    if (!link.TablePath.Contains("'" + endTableName + "'"))
+                    {
+                        RelationshipLink newLink = new RelationshipLink(beginTable, _tables.FindByName(endTableName), false, link.TablePath, link.PrecedingPathBiDiInvoked, filteringRelationship, biDi);
+                        ValidateLinkForAggsRls(newLink, chainsFromRoot, modelTablesWithRls, rlsTablesFiltering);
                     }
                 }
             }

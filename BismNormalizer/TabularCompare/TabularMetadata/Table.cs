@@ -203,7 +203,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// Find all direct relationships that filter this table. This is all ACTIVE relationships where 1) this is FROM table, or 2) this is TO table with CrossFilteringBehavior=BothDirections
         /// </summary>
         /// <returns>All the associated Relationships.</returns>
-        public List<Relationship> FindFilteringRelationships()
+        public List<Relationship> FindFilteringRelationships(bool checkSecurityBehavior=false)
         {
             //Considers DIRECT relationships for this table ONLY (1 level).
             List<Relationship> filteringRelationships = new List<Relationship>();
@@ -213,7 +213,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 {
                     if (relationship.TomRelationship.IsActive &&
                            (relationship.FromTableName == this.Name ||
-                               (relationship.ToTableName == this.Name && relationship.TomRelationship.CrossFilteringBehavior == CrossFilteringBehavior.BothDirections)
+                               (relationship.ToTableName == this.Name && relationship.TomRelationship.CrossFilteringBehavior == CrossFilteringBehavior.BothDirections && (!checkSecurityBehavior || (checkSecurityBehavior && relationship.TomRelationship.SecurityFilteringBehavior == SecurityFilteringBehavior.BothDirections)))
                            )
                        )
                     {

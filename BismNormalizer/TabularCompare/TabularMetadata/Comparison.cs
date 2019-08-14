@@ -774,7 +774,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             #endregion
 
             _targetTabularModel.CleanUpVariations();
-            _targetTabularModel.CleanUpAggregations();
+            string aggregationsRemovedMessage = _targetTabularModel.CleanUpAggregations();
+            if (!String.IsNullOrEmpty(aggregationsRemovedMessage))
+            {
+                OnValidationMessage(new ValidationMessageEventArgs(aggregationsRemovedMessage, ValidationMessageType.General, ValidationMessageStatus.Warning));
+            }
 
             #region Model2
 
