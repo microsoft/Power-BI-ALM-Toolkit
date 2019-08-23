@@ -774,12 +774,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             #endregion
 
             _targetTabularModel.CleanUpVariations();
-            string aggregationsRemovedMessage = _targetTabularModel.CleanUpAggregations();
-            if (!String.IsNullOrEmpty(aggregationsRemovedMessage))
-            {
-                OnValidationMessage(new ValidationMessageEventArgs(aggregationsRemovedMessage, ValidationMessageType.General, ValidationMessageStatus.Warning));
-            }
-
+            _targetTabularModel.CleanUpAggregations();
+            
             #region Model2
 
             //Doing model after tables in case there are calc group tables created so cannot set DisableImplictMeasures=false
