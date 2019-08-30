@@ -203,8 +203,12 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// Find all direct relationships that filter this table. This is all ACTIVE relationships where 1) this is FROM table, or 2) this is TO table with CrossFilteringBehavior=BothDirections
         /// </summary>
         /// <returns>All the associated Relationships.</returns>
-        public List<Relationship> FindFilteringRelationships(bool checkSecurityBehavior=false)
+        public List<Relationship> FindFilteredRelationships(bool checkSecurityBehavior = false)  
         {
+            //T1[C1]->T2[C2]
+            //FromTableName: T1   *** this.Name
+            //ToTableName:   T2   
+
             //Considers DIRECT relationships for this table ONLY (1 level).
             List<Relationship> filteringRelationships = new List<Relationship>();
             foreach (Table table in _parentTabularModel.Tables)
@@ -214,6 +218,35 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     if (relationship.TomRelationship.IsActive &&
                            (relationship.FromTableName == this.Name ||
                                (relationship.ToTableName == this.Name && relationship.TomRelationship.CrossFilteringBehavior == CrossFilteringBehavior.BothDirections && (!checkSecurityBehavior || (checkSecurityBehavior && relationship.TomRelationship.SecurityFilteringBehavior == SecurityFilteringBehavior.BothDirections)))
+                           )
+                       )
+                    {
+                        filteringRelationships.Add(relationship);
+                    }
+                }
+            }
+            return filteringRelationships;
+        }
+
+        /// <summary>
+        /// Find all direct relationships that filter this table. This is all ACTIVE relationships where 1) this is FROM table, or 2) this is TO table with CrossFilteringBehavior=BothDirections
+        /// </summary>
+        /// <returns>All the associated Relationships.</returns>
+        public List<Relationship> FindFilteringRelationships(bool checkSecurityBehavior = false)
+        {
+            //T1[C1]->T2[C2]
+            //FromTableName: T1
+            //ToTableName:   T2   *** this.Name
+
+            //Considers DIRECT relationships for this table ONLY (1 level).
+            List<Relationship> filteringRelationships = new List<Relationship>();
+            foreach (Table table in _parentTabularModel.Tables)
+            {
+                foreach (Relationship relationship in table.Relationships)
+                {
+                    if (relationship.TomRelationship.IsActive &&
+                           (relationship.ToTableName == this.Name ||
+                               (relationship.FromTableName == this.Name && relationship.TomRelationship.CrossFilteringBehavior == CrossFilteringBehavior.BothDirections && (!checkSecurityBehavior || (checkSecurityBehavior && relationship.TomRelationship.SecurityFilteringBehavior == SecurityFilteringBehavior.BothDirections)))
                            )
                        )
                     {

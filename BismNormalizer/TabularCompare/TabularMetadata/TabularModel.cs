@@ -633,7 +633,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 //beginTable might be the From or the To table in TOM Relationship object; it depends on CrossFilterDirection.
 
                 RelationshipChainsFromRoot referencedTableCollection = new RelationshipChainsFromRoot();
-                foreach (Relationship filteringRelationship in beginTable.FindFilteringRelationships())
+                foreach (Relationship filteringRelationship in beginTable.FindFilteredRelationships())
                 {
                     // EndTable can be either the From or the To table of a Relationship object depending on CrossFilteringBehavior
                     string endTableName = GetEndTableName(beginTable, filteringRelationship, out bool biDi);
@@ -702,7 +702,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 chainsFromRoot.Add(link);
 
                 Table beginTable = link.EndTable; //EndTable is now the begin table as iterating next level ...
-                foreach (Relationship filteringRelationship in beginTable.FindFilteringRelationships())
+                foreach (Relationship filteringRelationship in beginTable.FindFilteredRelationships())
                 {
                     // EndTable can be either the From or the To table of a Relationship object depending on direction of CrossFilteringBehavior
                     string endTableName = GetEndTableName(beginTable, filteringRelationship, out bool biDi);
@@ -840,6 +840,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             foreach (Table table in _tables)
             {
+                bool foundRule11Voilation = false;
                 foreach (Column column in table.TomTable.Columns)
                 {
                     if (column.AlternateOf != null)
@@ -852,8 +853,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                             if (!_database.Model.Tables.ContainsName(column.AlternateOf.BaseTable.Name))
                             {
                                 //Base table doesn't exist
-                                _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) refers to detail table that doesn't exist [table:{column.AlternateOf.BaseTable.Name}].\n",
-                                    ValidationMessageType.General, ValidationMessageStatus.Warning));
+                                _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) refers to detail table that does not exist [table:{column.AlternateOf.BaseTable.Name}].\n",
+                                    ValidationMessageType.AggregationDependency, ValidationMessageStatus.Warning));
                                 column.AlternateOf = null;
                             }
                         }
@@ -864,25 +865,29 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 //the referenced table is there, how about the referenced column?
                                 if (!_database.Model.Tables.Find(column.AlternateOf.BaseColumn.Table.Name).Columns.ContainsName(column.AlternateOf.BaseColumn.Name))
                                 {
-                                    //Base column doesn't exist
-                                    _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) refers to detail column that doesn't exist [table:{column.AlternateOf.BaseColumn.Table.Name}/column:{column.AlternateOf.BaseColumn.Name}].\n",
-                                        ValidationMessageType.General, ValidationMessageStatus.Warning));
+                                    //Base column does not exist
+                                    _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) refers to detail column that does not exist [table:{column.AlternateOf.BaseColumn.Table.Name}/column:{column.AlternateOf.BaseColumn.Name}].\n",
+                                        ValidationMessageType.AggregationDependency, ValidationMessageStatus.Warning));
                                     column.AlternateOf = null;
                                 }
                             }
                             else
                             {
-                                //Base table doesn't exist
-                                _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) refers to detail table that doesn't exist [table:{column.AlternateOf.BaseColumn.Table.Name}].\n",
-                                    ValidationMessageType.General, ValidationMessageStatus.Warning));
+                                //Base table does not exist
+                                _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) refers to detail table that does not exist [table:{column.AlternateOf.BaseColumn.Table.Name}].\n",
+                                    ValidationMessageType.AggregationDependency, ValidationMessageStatus.Warning));
                                 column.AlternateOf = null;
                             }
                         }
 
-                        string detailTableName = (column.AlternateOf != null && column.AlternateOf.BaseTable != null ? column.AlternateOf.BaseTable.Name : column.AlternateOf.BaseColumn.Table.Name);
+                        string detailTableName = null;
+                        if (column.AlternateOf != null)
+                        {
+                            detailTableName = (column.AlternateOf.BaseTable != null ? column.AlternateOf.BaseTable.Name : column.AlternateOf.BaseColumn.Table.Name);
+                        }
                         Table detailTable = _tables.FindByName(detailTableName);
 
-                        if (column.AlternateOf != null && modelTablesWithRls.Count > 0 && detailTable != null)
+                        if (column.AlternateOf != null && column.AlternateOf.Summarization != SummarizationType.GroupBy && modelTablesWithRls.Count > 0 && detailTable != null)
                         {
                             /* Rule 11: RLS expressions that can filter the agg table, must also be able to filter the detail table(s) using an active relationship
                              */
@@ -892,7 +897,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
                             //beginTable might be the From or the To table in TOM Relationship object; it depends on CrossFilterDirection.
                             RelationshipChainsFromRoot referencedTableCollection = new RelationshipChainsFromRoot();
-                            foreach (Relationship filteringRelationship in table.FindFilteringRelationships(checkSecurityBehavior: true))
+                            foreach (Relationship filteringRelationship in table.FindFilteredRelationships(checkSecurityBehavior: true))
                             {
                                 // EndTable can be either the From or the To table of a Relationship object depending on CrossFilteringBehavior/SecurityBehavior
                                 string endTableName = GetEndTableName(table, filteringRelationship, out bool biDi);
@@ -900,27 +905,38 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 ValidateLinkForAggsRls(rootLink, referencedTableCollection, modelTablesWithRls, rlsTablesFilteringAgg);
                             }
 
-                            //Get list of filtering RLS tables on the detail table
-                            List<string> rlsTablesFilteringDetail = new List<string>(); //RLS tables that filter the detail table
-
-                            //beginTable might be the From or the To table in TOM Relationship object; it depends on CrossFilterDirection.
-                            referencedTableCollection = new RelationshipChainsFromRoot();
-                            foreach (Relationship filteringRelationship in detailTable.FindFilteringRelationships(checkSecurityBehavior: true))
+                            //If the agg table itself has RLS on it, then consider it a table that is filtering the agg too
+                            if (modelTablesWithRls.Contains(table.Name))
                             {
-                                // EndTable can be either the From or the To table of a Relationship object depending on CrossFilteringBehavior/SecurityBehavior
-                                string endTableName = GetEndTableName(detailTable, filteringRelationship, out bool biDi);
-                                RelationshipLink rootLink = new RelationshipLink(detailTable, _tables.FindByName(endTableName), true, "", false, filteringRelationship, biDi);
-                                ValidateLinkForAggsRls(rootLink, referencedTableCollection, modelTablesWithRls, rlsTablesFilteringDetail);
+                                rlsTablesFilteringAgg.Add(table.Name);
                             }
 
-                            //For each agg table, check any RLS filter tables also covers the detail table
-                            foreach (string rlsTableFilteringAgg in rlsTablesFilteringAgg)
+                            if (rlsTablesFilteringAgg.Count > 0)
                             {
-                                if (!rlsTablesFilteringDetail.Contains(rlsTableFilteringAgg))
+                                //Get list of filtering RLS tables on the detail table
+                                List<string> rlsTablesFilteringDetail = new List<string>(); //RLS tables that filter the detail table
+
+                                //beginTable might be the From or the To table in TOM Relationship object; it depends on CrossFilterDirection.
+                                referencedTableCollection = new RelationshipChainsFromRoot();
+                                foreach (Relationship filteringRelationship in detailTable.FindFilteredRelationships(checkSecurityBehavior: true))
                                 {
-                                    _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) filtered by RLS on table {rlsTableFilteringAgg} that doesn't filter detail table {detailTableName}.\n",
-                                        ValidationMessageType.General, ValidationMessageStatus.Warning));
-                                    column.AlternateOf = null;
+                                    // EndTable can be either the From or the To table of a Relationship object depending on CrossFilteringBehavior/SecurityBehavior
+                                    string endTableName = GetEndTableName(detailTable, filteringRelationship, out bool biDi);
+                                    RelationshipLink rootLink = new RelationshipLink(detailTable, _tables.FindByName(endTableName), true, "", false, filteringRelationship, biDi);
+                                    ValidateLinkForAggsRls(rootLink, referencedTableCollection, modelTablesWithRls, rlsTablesFilteringDetail);
+                                }
+
+                                //For each agg table, check any RLS filter tables also covers the detail table
+                                foreach (string rlsTableFilteringAgg in rlsTablesFilteringAgg)
+                                {
+                                    if (!rlsTablesFilteringDetail.Contains(rlsTableFilteringAgg))
+                                    {
+                                        _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) RLS filter on table {rlsTableFilteringAgg} that filters the agg, but does not filter detail table {detailTableName}.\n",
+                                            ValidationMessageType.AggregationDependency, ValidationMessageStatus.Warning));
+                                        column.AlternateOf = null;
+                                        foundRule11Voilation = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -953,9 +969,10 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
                                     if (!endTableContainsAggs)
                                     {
-                                        _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) the agg table is on the filtering side of a relationship to a table that does not contain aggregations, which is not allowed.\n",
-                                            ValidationMessageType.General, ValidationMessageStatus.Warning));
+                                        _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) the agg table is on the filtering side of a relationship to a table ({endTable.Name}) that does not contain aggregations, which is not allowed.\n",
+                                            ValidationMessageType.AggregationDependency, ValidationMessageStatus.Warning));
                                         column.AlternateOf = null;
+                                        break;
                                     }
                                 }
                             }
@@ -971,11 +988,25 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 if (detailColumn.AlternateOf != null)
                                 {
                                     _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) the detail table {detailTableName} also contains aggregations, which is not allowed.\n",
-                                        ValidationMessageType.General, ValidationMessageStatus.Warning));
+                                        ValidationMessageType.AggregationDependency, ValidationMessageStatus.Warning));
                                     column.AlternateOf = null;
                                     break;
                                 }
                             }
+                        }
+                    }
+                }
+
+                //Rule 11 needs to clear all remaining aggs on the agg table
+                if (foundRule11Voilation)
+                {
+                    foreach (Column column in table.TomTable.Columns)
+                    {
+                        if (column.AlternateOf != null)
+                        {
+                            _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) RLS filter that filters the agg, but does not filter detail table.\n",
+                                ValidationMessageType.AggregationDependency, ValidationMessageStatus.Warning));
+                            column.AlternateOf = null;
                         }
                     }
                 }
@@ -995,7 +1026,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 chainsFromRoot.Add(link);
 
                 Table beginTable = link.EndTable; //EndTable is now the begin table as iterating next level ...
-                foreach (Relationship filteringRelationship in beginTable.FindFilteringRelationships(checkSecurityBehavior: true))
+                foreach (Relationship filteringRelationship in beginTable.FindFilteredRelationships(checkSecurityBehavior: true))
                 {
                     // EndTable can be either the From or the To table of a Relationship object depending on direction of CrossFilteringBehavior
                     string endTableName = GetEndTableName(beginTable, filteringRelationship, out bool biDi);
@@ -1506,7 +1537,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                             break;
                     }
 
-                    //If namedObjectTarget is null, the model object doesn't exist in target, so can ignore
+                    //If namedObjectTarget is null, the model object does not exist in target, so can ignore
                     if (namedObjectTarget != null)
                     {
                         //Does the translation already exist in cultureTarget?
@@ -2016,7 +2047,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                         PartitionRowCounter partition = processingTable.FindPartition(partitionNodeList[0].InnerText);
                         partition.RowCount = e.IntegerData;
 
-                        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(processingTable.Name, $"Retreived {String.Format("{0:#,###0}", processingTable.GetRowCount())} rows ...", DeploymentStatus.Deploying));
+                        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(processingTable.Name, $"Retrieved {String.Format("{0:#,###0}", processingTable.GetRowCount())} rows ...", DeploymentStatus.Deploying));
                     }
                 }
 
@@ -2091,10 +2122,10 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
         private void FinalValidation()
         {
-            if (_connectionInfo.DirectQuery && _dataSources.Count > 1)
-            {
-                throw new InvalidOperationException("Target model contains multiple data sources, which are not allowed for Direct Query models. Re-run comparison and (considering changes) ensure there is a single connection in the target model.");
-            }
+            //if (_connectionInfo.DirectQuery && _dataSources.Count > 1)
+            //{
+            //    throw new InvalidOperationException("Target model contains multiple data sources, which are not allowed for Direct Query models. Re-run comparison and (considering changes) ensure there is a single connection in the target model.");
+            //}
         }
 
         public override string ToString() => this.GetType().FullName;

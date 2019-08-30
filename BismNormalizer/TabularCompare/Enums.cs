@@ -4,7 +4,7 @@ namespace BismNormalizer.TabularCompare
     /// <summary>
     /// Type of object that a validation message relates to. For example, Table, Measure, MeasureCalculationDependency, etc.
     /// </summary>
-    public enum ValidationMessageType { Model, DataSource, Table, Relationship, Measure, Kpi, CalculationGroup, CalculationItem, Perspective, Culture, Role, Expression, Action, MeasureCalculationDependency, General }; //General used for command line only
+    public enum ValidationMessageType { Model, DataSource, Table, Relationship, Measure, Kpi, CalculationGroup, CalculationItem, Perspective, Culture, Role, Expression, Action, MeasureCalculationDependency, AggregationDependency, General }; //General used for command line only
 
     /// <summary>
     /// Status for a validation message, such as Informational and Warning.
@@ -40,4 +40,9 @@ namespace BismNormalizer.TabularCompare
     /// Type of dependency. For example, DataSource, Partition, Expression.
     /// </summary>
     public enum CalcDependencyObjectType { DataSource, Partition, Expression };
+
+    /// <summary>
+    /// Model storage mode: DirectQuery, Import, Composite.
+    /// </summary>
+    public enum ModelStorageMode { DirectQuery, Import, Composite };
 }

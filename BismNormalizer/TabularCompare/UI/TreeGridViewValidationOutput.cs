@@ -180,6 +180,10 @@ namespace BismNormalizer.TabularCompare.UI
                     particularTypeNode = FindOrCreateTypeNode(topLevelNodeForHandle, "Measure Calculation Dependencies");
                     particularTypeNode.ImageIndex = 3;
                     break;
+                case ValidationMessageType.AggregationDependency:
+                    particularTypeNode = FindOrCreateTypeNode(topLevelNodeForHandle, "Aggregation Dependencies");
+                    particularTypeNode.ImageIndex = 2;
+                    break;
                 default:
                     //Something is wrong, better get out of here.
                     return;

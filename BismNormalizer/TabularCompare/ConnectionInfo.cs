@@ -26,6 +26,7 @@ namespace BismNormalizer.TabularCompare
         private int _compatibilityLevel;
         private string _dataSourceVersion;
         private bool _directQuery;
+        private ModelStorageMode _modelStorageMode;
         private string _bimFileFullName;
         private EnvDTE.Project _project;
         private string _deploymentServerName;
@@ -104,6 +105,12 @@ namespace BismNormalizer.TabularCompare
         /// </summary>
         [XmlIgnore()]
         public bool DirectQuery => _directQuery;
+
+        /// <summary>
+        /// An enum specifying whether the model storage mode.
+        /// </summary>
+        [XmlIgnore()]
+        public ModelStorageMode ModelStorageMode => _modelStorageMode;
 
         /// <summary>
         /// Project running in Visual Studio.

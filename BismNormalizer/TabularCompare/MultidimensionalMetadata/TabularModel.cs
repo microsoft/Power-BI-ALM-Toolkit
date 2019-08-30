@@ -2779,7 +2779,7 @@ namespace BismNormalizer.TabularCompare.MultidimensionalMetadata
                         PartitionRowCounter partition = table.FindPartition(partitionIdNodeList[0].InnerText);
                         partition.RowCount = e.IntegerData;
 
-                        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(table.Name, "Retreived " + String.Format("{0:#,###0}", table.GetRowCount()) + " rows ...", DeploymentStatus.Deploying));
+                        _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(table.Name, "Retrieved " + String.Format("{0:#,###0}", table.GetRowCount()) + " rows ...", DeploymentStatus.Deploying));
                     }
                 }
 
