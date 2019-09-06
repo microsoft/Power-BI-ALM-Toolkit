@@ -21,6 +21,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         private RelationshipCollection _relationships = new RelationshipCollection();
         private MeasureCollection _measures = new MeasureCollection();
         private bool _isCalculationGroup;
+        private ModeType _tableModeType;
         private CalculationItemCollection _calculationItems = new CalculationItemCollection();
 
         /// <summary>
@@ -66,6 +67,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         /// </summary>
         public bool IsCalculationGroup => _isCalculationGroup;
 
+        public ModeType TableModeType => _tableModeType;
+
         /// <summary>
         /// Collection of calculation items for the Table object.
         /// </summary>
@@ -88,6 +91,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             //Associate table with a DataSource if possible. It's not possible if calc table or if M expression refers to a shared expression, or multiple data sources
             foreach (Partition partition in _tomTable.Partitions)
             {
+                _tableModeType = partition.Mode;
                 if (partition.SourceType == PartitionSourceType.M)
                 {
                     hasMQueryOrPolicyPartition = true;

@@ -41,8 +41,4 @@ namespace BismNormalizer.TabularCompare
     /// </summary>
     public enum CalcDependencyObjectType { DataSource, Partition, Expression };
 
-    /// <summary>
-    /// Model storage mode: DirectQuery, Import, Composite.
-    /// </summary>
-    public enum ModelStorageMode { DirectQuery, Import, Composite };
 }

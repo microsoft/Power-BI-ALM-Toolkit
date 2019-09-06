@@ -26,7 +26,6 @@ namespace BismNormalizer.TabularCompare
         private int _compatibilityLevel;
         private string _dataSourceVersion;
         private bool _directQuery;
-        private ModelStorageMode _modelStorageMode;
         private string _bimFileFullName;
         private EnvDTE.Project _project;
         private string _deploymentServerName;
@@ -105,12 +104,6 @@ namespace BismNormalizer.TabularCompare
         /// </summary>
         [XmlIgnore()]
         public bool DirectQuery => _directQuery;
-
-        /// <summary>
-        /// An enum specifying whether the model storage mode.
-        /// </summary>
-        [XmlIgnore()]
-        public ModelStorageMode ModelStorageMode => _modelStorageMode;
 
         /// <summary>
         /// Project running in Visual Studio.
@@ -251,7 +244,7 @@ namespace BismNormalizer.TabularCompare
 
                 if (!String.IsNullOrEmpty(configurationName))
                 {
-                    deploymentServerNameNode =     projectFileDoc.SelectSingleNode($"//myns1:PropertyGroup[contains(@Condition,'{configurationName}')]/myns1:DeploymentServerName", nsmgr);
+                    deploymentServerNameNode = projectFileDoc.SelectSingleNode($"//myns1:PropertyGroup[contains(@Condition,'{configurationName}')]/myns1:DeploymentServerName", nsmgr);
                     deploymentServerDatabaseNode = projectFileDoc.SelectSingleNode($"//myns1:PropertyGroup[contains(@Condition,'{configurationName}')]/myns1:DeploymentServerDatabase", nsmgr);
                     deploymentServerCubeNameNode = projectFileDoc.SelectSingleNode($"//myns1:PropertyGroup[contains(@Condition,'{configurationName}')]/myns1:DeploymentServerCubeName", nsmgr);
                 }
@@ -467,7 +460,7 @@ namespace BismNormalizer.TabularCompare
                         jDocument["id"] = DatabaseName;
 
                         //Todo: see if Tabular helper classes for this once documentation available after CTP
-                        string command = 
+                        string command =
 $@"{{
   ""createOrReplace"": {{
     ""object"": {{
@@ -521,7 +514,7 @@ $@"{{
             }
             _compatibilityLevel = tabularDatabase.CompatibilityLevel;
             _dataSourceVersion = tabularDatabase.Model.DefaultPowerBIDataSourceVersion.ToString();
-            _directQuery = ((tabularDatabase.Model != null && tabularDatabase.Model.DefaultMode == Microsoft.AnalysisServices.Tabular.ModeType.DirectQuery) || 
+            _directQuery = ((tabularDatabase.Model != null && tabularDatabase.Model.DefaultMode == Microsoft.AnalysisServices.Tabular.ModeType.DirectQuery) ||
                              tabularDatabase.DirectQueryMode == DirectQueryMode.DirectQuery || tabularDatabase.DirectQueryMode == DirectQueryMode.InMemoryWithDirectQuery || tabularDatabase.DirectQueryMode == DirectQueryMode.DirectQueryWithInMemory);
         }
     }

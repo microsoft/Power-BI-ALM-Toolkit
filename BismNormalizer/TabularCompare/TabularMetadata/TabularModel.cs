@@ -314,6 +314,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         public void UpdateModel(Model modelSource, Model modelTarget)
         {
             modelTarget.TomModel.Description = modelSource.TomModel.Description;
+            modelTarget.TomModel.DefaultMode = modelSource.TomModel.DefaultMode;
             modelTarget.TomModel.DiscourageImplicitMeasures = modelSource.TomModel.DiscourageImplicitMeasures;
         }
 
@@ -840,25 +841,27 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             foreach (Table table in _tables)
             {
-                bool foundRule11Voilation = false;
+                bool foundViolation = false;
+                string warningMessage = "";
+
                 foreach (Column column in table.TomTable.Columns)
                 {
-                    if (column.AlternateOf != null)
+                    if (!foundViolation)
                     {
                         /* Check aggs refer to valid base tables/columns
                          */
 
-                        if (column.AlternateOf.BaseTable != null)
+                        if (column.AlternateOf?.BaseTable != null)
                         {
                             if (!_database.Model.Tables.ContainsName(column.AlternateOf.BaseTable.Name))
                             {
                                 //Base table doesn't exist
-                                _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) refers to detail table that does not exist [table:{column.AlternateOf.BaseTable.Name}].\n",
-                                    ValidationMessageType.AggregationDependency, ValidationMessageStatus.Warning));
-                                column.AlternateOf = null;
+                                foundViolation = true;
+                                warningMessage = $"Removed aggregations on table {table.Name} because summarization {column.AlternateOf.Summarization.ToString()} on column {column.Name} (considering changes) refers to detail table that does not exist [table:{column.AlternateOf.BaseTable.Name}].\n";
+                                break;
                             }
                         }
-                        else if (column.AlternateOf.BaseColumn != null)
+                        else if (column.AlternateOf?.BaseColumn != null)
                         {
                             if (_database.Model.Tables.ContainsName(column.AlternateOf.BaseColumn.Table?.Name))
                             {
@@ -866,28 +869,28 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 if (!_database.Model.Tables.Find(column.AlternateOf.BaseColumn.Table.Name).Columns.ContainsName(column.AlternateOf.BaseColumn.Name))
                                 {
                                     //Base column does not exist
-                                    _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) refers to detail column that does not exist [table:{column.AlternateOf.BaseColumn.Table.Name}/column:{column.AlternateOf.BaseColumn.Name}].\n",
-                                        ValidationMessageType.AggregationDependency, ValidationMessageStatus.Warning));
-                                    column.AlternateOf = null;
+                                    foundViolation = true;
+                                    warningMessage = $"Removed aggregations on table {table.Name} because summarization {column.AlternateOf.Summarization.ToString()} on column {column.Name} (considering changes) refers to detail column that does not exist [table:{column.AlternateOf.BaseColumn.Table.Name}/column:{column.AlternateOf.BaseColumn.Name}].\n";
+                                    break;
                                 }
                             }
                             else
                             {
                                 //Base table does not exist
-                                _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) refers to detail table that does not exist [table:{column.AlternateOf.BaseColumn.Table.Name}].\n",
-                                    ValidationMessageType.AggregationDependency, ValidationMessageStatus.Warning));
-                                column.AlternateOf = null;
+                                foundViolation = true;
+                                warningMessage = $"Removed aggregations on table {table.Name} because summarization {column.AlternateOf.Summarization.ToString()} on column {column.Name} (considering changes) refers to detail table that does not exist [table:{column.AlternateOf.BaseColumn.Table.Name}].\n";
+                                break;
                             }
                         }
 
                         string detailTableName = null;
-                        if (column.AlternateOf != null)
+                        if (!foundViolation && column.AlternateOf != null)
                         {
                             detailTableName = (column.AlternateOf.BaseTable != null ? column.AlternateOf.BaseTable.Name : column.AlternateOf.BaseColumn.Table.Name);
                         }
                         Table detailTable = _tables.FindByName(detailTableName);
 
-                        if (column.AlternateOf != null && column.AlternateOf.Summarization != SummarizationType.GroupBy && modelTablesWithRls.Count > 0 && detailTable != null)
+                        if (!foundViolation && column.AlternateOf != null && column.AlternateOf.Summarization != SummarizationType.GroupBy && modelTablesWithRls.Count > 0 && detailTable != null)
                         {
                             /* Rule 11: RLS expressions that can filter the agg table, must also be able to filter the detail table(s) using an active relationship
                              */
@@ -931,17 +934,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                                 {
                                     if (!rlsTablesFilteringDetail.Contains(rlsTableFilteringAgg))
                                     {
-                                        _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) RLS filter on table {rlsTableFilteringAgg} that filters the agg, but does not filter detail table {detailTableName}.\n",
-                                            ValidationMessageType.AggregationDependency, ValidationMessageStatus.Warning));
-                                        column.AlternateOf = null;
-                                        foundRule11Voilation = true;
+                                        foundViolation = true;
+                                        warningMessage = $"Removed aggregations on table {table.Name} because summarization {column.AlternateOf.Summarization.ToString()} on column {column.Name} (considering changes) RLS filter on table {rlsTableFilteringAgg} that filters the agg, but does not filter detail table {detailTableName}.\n";
                                         break;
                                     }
                                 }
                             }
                         }
 
-                        if (column.AlternateOf != null)
+                        if (!foundViolation && column.AlternateOf != null)
                         {
                             /* Rule 10: Relationships between aggregation tables and other (non-aggregation) tables are not allowed if the aggregation table is on the filtering side of a relationship (active or inactive relationships).
                                This rule applies whether relationships are weak or strong, whether BiDi or not [including to-many BiDi, not just to-one]
@@ -969,16 +970,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
                                     if (!endTableContainsAggs)
                                     {
-                                        _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) the agg table is on the filtering side of a relationship to a table ({endTable.Name}) that does not contain aggregations, which is not allowed.\n",
-                                            ValidationMessageType.AggregationDependency, ValidationMessageStatus.Warning));
-                                        column.AlternateOf = null;
+                                        foundViolation = true;
+                                        warningMessage = $"Removed aggregations on table {table.Name} because summarization {column.AlternateOf.Summarization.ToString()} on column {column.Name} (considering changes) the agg table is on the filtering side of a relationship to a table ({endTable.Name}) that does not contain aggregations, which is not allowed.\n";
                                         break;
                                     }
                                 }
                             }
                         }
 
-                        if (column.AlternateOf != null && detailTable != null)
+                        if (!foundViolation && column.AlternateOf != null && detailTable != null)
                         {
                             /* Rule 3: Chained aggregations are disallowed
                              */
@@ -987,9 +987,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                             {
                                 if (detailColumn.AlternateOf != null)
                                 {
-                                    _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) the detail table {detailTableName} also contains aggregations, which is not allowed.\n",
-                                        ValidationMessageType.AggregationDependency, ValidationMessageStatus.Warning));
-                                    column.AlternateOf = null;
+                                    foundViolation = true;
+                                    warningMessage = $"Removed aggregations on table {table.Name} because summarization {column.AlternateOf.Summarization.ToString()} on column {column.Name} (considering changes) the detail table {detailTableName} also contains aggregations, which is not allowed.\n";
                                     break;
                                 }
                             }
@@ -997,15 +996,15 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                     }
                 }
 
-                //Rule 11 needs to clear all remaining aggs on the agg table
-                if (foundRule11Voilation)
+                //Clear all aggs on the agg table
+                if (foundViolation)
                 {
+                    _parentComparison.OnValidationMessage(new ValidationMessageEventArgs(warningMessage, ValidationMessageType.AggregationDependency, ValidationMessageStatus.Warning));
+
                     foreach (Column column in table.TomTable.Columns)
                     {
                         if (column.AlternateOf != null)
                         {
-                            _parentComparison.OnValidationMessage(new ValidationMessageEventArgs($"Removed aggregation {column.AlternateOf.Summarization.ToString()} on [table:{table.Name}/column:{column.Name}] because (considering changes) RLS filter that filters the agg, but does not filter detail table.\n",
-                                ValidationMessageType.AggregationDependency, ValidationMessageStatus.Warning));
                             column.AlternateOf = null;
                         }
                     }
@@ -1969,7 +1968,11 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 // Show row count for each table
                 foreach (ProcessingTable table in _tablesToProcess)
                 {
-                    int rowCount = _connectionInfo.DirectQuery ? 0 : Core.Comparison.FindRowCount(_server, table.Name, _database.Name);
+                    int rowCount = 
+                        (
+                            this._tables.FindByName(table.Name)?.TableModeType == ModeType.DirectQuery || 
+                            (this._tables.FindByName(table.Name)?.TableModeType == ModeType.Default && _database.Model.DefaultMode == ModeType.DirectQuery)
+                        ) ? 0 : Core.Comparison.FindRowCount(_server, table.Name, _database.Name);
                     _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(table.Name, $"Success. {String.Format("{0:#,###0}", rowCount)} rows transferred.", DeploymentStatus.Success));
                 }
                 _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Success, null));

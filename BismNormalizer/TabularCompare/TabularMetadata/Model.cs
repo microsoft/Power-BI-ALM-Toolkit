@@ -53,8 +53,9 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             string customObjectDefinition = "{ ";
             if (!string.IsNullOrEmpty(_tomModel.Description))
             {
-                customObjectDefinition += $"\"description\": \"{_tomModel.Description}\", }}";
+                customObjectDefinition += $"\"description\": \"{_tomModel.Description}\", ";
             }
+            customObjectDefinition += $"\"defaultMode\": \"{_tomModel.DefaultMode.ToString().ToLower()}\", ";
             customObjectDefinition += $"\"discourageImplicitMeasures\": {_tomModel.DiscourageImplicitMeasures.ToString().ToLower()} }}";
             base.SetCustomObjectDefinition(customObjectDefinition);
         }

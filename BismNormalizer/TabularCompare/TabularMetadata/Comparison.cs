@@ -74,7 +74,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             #region Model
 
-            if (_comparisonInfo.TargetCompatibilityLevel >= 1470) //Target compat level is always >= source one.
+            if (_comparisonInfo.TargetCompatibilityLevel >= 1460) //Target compat level is always >= source one.
             {
                 // check if Model object definition is different
                 ComparisonObject comparisonObjectModel;
@@ -774,7 +774,6 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             #endregion
 
             _targetTabularModel.CleanUpVariations();
-            _targetTabularModel.CleanUpAggregations();
             
             #region Model2
 
@@ -911,6 +910,8 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             _targetTabularModel.RolesCleanup();
 
             #endregion
+
+            _targetTabularModel.CleanUpAggregations();
 
             #region Cultures
 
