@@ -532,6 +532,19 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         #region Other public methods
 
         /// <summary>
+        /// For option when retain storage mode in composite models.
+        /// </summary>
+        /// <param name="modeType"></param>
+        public void ResetStorageMode(ModeType modeType)
+        {
+            foreach (Partition partition in _tomTable.Partitions)
+            {
+                partition.Mode = modeType;
+            }
+            _tableModeType = modeType;
+        }
+
+        /// <summary>
         /// A Boolean specifying whether the table contains a column with the same name searching without case sensitivity.
         /// </summary>
         /// <param name="columnName">The name of the column being searched for.</param>

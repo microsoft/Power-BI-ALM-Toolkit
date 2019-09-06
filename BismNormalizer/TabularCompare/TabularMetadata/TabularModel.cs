@@ -314,7 +314,10 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         public void UpdateModel(Model modelSource, Model modelTarget)
         {
             modelTarget.TomModel.Description = modelSource.TomModel.Description;
-            modelTarget.TomModel.DefaultMode = modelSource.TomModel.DefaultMode;
+            if (!_comparisonInfo.OptionsInfo.OptionRetainStorageMode)
+            {
+                modelTarget.TomModel.DefaultMode = modelSource.TomModel.DefaultMode;
+            }
             modelTarget.TomModel.DiscourageImplicitMeasures = modelSource.TomModel.DiscourageImplicitMeasures;
         }
 
@@ -460,6 +463,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
         {
             bool canRetainPartitions = CanRetainPartitions(tableSource, tableTarget, out retainPartitionsMessage);
             Tom.Table tomTableTargetOrig = tableTarget.TomTable.Clone();
+            ModeType tableTargetModeType = tableTarget.TableModeType;
             List<SingleColumnRelationship> tomRelationshipsToAddBack = DeleteTable(tableTarget.Name);
             CreateTable(tableSource);
 
@@ -499,6 +503,14 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 foreach (Tom.CalculationItem tomCalculationItemToAddBack in tomTableTargetOrig.CalculationGroup.CalculationItems)
                 {
                     tableTarget.CreateCalculationItem(tomCalculationItemToAddBack);
+                }
+            }
+            else
+            {
+                //add back storage mode if option selected
+                if (_comparisonInfo.OptionsInfo.OptionRetainStorageMode)
+                {
+                    tableTarget.ResetStorageMode(tableTargetModeType);
                 }
             }
         }
@@ -1968,12 +1980,20 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
                 // Show row count for each table
                 foreach (ProcessingTable table in _tablesToProcess)
                 {
-                    int rowCount = 
-                        (
-                            this._tables.FindByName(table.Name)?.TableModeType == ModeType.DirectQuery || 
-                            (this._tables.FindByName(table.Name)?.TableModeType == ModeType.Default && _database.Model.DefaultMode == ModeType.DirectQuery)
-                        ) ? 0 : Core.Comparison.FindRowCount(_server, table.Name, _database.Name);
-                    _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(table.Name, $"Success. {String.Format("{0:#,###0}", rowCount)} rows transferred.", DeploymentStatus.Success));
+                    string message = "";
+                    if (
+                            this._tables.FindByName(table.Name)?.TableModeType == ModeType.DirectQuery ||
+                           (this._tables.FindByName(table.Name)?.TableModeType == ModeType.Default && _database.Model.DefaultMode == ModeType.DirectQuery)
+                       )
+                    {
+                        message = "Success. 0 rows transferred (DirectQuery).";
+                    }
+                    else
+                    {
+                        int rowCount = Core.Comparison.FindRowCount(_server, table.Name, _database.Name);
+                        message = $"Success. {String.Format("{0:#,###0}", rowCount)} rows transferred.";
+                    }
+                    _parentComparison.OnDeploymentMessage(new DeploymentMessageEventArgs(table.Name, message, DeploymentStatus.Success));
                 }
                 _parentComparison.OnDeploymentComplete(new DeploymentCompleteEventArgs(DeploymentStatus.Success, null));
             }

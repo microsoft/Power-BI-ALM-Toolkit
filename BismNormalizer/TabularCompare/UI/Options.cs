@@ -52,6 +52,7 @@ namespace BismNormalizer.TabularCompare.UI
             chkPartitions.Checked = _comparisonInfo.OptionsInfo.OptionPartitions;
             chkRetainPartitions.Checked = _comparisonInfo.OptionsInfo.OptionRetainPartitions;
             chkRetainPolicyPartitions.Checked = _comparisonInfo.OptionsInfo.OptionRetainPolicyPartitions;
+            chkRetainStorageMode.Checked = _comparisonInfo.OptionsInfo.OptionRetainStorageMode;
             chkMeasureDependencies.Checked = _comparisonInfo.OptionsInfo.OptionMeasureDependencies;
             string processingOption = _comparisonInfo.OptionsInfo.OptionProcessingOption.ToString();
             cboProcessingOption.Text = processingOption == "DoNotProcess" ? "Do Not Process" : processingOption;
@@ -71,6 +72,7 @@ namespace BismNormalizer.TabularCompare.UI
             _comparisonInfo.OptionsInfo.OptionPartitions = chkPartitions.Checked;
             _comparisonInfo.OptionsInfo.OptionRetainPartitions = chkRetainPartitions.Checked;
             _comparisonInfo.OptionsInfo.OptionRetainPolicyPartitions = chkRetainPolicyPartitions.Checked;
+            _comparisonInfo.OptionsInfo.OptionRetainStorageMode = chkRetainStorageMode.Checked;
             _comparisonInfo.OptionsInfo.OptionMeasureDependencies = chkMeasureDependencies.Checked;
             _comparisonInfo.OptionsInfo.OptionProcessingOption = (ProcessingOption)Enum.Parse(typeof(ProcessingOption), cboProcessingOption.Text.Replace(" ", ""));
             //_comparisonInfo.OptionsInfo.OptionTransaction = chkTransaction.Checked;
@@ -124,5 +126,6 @@ namespace BismNormalizer.TabularCompare.UI
             get { return _dpiScaleFactor; }
             set { _dpiScaleFactor = value; }
         }
+
     }
 }
