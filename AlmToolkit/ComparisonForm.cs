@@ -175,7 +175,7 @@ namespace AlmToolkit
             }
 
 
-            Connections connForm = new Connections();
+            ConnectionsAlmt connForm = new ConnectionsAlmt();
             connForm.ComparisonInfo = _comparisonInfo;
             connForm.StartPosition = FormStartPosition.CenterParent;
             connForm.DpiScaleFactor = _dpiScaleFactor;

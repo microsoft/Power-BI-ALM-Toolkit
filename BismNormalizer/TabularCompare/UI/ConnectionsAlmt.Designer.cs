@@ -1,6 +1,6 @@
 ﻿namespace BismNormalizer.TabularCompare.UI
 {
-    partial class Connections
+    partial class ConnectionsAlmt
     {
         /// <summary>
         /// Required designer variable.

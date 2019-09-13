@@ -19,7 +19,7 @@ namespace BismNormalizer.TabularCompare.UI
     /// <summary>
     /// The main BISM Normalizer comparison control, containing the differences grid, and source/target object definition text boxes.
     /// </summary>
-    public partial class ComparisonControl : UserControl
+    public partial class ComparisonControlAlmt : UserControl
     {
         #region Private variables
 
@@ -117,7 +117,7 @@ namespace BismNormalizer.TabularCompare.UI
 
         #endregion
 
-        public ComparisonControl()
+        public ComparisonControlAlmt()
         {
             InitializeComponent();
         }
@@ -211,7 +211,7 @@ namespace BismNormalizer.TabularCompare.UI
                 this.RefreshSkipSelections();
             }
 
-            Connections connForm = new Connections();
+            ConnectionsAlmt connForm = new ConnectionsAlmt();
             connForm.Dte = _bismNormalizerPackage.Dte;
             connForm.ComparisonInfo = _comparisonInfo;
             connForm.StartPosition = FormStartPosition.CenterParent;

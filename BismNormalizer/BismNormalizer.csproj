@@ -272,11 +272,11 @@
     <Compile Include="TabularCompare\MultidimensionalMetadata\Table.cs" />
     <Compile Include="TabularCompare\MultidimensionalMetadata\TableCollection.cs" />
     <Compile Include="TabularCompare\MultidimensionalMetadata\ITabularObject.cs" />
-    <Compile Include="TabularCompare\UI\ComparisonControl.cs">
+    <Compile Include="TabularCompare\UI\ComparisonControlAlmt.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="TabularCompare\UI\ComparisonControl.Designer.cs">
-      <DependentUpon>ComparisonControl.cs</DependentUpon>
+    <Compile Include="TabularCompare\UI\ComparisonControlAlmt.Designer.cs">
+      <DependentUpon>ComparisonControlAlmt.cs</DependentUpon>
     </Compile>
     <Compile Include="TabularCompare\Core\Comparison.cs" />
     <Compile Include="TabularCompare\Core\ComparisonObject.cs" />
@@ -342,11 +342,11 @@
     <Compile Include="TabularCompare\UI\TreeGridView.cs" />
     <Compile Include="TabularCompare\UI\TreeGridViewComparison.cs" />
     <Compile Include="TabularCompare\UI\TreeGridViewValidationOutput.cs" />
-    <Compile Include="TabularCompare\UI\Connections.cs">
+    <Compile Include="TabularCompare\UI\ConnectionsAlmt.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TabularCompare\UI\Connections.Designer.cs">
-      <DependentUpon>Connections.cs</DependentUpon>
+    <Compile Include="TabularCompare\UI\ConnectionsAlmt.Designer.cs">
+      <DependentUpon>ConnectionsAlmt.cs</DependentUpon>
     </Compile>
     <Compile Include="WarningList.cs" />
     <Compile Include="EditorFactory.cs" />
@@ -474,12 +474,12 @@
     <Compile Include="PkgCmdID.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="TabularCompare\UI\ComparisonControl.resx">
-      <DependentUpon>ComparisonControl.cs</DependentUpon>
+    <EmbeddedResource Include="TabularCompare\UI\ComparisonControlAlmt.resx">
+      <DependentUpon>ComparisonControlAlmt.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="TabularCompare\UI\Connections.resx">
-      <DependentUpon>Connections.cs</DependentUpon>
+    <EmbeddedResource Include="TabularCompare\UI\ConnectionsAlmt.resx">
+      <DependentUpon>ConnectionsAlmt.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TabularCompare\UI\Deployment.resx">
       <DependentUpon>Deployment.cs</DependentUpon>

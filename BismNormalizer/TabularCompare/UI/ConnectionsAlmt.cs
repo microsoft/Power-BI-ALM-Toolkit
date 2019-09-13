@@ -7,14 +7,14 @@ using System.Drawing;
 
 namespace BismNormalizer.TabularCompare.UI
 {
-    public partial class Connections : Form
+    public partial class ConnectionsAlmt : Form
     {
         private ComparisonInfo _comparisonInfo;
         private float _dpiScaleFactor;
         private bool _sourceDatabaseBound = false;
         private bool _targetDatabaseBound = false;
 
-        public Connections()
+        public ConnectionsAlmt()
         {
             InitializeComponent();
         }
@@ -56,8 +56,8 @@ namespace BismNormalizer.TabularCompare.UI
                 this.grpTarget.Left = btnSwitch.Right + Convert.ToInt32(12 * dpiScaleFactorFudged);
             }
 
-            cboSourceServer.DataSource = ComparisonControl.ReverseArray<string>(Settings.Default.SourceServerAutoCompleteEntries.Substring(0, Settings.Default.SourceServerAutoCompleteEntries.Length - 1).Split("|".ToCharArray()));
-            cboTargetServer.DataSource = ComparisonControl.ReverseArray<string>(Settings.Default.TargetServerAutoCompleteEntries.Substring(0, Settings.Default.TargetServerAutoCompleteEntries.Length - 1).Split("|".ToCharArray()));
+            cboSourceServer.DataSource = ComparisonControlAlmt.ReverseArray<string>(Settings.Default.SourceServerAutoCompleteEntries.Substring(0, Settings.Default.SourceServerAutoCompleteEntries.Length - 1).Split("|".ToCharArray()));
+            cboTargetServer.DataSource = ComparisonControlAlmt.ReverseArray<string>(Settings.Default.TargetServerAutoCompleteEntries.Substring(0, Settings.Default.TargetServerAutoCompleteEntries.Length - 1).Split("|".ToCharArray()));
 
             cboSourceDatabase.Text = Settings.Default.SourceCatalog;
             cboTargetDatabase.Text = Settings.Default.TargetCatalog;
