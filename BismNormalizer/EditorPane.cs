@@ -100,7 +100,7 @@ namespace BismNormalizer
         // This flag is true when we are asking the QueryEditQuerySave service if we can edit the
         // file. It is used to avoid to have more than one request queued.
         private bool gettingCheckoutStatus;
-        private ComparisonControlAlmt bismNormalizerForm;
+        private ComparisonControl bismNormalizerForm;
         private string name;
 
         private Microsoft.VisualStudio.Shell.SelectionContainer selContainer;
@@ -126,7 +126,7 @@ namespace BismNormalizer
 
         #endregion
 
-        public ComparisonControlAlmt BismNormalizerForm => bismNormalizerForm;
+        public ComparisonControl BismNormalizerForm => bismNormalizerForm;
 
         #region "Window.Pane Overrides"
         /// <summary>
@@ -177,7 +177,7 @@ namespace BismNormalizer
             // Create and initialize the editor
 
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EditorPane));
-            this.bismNormalizerForm = new ComparisonControlAlmt();
+            this.bismNormalizerForm = new ComparisonControl();
             this.bismNormalizerForm.BismNormalizerPackage = bismNormalizerPackage;
             this.bismNormalizerForm.ComparisonEditorPane = this;
             bismNormalizerPackage.EditorPanes.Add(this);
