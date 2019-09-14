@@ -246,46 +246,28 @@ namespace BismNormalizer.TabularCompare
         /// <param name="compatibilityLevelTarget"></param>
         public void InitializeCompatibilityLevels()
         {
+            if (_credsProvided)
+            {
+                ConnectionInfoSource.CredsProvided = true;
+                ConnectionInfoSource.Username = _sourceUsername;
+                ConnectionInfoSource.Password = _sourcePassword;
+
+                ConnectionInfoTarget.CredsProvided = true;
+                ConnectionInfoTarget.Username = _targetUsername;
+                ConnectionInfoTarget.Password = _targetPassword;
+
+                if (_workspaceServerProvided)
+                {
+                    ConnectionInfoSource.WorkspaceServerProvided = true;
+                    ConnectionInfoSource.WorkspaceServer = _workspaceServer;
+
+                    ConnectionInfoTarget.WorkspaceServerProvided = true;
+                    ConnectionInfoTarget.WorkspaceServer = _workspaceServer;
+                }
+            }
+
             ConnectionInfoSource.InitializeCompatibilityLevel();
             ConnectionInfoTarget.InitializeCompatibilityLevel();
-
-            PopulateDatabaseProperties();
-        }
-
-        /// <summary>
-        /// Finds models' compatibility levels (and preps databases on workspace servers for comparison). This overload to be used when client is not Visual Studio - e.g. command line.
-        /// </summary>
-        public void InitializeCompatibilityLevels(string sourceUsername, string sourcePassword, string targetUsername, string targetPassword)
-        {
-            ConnectionInfoSource.CredsProvided = true;
-            ConnectionInfoSource.Username = sourceUsername;
-            ConnectionInfoSource.Password = sourcePassword;
-            ConnectionInfoSource.InitializeCompatibilityLevel();
-
-            ConnectionInfoTarget.CredsProvided = true;
-            ConnectionInfoTarget.Username = targetUsername;
-            ConnectionInfoTarget.Password = targetPassword;
-            ConnectionInfoTarget.InitializeCompatibilityLevel();
-
-            PopulateDatabaseProperties();
-        }
-
-        /// <summary>
-        /// Finds models' compatibility levels (and preps databases on workspace servers for comparison). This overload to be used when client is not Visual Studio - e.g. command line.
-        /// </summary>
-        public void InitializeCompatibilityLevels(string sourceUsername, string sourcePassword, string targetUsername, string targetPassword, string workspaceServer)
-        {
-
-
-            ConnectionInfoSource.CredsProvided = true;
-            ConnectionInfoSource.Username = sourceUsername;
-            ConnectionInfoSource.Password = sourcePassword;
-            ConnectionInfoSource.InitializeCompatibilityLevel(workspaceServer: workspaceServer);
-
-            ConnectionInfoTarget.CredsProvided = true;
-            ConnectionInfoTarget.Username = targetUsername;
-            ConnectionInfoTarget.Password = targetPassword;
-            ConnectionInfoTarget.InitializeCompatibilityLevel(workspaceServer: workspaceServer);
 
             PopulateDatabaseProperties();
         }

@@ -35,6 +35,8 @@ namespace BismNormalizer.TabularCompare
         private bool _credsProvided = false;
         private string _username;
         private string _password;
+        private bool _workspaceServerProvided = false;
+        private string _workspaceServer;
 
         #endregion
 
@@ -170,6 +172,26 @@ namespace BismNormalizer.TabularCompare
         {
             get { return _password; }
             set { _password = value; }
+        }
+
+        /// <summary>
+        /// Flag depending on whether workspace server was provided. Used for command line mode/automated build.
+        /// </summary>
+        [XmlIgnore()]
+        public bool WorkspaceServerProvided
+        {
+            get { return _workspaceServerProvided; }
+            set { _workspaceServerProvided = value; }
+        }
+
+        /// <summary>
+        /// Workspace server name for when WorkspaceServerProvided = true. Used for command line mode/automated build.
+        /// </summary>
+        [XmlIgnore()]
+        public string WorkspaceServer
+        {
+            get { return _workspaceServer; }
+            set { _workspaceServer = value; }
         }
 
         private void ReadSettingsFile()
@@ -339,7 +361,7 @@ namespace BismNormalizer.TabularCompare
         /// This method ensures the tabular model is online and populates the CompatibilityLevel property.
         /// </summary>
         /// <param name="closedBimFile">A Boolean specifying if the user cancelled the comparison. For the case where running in Visual Studio, the user has the option of cancelling if the project BIM file is open.</param>
-        public void InitializeCompatibilityLevel(bool closedBimFile = false, string workspaceServer = null)
+        public void InitializeCompatibilityLevel(bool closedBimFile = false)
         {
             if (UseProject)
             {
@@ -363,9 +385,9 @@ namespace BismNormalizer.TabularCompare
                 ReadProjectFile();
 
                 //Overwrite the server if a workspace server provided
-                if (!String.IsNullOrEmpty(workspaceServer))
+                if (_workspaceServerProvided)
                 {
-                    this.ServerName = workspaceServer;
+                    this.ServerName = _workspaceServer;
                 }
             }
 
