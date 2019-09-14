@@ -51,7 +51,7 @@
     <AssemblyName>BismNormalizer</AssemblyName>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -243,6 +243,24 @@
     <Compile Include="TabularCompare\TabularMetadata\CalcDependency.cs" />
     <Compile Include="TabularCompare\TabularMetadata\CalcDependencyCollection.cs" />
     <Compile Include="TabularCompare\Telemetry.cs" />
+    <Compile Include="TabularCompare\UI\ComparisonControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TabularCompare\UI\ComparisonControl.Designer.cs">
+      <DependentUpon>ComparisonControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TabularCompare\UI\ComparisonControlAlmt.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TabularCompare\UI\ComparisonControlAlmt.Designer.cs">
+      <DependentUpon>ComparisonControlAlmt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TabularCompare\UI\Connections.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TabularCompare\UI\Connections.Designer.cs">
+      <DependentUpon>Connections.cs</DependentUpon>
+    </Compile>
     <Compile Include="TabularCompare\UI\HighDpiUtils.cs" />
     <Compile Include="TabularCompare\UI\BlobCredentials.cs">
       <SubType>Form</SubType>
@@ -272,12 +290,6 @@
     <Compile Include="TabularCompare\MultidimensionalMetadata\Table.cs" />
     <Compile Include="TabularCompare\MultidimensionalMetadata\TableCollection.cs" />
     <Compile Include="TabularCompare\MultidimensionalMetadata\ITabularObject.cs" />
-    <Compile Include="TabularCompare\UI\ComparisonControlAlmt.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="TabularCompare\UI\ComparisonControlAlmt.Designer.cs">
-      <DependentUpon>ComparisonControlAlmt.cs</DependentUpon>
-    </Compile>
     <Compile Include="TabularCompare\Core\Comparison.cs" />
     <Compile Include="TabularCompare\Core\ComparisonObject.cs" />
     <Compile Include="TabularCompare\PartitionRowCounter.cs" />
@@ -474,9 +486,15 @@
     <Compile Include="PkgCmdID.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="TabularCompare\UI\ComparisonControl.resx">
+      <DependentUpon>ComparisonControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="TabularCompare\UI\ComparisonControlAlmt.resx">
       <DependentUpon>ComparisonControlAlmt.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TabularCompare\UI\Connections.resx">
+      <DependentUpon>Connections.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TabularCompare\UI\ConnectionsAlmt.resx">
       <DependentUpon>ConnectionsAlmt.cs</DependentUpon>

@@ -131,7 +131,7 @@ namespace BismNormalizer.TabularCompare.UI
                     //Blank file not saved to yet
                     return;
                 }
-                _comparisonInfo = ComparisonInfo.DeserializeBsmnFile(fileName);
+                _comparisonInfo = ComparisonInfo.DeserializeBsmnFile(fileName, "BISM Normalizer");
 
                 PopulateSourceTargetTextBoxes();
             }
@@ -615,11 +615,6 @@ namespace BismNormalizer.TabularCompare.UI
                 SetObjDefFontBold("Status Graphic:", txtSourceObjectDefinition);
                 SetObjDefFontBold("Trend Graphic:", txtSourceObjectDefinition);
             }
-            else if (objType == ComparisonObjectType.CalculationItem)
-            {
-                SetObjDefFontBold("Expression:", txtSourceObjectDefinition);
-                SetObjDefFontBold("Format & Visibility:", txtSourceObjectDefinition);
-            }
             else if (objType == ComparisonObjectType.Role)
             {
                 SetObjDefFontBold("Permissions:", txtSourceObjectDefinition);
@@ -1046,7 +1041,7 @@ namespace BismNormalizer.TabularCompare.UI
                 pnlProgressBar.Visible = true;
                 pnlProgressBar.BringToFront();
                 pnlProgressBar.Refresh();
-                //_comparison.ReportDifferences(progressBar);
+                _comparison.ReportDifferences(progressBar);
 
                 if (_bismNormalizerPackage.Dte != null)
                 {

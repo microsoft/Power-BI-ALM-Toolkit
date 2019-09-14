@@ -534,14 +534,14 @@
             this.label5.TabIndex = 1;
             this.label5.Text = "Target Object Definition";
             // 
-            // ComparisonControl
+            // ComparisonControlAlmt
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.scDifferenceResults);
             this.Controls.Add(this.pnlHeader);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.Name = "ComparisonControl";
+            this.Name = "ComparisonControlAlmt";
             this.Size = new System.Drawing.Size(980, 869);
             this.Load += new System.EventHandler(this.BismNormalizer_Load);
             this.pnlHeader.ResumeLayout(false);

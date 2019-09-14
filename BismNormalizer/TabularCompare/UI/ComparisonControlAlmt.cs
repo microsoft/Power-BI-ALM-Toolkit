@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace BismNormalizer.TabularCompare.UI
 {
-    public enum CompareState { NotCompared, Compared, Validated };
+    //public enum CompareState { NotCompared, Compared, Validated };
 
     /// <summary>
     /// The main BISM Normalizer comparison control, containing the differences grid, and source/target object definition text boxes.
@@ -30,7 +30,7 @@ namespace BismNormalizer.TabularCompare.UI
         private BismNormalizerPackage _bismNormalizerPackage;
         private EditorPane _editorPane;
 
-        private const string _bismNormalizerCaption = "BISM Normalizer";
+        private const string _appName = "ALM Toolkit";
         private CompareState _compareState = CompareState.NotCompared;
 
         #endregion
@@ -131,13 +131,13 @@ namespace BismNormalizer.TabularCompare.UI
                     //Blank file not saved to yet
                     return;
                 }
-                _comparisonInfo = ComparisonInfo.DeserializeBsmnFile(fileName);
+                _comparisonInfo = ComparisonInfo.DeserializeBsmnFile(fileName, _appName);
 
                 PopulateSourceTargetTextBoxes();
             }
             catch (Exception exc)
             {
-                MessageBox.Show($"Error loading file {fileName}\n{exc.Message}\n\nPlease save over this file with a new version.", _bismNormalizerCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error loading file {fileName}\n{exc.Message}\n\nPlease save over this file with a new version.", _appName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -158,7 +158,7 @@ namespace BismNormalizer.TabularCompare.UI
             }
             catch (Exception exc)
             {
-                MessageBox.Show($"Error saving file {fileName}\n{exc.Message}", _bismNormalizerCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error saving file {fileName}\n{exc.Message}", _appName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -726,7 +726,7 @@ namespace BismNormalizer.TabularCompare.UI
             }
             catch (Exception exc)
             {
-                MessageBox.Show(exc.Message, _bismNormalizerCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(exc.Message, _appName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetNotComparedState();
             }
             finally
@@ -875,7 +875,7 @@ namespace BismNormalizer.TabularCompare.UI
             }
             catch (Exception exc)
             {
-                MessageBox.Show(exc.Message, _bismNormalizerCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(exc.Message, _appName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetNotComparedState();
             }
             finally
@@ -886,7 +886,7 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show($"Are you sure you want to update target {(_comparisonInfo.ConnectionInfoTarget.UseProject ? "project" : "database")}?", _bismNormalizerCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            if (MessageBox.Show($"Are you sure you want to update target {(_comparisonInfo.ConnectionInfoTarget.UseProject ? "project" : "database")}?", _appName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
             {
                 return;
             }
@@ -908,7 +908,7 @@ namespace BismNormalizer.TabularCompare.UI
                 }
 
                 SetNotComparedState();
-                if (update && MessageBox.Show($"Updated {(_comparisonInfo.ConnectionInfoTarget.UseProject ? "project " + _comparisonInfo.ConnectionInfoTarget.ProjectName : "database " + _comparisonInfo.ConnectionInfoTarget.DatabaseName)}.\n\nDo you want to refresh the comparison?", _bismNormalizerCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (update && MessageBox.Show($"Updated {(_comparisonInfo.ConnectionInfoTarget.UseProject ? "project " + _comparisonInfo.ConnectionInfoTarget.ProjectName : "database " + _comparisonInfo.ConnectionInfoTarget.DatabaseName)}.\n\nDo you want to refresh the comparison?", _appName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     this.CompareTabularModels();
                 }
@@ -916,7 +916,7 @@ namespace BismNormalizer.TabularCompare.UI
 
             catch (Exception exc)
             {
-                MessageBox.Show(exc.Message, _bismNormalizerCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(exc.Message, _appName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetNotComparedState();
             }
             finally
@@ -967,12 +967,12 @@ namespace BismNormalizer.TabularCompare.UI
                     {
                         _bismNormalizerPackage.Dte.StatusBar.Text = "BISM Normalizer - finished generating script";
                     }
-                    MessageBox.Show("Created script\n" + saveFile.FileName, _bismNormalizerCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Created script\n" + saveFile.FileName, _appName, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception exc)
             {
-                MessageBox.Show(exc.Message, _bismNormalizerCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(exc.Message, _appName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 SetNotComparedState();
             }
             finally
@@ -1055,7 +1055,7 @@ namespace BismNormalizer.TabularCompare.UI
             }
             catch (Exception exc)
             {
-                MessageBox.Show(exc.Message, _bismNormalizerCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(exc.Message, _appName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {

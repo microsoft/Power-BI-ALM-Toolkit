@@ -14,12 +14,11 @@ namespace BismNormalizer.TabularCompare
     {
         // Factory pattern: https://msdn.microsoft.com/en-us/library/orm-9780596527730-01-05.aspx 
 
-        private const string _appName = "ALM Toolkit";
-        private static int _minCompatibilityLevel = 1200;
-        private static int _maxCompatibilityLevel = 1499;
+        private static int _minCompatibilityLevel = 1100;
+        private static int _maxCompatibilityLevel = 1500;
         private static List<string> _supportedDataSourceVersions = new List<string> { "PowerBI_V3" };
 
-        ///// <summary>
+        /// <summary>
         /// Uses factory design pattern to return an object of type Core.Comparison, which is instantiated using MultidimensionalMetadata.Comparison or TabularMeatadata.Comparison depending on SSAS compatibility level. Use this overload when running in Visual Studio.
         /// </summary>
         /// <param name="comparisonInfo">ComparisonInfo object for the comparison.</param>
@@ -45,9 +44,9 @@ namespace BismNormalizer.TabularCompare
         /// </summary>
         /// <param name="bsmnFile">Full path to the BSMN file.</param>
         /// <returns>Core.Comparison object</returns>
-        public static Comparison CreateComparison(string bsmnFile)
+        public static Comparison CreateComparison(string bsmnFile, string appName)
         {
-            ComparisonInfo comparisonInfo = ComparisonInfo.DeserializeBsmnFile(bsmnFile);
+            ComparisonInfo comparisonInfo = ComparisonInfo.DeserializeBsmnFile(bsmnFile, appName);
             return CreateComparison(comparisonInfo);
         }
 
@@ -64,13 +63,13 @@ namespace BismNormalizer.TabularCompare
 
         private static Comparison CreateComparisonInitialized(ComparisonInfo comparisonInfo)
         {
-            Telemetry.TrackEvent("CreateComparisonInitialized", new Dictionary<string, string> { { "App", _appName.Replace(" ", "") } });
+            Telemetry.TrackEvent("CreateComparisonInitialized", new Dictionary<string, string> { { "App", comparisonInfo.AppName.Replace(" ", "") } });
 
-            //Currently can't source from PBIP to AS because AS doesn't work with inline data sources:
-            if (comparisonInfo.ConnectionInfoSource.ServerName.StartsWith("powerbi://") && !comparisonInfo.ConnectionInfoTarget.ServerName.StartsWith("powerbi://"))
-            {
-                throw new ConnectionException($"Source model is a Power BI dataset and the target is Analysis Services, which is not supported in the current version.");
-            }
+            ////Currently can't source from PBIP to AS because AS doesn't work with inline data sources:
+            //if (comparisonInfo.ConnectionInfoSource.ServerName.StartsWith("powerbi://") && !comparisonInfo.ConnectionInfoTarget.ServerName.StartsWith("powerbi://"))
+            //{
+            //    throw new ConnectionException($"Source model is a Power BI dataset and the target is Analysis Services, which is not supported in the current version.");
+            //}
 
             //If composite models not allowed on AS, check DQ/Import at model level matches:
             if (!comparisonInfo.ConnectionInfoSource.ServerName.StartsWith("powerbi://") && !Settings.Default.OptionCompositeModelsOverride && comparisonInfo.SourceDirectQuery != comparisonInfo.TargetDirectQuery)
@@ -83,15 +82,13 @@ namespace BismNormalizer.TabularCompare
             //If Power BI, check the default datasource version
             //Source
             bool sourceDataSourceVersionRequiresUpgrade = false;
-            if (comparisonInfo.ConnectionInfoSource.ServerName.StartsWith("powerbi://") &&
-                !_supportedDataSourceVersions.Contains(comparisonInfo.SourceDataSourceVersion))
+            if (comparisonInfo.ConnectionInfoSource.ServerName.StartsWith("powerbi://") && !_supportedDataSourceVersions.Contains(comparisonInfo.SourceDataSourceVersion))
             {
                 sourceDataSourceVersionRequiresUpgrade = true;
             }
             //Target
             bool targetDataSourceVersionRequiresUpgrade = false;
-            if (comparisonInfo.ConnectionInfoTarget.ServerName.StartsWith("powerbi://") &&
-                !_supportedDataSourceVersions.Contains(comparisonInfo.TargetDataSourceVersion))
+            if (comparisonInfo.ConnectionInfoTarget.ServerName.StartsWith("powerbi://") && !_supportedDataSourceVersions.Contains(comparisonInfo.TargetDataSourceVersion))
             {
                 targetDataSourceVersionRequiresUpgrade = true;
             }
@@ -99,8 +96,8 @@ namespace BismNormalizer.TabularCompare
             if (sourceDataSourceVersionRequiresUpgrade && targetDataSourceVersionRequiresUpgrade)
             {
                 string message = $"The source and target are Power BI datasets have default data-source versions of {comparisonInfo.SourceDataSourceVersion} and {comparisonInfo.TargetDataSourceVersion} respectively, which are not supported for comparison.";
-                if (System.Windows.Forms.MessageBox.Show(
-                    message += $"\nDo you want to upgrade them both to {_supportedDataSourceVersions[0]} and allow the comparison?\n\nNOTE: this is a irreversible operation and you WILL NOT be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
+                if (comparisonInfo.Interactive && System.Windows.Forms.MessageBox.Show(
+                    message += $"\nDo you want to upgrade them both to {_supportedDataSourceVersions[0]} and allow the comparison?\n\nNOTE: this is a irreversible operation and you may not be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", comparisonInfo.AppName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
                 {
                     throw new ConnectionException(message);
                 }
@@ -108,8 +105,8 @@ namespace BismNormalizer.TabularCompare
             else if (sourceDataSourceVersionRequiresUpgrade)
             {
                 string message = $"The source is a Power BI dataset with default data-source version of {comparisonInfo.SourceDataSourceVersion}, which is not supported for comparison.";
-                if (System.Windows.Forms.MessageBox.Show(
-                    message += $"\nDo you want to upgrade it to {_supportedDataSourceVersions[0]} and allow the comparison?\n\nNOTE: this is a irreversible operation and you WILL NOT be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
+                if (comparisonInfo.Interactive && System.Windows.Forms.MessageBox.Show(
+                    message += $"\nDo you want to upgrade it to {_supportedDataSourceVersions[0]} and allow the comparison?\n\nNOTE: this is a irreversible operation and you may not be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", comparisonInfo.AppName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
                 {
                     throw new ConnectionException(message);
                 }
@@ -117,8 +114,8 @@ namespace BismNormalizer.TabularCompare
             else if (targetDataSourceVersionRequiresUpgrade)
             {
                 string message = $"The target is a Power BI datasets with default data-source version of {comparisonInfo.TargetDataSourceVersion}, which is not supported for comparison.";
-                if (System.Windows.Forms.MessageBox.Show(
-                    message += $"\nDo you want to upgrade it to {_supportedDataSourceVersions[0]} and allow the comparison?\n\nNOTE: this is a irreversible operation and you WILL NOT be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
+                if (comparisonInfo.Interactive && System.Windows.Forms.MessageBox.Show(
+                    message += $"\nDo you want to upgrade it to {_supportedDataSourceVersions[0]} and allow the comparison?\n\nNOTE: this is a irreversible operation and you may not be able to download the PBIX file(s) to Power BI Desktop. You should only do this if you have the original PBIX as a backup.", comparisonInfo.AppName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
                 {
                     throw new ConnectionException(message);
                 }
@@ -144,7 +141,7 @@ namespace BismNormalizer.TabularCompare
                 returnComparison = new TabularMetadata.Comparison(comparisonInfo);
                 TabularMetadata.Comparison returnTabularComparison = (TabularMetadata.Comparison)returnComparison;
 
-                //Upgrade default data-source versions if required
+                //Upgrade default DATA-SOURCE versions if required
                 if (sourceDataSourceVersionRequiresUpgrade)
                 {
                     returnTabularComparison.SourceTabularModel.Connect();
@@ -163,8 +160,12 @@ namespace BismNormalizer.TabularCompare
                 //Check if source has a higher compat level than the target and offer upgrade if appropriate.
                 if (comparisonInfo.SourceCompatibilityLevel > comparisonInfo.TargetCompatibilityLevel)
                 {
-                    //If target is SSDT, don't even bother.
-                    if (!comparisonInfo.ConnectionInfoTarget.UseProject && System.Windows.Forms.MessageBox.Show($"Source compatibility level is {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)} and target is {Convert.ToString(comparisonInfo.TargetCompatibilityLevel)}, which is not supported for comparison.\n\nDo you want to upgrade the target to {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)} and allow the comparison?", _appName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                    string message = $"Source compatibility level is { Convert.ToString(comparisonInfo.SourceCompatibilityLevel) } and target is { Convert.ToString(comparisonInfo.TargetCompatibilityLevel) }, which is not supported for comparison.\n";
+
+                    if (comparisonInfo.Interactive && 
+                        !comparisonInfo.ConnectionInfoTarget.UseProject && //Upgrade in SSDT not supported
+                        System.Windows.Forms.MessageBox.Show(
+                    message += $"\nDo you want to upgrade the target to {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)} and allow the comparison?", comparisonInfo.AppName, System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
                     {
                         returnTabularComparison.TargetTabularModel.Connect();
                         returnTabularComparison.TargetTabularModel.TomDatabase.CompatibilityLevel = comparisonInfo.SourceCompatibilityLevel;
@@ -173,7 +174,7 @@ namespace BismNormalizer.TabularCompare
                     }
                     else
                     {
-                        throw new ConnectionException($"This combination of mixed compatibility levels is not supported.\nSource is {Convert.ToString(comparisonInfo.SourceCompatibilityLevel)} and target is {Convert.ToString(comparisonInfo.TargetCompatibilityLevel)}.");
+                        throw new ConnectionException(message + "\nUpgrade the target compatibility level and retry.");
                     }
                 }
             }

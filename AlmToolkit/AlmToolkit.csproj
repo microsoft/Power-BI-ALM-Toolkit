@@ -12,7 +12,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>AlmToolkit</RootNamespace>
     <AssemblyName>AlmToolkit</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <NuGetPackageImportStamp>
@@ -80,12 +80,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChromeDebugger.cs" />
-    <Compile Include="ComparisonControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ComparisonControl.Designer.cs">
-      <DependentUpon>ComparisonControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="ComparisonForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -103,10 +97,6 @@
     <Compile Include="WarningListForm.Designer.cs">
       <DependentUpon>WarningListForm.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="ComparisonControl.resx">
-      <DependentUpon>ComparisonControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="ComparisonForm.resx">
       <DependentUpon>ComparisonForm.cs</DependentUpon>
     </EmbeddedResource>

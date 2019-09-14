@@ -78,7 +78,7 @@ namespace BismNormalizer.TabularCompare.UI
             }
             catch (Exception exc)
             {
-                MessageBox.Show(exc.Message, "ALM Toolkit", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(exc.Message, _comparisonInfo.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -169,7 +169,7 @@ namespace BismNormalizer.TabularCompare.UI
 
         private void btnStopProcessing_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to attempt to stop processing?", "ALM Toolkit", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+            if (MessageBox.Show("Are you sure you want to attempt to stop processing?", _comparisonInfo.AppName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
             {
                 return;
             }

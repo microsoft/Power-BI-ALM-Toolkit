@@ -7,8 +7,6 @@ using Tom = Microsoft.AnalysisServices.Tabular;
 using Amo = Microsoft.AnalysisServices;
 using Newtonsoft.Json.Linq;
 using BismNormalizer.TabularCompare.Core;
-using System.Runtime.CompilerServices;
-using System.Windows.Documents;
 
 namespace BismNormalizer.TabularCompare.TabularMetadata
 {
@@ -60,7 +58,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
             this.Disconnect();
 
             _server = new Server();
-            _server.Connect($"Provider=MSOLAP;Data Source={_connectionInfo.ServerName};Initial Catalog={_connectionInfo.DatabaseName}");
+            _server.Connect(_connectionInfo.BuildConnectionString());
 
             _database = _server.Databases.FindByName(_connectionInfo.DatabaseName);
             if (_database == null)
@@ -1921,7 +1919,7 @@ namespace BismNormalizer.TabularCompare.TabularMetadata
 
             _server.Disconnect();
             _server = new Server();
-            _server.Connect($"Provider=MSOLAP;Data Source={_connectionInfo.ServerName};Initial Catalog={_connectionInfo.DatabaseName}");
+            _server.Connect(_connectionInfo.BuildConnectionString());
             Amo.XmlaResultCollection results = _server.Execute(tmslCommand);
             if (results.ContainsErrors)
                 throw new Amo.OperationException(results);

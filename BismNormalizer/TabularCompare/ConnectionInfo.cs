@@ -32,6 +32,9 @@ namespace BismNormalizer.TabularCompare
         private string _deploymentServerDatabase;
         private string _deploymentServerCubeName;
         private DirectoryInfo _projectDirectoryInfo;
+        private bool _credsProvided = false;
+        private string _username;
+        private string _password;
 
         #endregion
 
@@ -139,6 +142,36 @@ namespace BismNormalizer.TabularCompare
         [XmlIgnore()]
         public string DeploymentServerCubeName => _deploymentServerCubeName;
 
+        /// <summary>
+        /// Use credentials are provided for command line execution.
+        /// </summary>
+        [XmlIgnore()]
+        public bool CredsProvided
+        {
+            get { return _credsProvided; }
+            set { _credsProvided = value; }
+        }
+
+        /// <summary>
+        /// Username for command line execution.
+        /// </summary>
+        [XmlIgnore()]
+        public string Username
+        {
+            get { return _username; }
+            set { _username = value; }
+        }
+
+        /// <summary>
+        /// Password for command line execution.
+        /// </summary>
+        [XmlIgnore()]
+        public string Password
+        {
+            get { return _password; }
+            set { _password = value; }
+        }
+
         private void ReadSettingsFile()
         {
             FileInfo[] files = _projectDirectoryInfo.GetFiles("*.settings", SearchOption.TopDirectoryOnly);
@@ -153,7 +186,7 @@ namespace BismNormalizer.TabularCompare
 
             foreach (FileInfo file in files)
             {
-                if (file.Name.Contains(currentUserName))
+                if (file.Name.ToUpper().Contains(currentUserName.ToUpper()))
                 {
                     settingsFile = file;
                     break;
@@ -244,7 +277,7 @@ namespace BismNormalizer.TabularCompare
 
                 if (!String.IsNullOrEmpty(configurationName))
                 {
-                    deploymentServerNameNode = projectFileDoc.SelectSingleNode($"//myns1:PropertyGroup[contains(@Condition,'{configurationName}')]/myns1:DeploymentServerName", nsmgr);
+                    deploymentServerNameNode =     projectFileDoc.SelectSingleNode($"//myns1:PropertyGroup[contains(@Condition,'{configurationName}')]/myns1:DeploymentServerName", nsmgr);
                     deploymentServerDatabaseNode = projectFileDoc.SelectSingleNode($"//myns1:PropertyGroup[contains(@Condition,'{configurationName}')]/myns1:DeploymentServerDatabase", nsmgr);
                     deploymentServerCubeNameNode = projectFileDoc.SelectSingleNode($"//myns1:PropertyGroup[contains(@Condition,'{configurationName}')]/myns1:DeploymentServerCubeName", nsmgr);
                 }
@@ -306,7 +339,7 @@ namespace BismNormalizer.TabularCompare
         /// This method ensures the tabular model is online and populates the CompatibilityLevel property.
         /// </summary>
         /// <param name="closedBimFile">A Boolean specifying if the user cancelled the comparison. For the case where running in Visual Studio, the user has the option of cancelling if the project BIM file is open.</param>
-        public void InitializeCompatibilityLevel(bool closedBimFile = false)
+        public void InitializeCompatibilityLevel(bool closedBimFile = false, string workspaceServer = null)
         {
             if (UseProject)
             {
@@ -328,12 +361,18 @@ namespace BismNormalizer.TabularCompare
 
                 //Read project file to get deployment server/cube names, and bim file
                 ReadProjectFile();
+
+                //Overwrite the server if a workspace server provided
+                if (!String.IsNullOrEmpty(workspaceServer))
+                {
+                    this.ServerName = workspaceServer;
+                }
             }
 
             Server amoServer = new Server();
             try
             {
-                amoServer.Connect($"Provider=MSOLAP;Data Source={this.ServerName};Initial Catalog={this.DatabaseName}");
+                amoServer.Connect(BuildConnectionString());
             }
             catch (ConnectionException) when (UseProject)
             {
@@ -356,7 +395,7 @@ namespace BismNormalizer.TabularCompare
                             {
                                 string port = File.ReadAllText(portFilePath[0]).Replace("\0", "");
                                 this.ServerName = $"localhost:{Convert.ToString(port)}";
-                                amoServer.Connect($"Provider=MSOLAP;Data Source={this.ServerName};Initial Catalog={this.DatabaseName}");
+                                amoServer.Connect(BuildConnectionString());
                                 foundServer = true;
                                 break;
                             }
@@ -460,7 +499,7 @@ namespace BismNormalizer.TabularCompare
                         jDocument["id"] = DatabaseName;
 
                         //Todo: see if Tabular helper classes for this once documentation available after CTP
-                        string command =
+                        string command = 
 $@"{{
   ""createOrReplace"": {{
     ""object"": {{
@@ -503,7 +542,7 @@ $@"{{
                 //need next lines in case just created the db using the Execute method
                 //amoServer.Refresh(); //todo workaround for bug 9719887 on 3/10/17 need to disconnect and reconnect
                 amoServer.Disconnect();
-                amoServer.Connect($"Provider=MSOLAP;Data Source={this.ServerName};Initial Catalog={this.DatabaseName}");
+                amoServer.Connect(BuildConnectionString());
 
                 tabularDatabase = amoServer.Databases.FindByName(this.DatabaseName);
             }
@@ -516,6 +555,21 @@ $@"{{
             _dataSourceVersion = tabularDatabase.Model.DefaultPowerBIDataSourceVersion.ToString();
             _directQuery = ((tabularDatabase.Model != null && tabularDatabase.Model.DefaultMode == Microsoft.AnalysisServices.Tabular.ModeType.DirectQuery) ||
                              tabularDatabase.DirectQueryMode == DirectQueryMode.DirectQuery || tabularDatabase.DirectQueryMode == DirectQueryMode.InMemoryWithDirectQuery || tabularDatabase.DirectQueryMode == DirectQueryMode.DirectQueryWithInMemory);
+        }
+
+        /// <summary>
+        /// Build connection string.
+        /// </summary>
+        /// <returns></returns>
+        public string BuildConnectionString()
+        {
+            string connectionString = $"Provider=MSOLAP;Data Source={this.ServerName};";
+            if (this.CredsProvided)
+            {
+                connectionString += $"User ID={this.Username};Password={this.Password};";
+            }
+
+            return connectionString;
         }
     }
 }
