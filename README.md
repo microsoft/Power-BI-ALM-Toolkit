@@ -1,5 +1,5 @@
 
-# Archived
+# Repo archived
 
 This repository is now archived. The code has been migrated to https://github.com/microsoft/Analysis-Services/tree/master/BismNormalizer/AlmToolkit
 
